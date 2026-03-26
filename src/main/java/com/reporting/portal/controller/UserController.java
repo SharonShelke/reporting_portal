@@ -31,6 +31,15 @@ public class UserController {
         }
     }
 
+    @PostMapping("/invite")
+    public ResponseEntity<?> inviteUser(@RequestBody com.reporting.portal.dto.InviteRequest request) {
+        try {
+            return ResponseEntity.ok(java.util.Map.of("link", userService.inviteUser(request)));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User request) {
         return ResponseEntity.ok(userService.updateUser(id, request));

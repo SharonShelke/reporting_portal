@@ -24,7 +24,9 @@ public class User {
     
     private String region;
     
-    private String status; // 'active', 'inactive'
+    private String status; // 'active', 'inactive', 'pending'
+
+    private String inviteToken;
 
     private LocalDate joinedDate;
     
@@ -59,6 +61,9 @@ public class User {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getInviteToken() { return inviteToken; }
+    public void setInviteToken(String inviteToken) { this.inviteToken = inviteToken; }
 
     public LocalDate getJoinedDate() { return joinedDate; }
     public void setJoinedDate(LocalDate joinedDate) { this.joinedDate = joinedDate; }

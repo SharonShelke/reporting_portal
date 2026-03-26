@@ -22,8 +22,8 @@ public class ReportController {
 
     // Fetches initial reports for the React Table
     @GetMapping
-    public ResponseEntity<List<ReportDto>> getAllReports() {
-        return ResponseEntity.ok(reportService.getAllReports());
+    public ResponseEntity<List<ReportDto>> getAllReports(@RequestParam(required = false) String email) {
+        return ResponseEntity.ok(reportService.getAllReports(email));
     }
 
     // Activated when 'Submit Report' Button is pressed
