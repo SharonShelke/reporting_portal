@@ -1,14 +1,22 @@
 package com.reporting.portal.dto;
 
-// The payload sent down to the frontend Table
+import java.math.BigDecimal;
+
 public record ReportDto(
-    String id,
-    String rawDate,
-    String region,
-    String zone,
-    String campaign,
-    String submittedBy,
-    String attendance,
-    String notes,
-    String status
+    Long id,
+    String createdAt,
+    String zoneName,
+    String zonalManager,
+    BigDecimal totalPartnershipRemittance,
+    Integer newPartnersRecruited,
+    Integer testimoniesSubmitted,
+    Integer httnmTranslations,
+    Integer httnmOutreaches,
+    Integer outreachMediaSubmitted,
+    String zonalPastorAttendance,
+    String zonalManagerDirectorMeetingAttendance,
+    String zonalManagerStrategyMeetingAttendance,
+    BigDecimal sponsorshipHealingCrusade,
+    String testimonyClarificationConcern,
+    String submittedByEmail
 ) {}

@@ -1,62 +1,89 @@
 package com.reporting.portal.entity;
 
+import com.reporting.portal.AttendanceStatus;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
-@Table(name = "reports")
+@Table(name = "zone_weekly_reports")
 public class Report {
 
     @Id
-    @Column(length = 50, updatable = false, nullable = false)
-    private String id;
-    
-    private LocalDate rawDate;
-    private String region;
-    private String zone;
-    private String campaign;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "submitted_by", nullable = false, length = 150)
     private String submittedBy;
-    private String attendance;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-    private String status;
+
+    @Column(name = "submitter_email", nullable = false, length = 255)
+    private String submitterEmail;
+
+    @Column(name = "submitted_at", nullable = false, updatable = false)
+    private LocalDateTime submittedAt;
+
+    @Column(name = "submitted_date", nullable = false)
+    private LocalDate submittedDate;
+
+    @Column(name = "submitted_time", nullable = false)
+    private LocalTime submittedTime;
+
+    @Column(name = "week_start_date", nullable = false)
+    private LocalDate weekStartDate;
+
+    @Column(name = "zone_name", nullable = false, length = 150)
+    private String zoneName;
+
+    @Column(name = "zonal_manager", nullable = false, length = 150)
+    private String zonalManager;
+
+    @Column(name = "total_partnership_remittance", nullable = false, precision = 12, scale = 2)
+    private BigDecimal totalPartnershipRemittance;
+
+    @Column(name = "new_partners_recruited", nullable = false)
+    private Integer newPartnersRecruited;
+
+    @Column(name = "testimonies_submitted", nullable = false)
+    private Integer testimoniesSubmitted;
+
+    @Column(name = "httnm_translations", nullable = false)
+    private Integer httnmTranslations;
+
+    @Column(name = "httnm_outreaches_held", nullable = false)
+    private Integer httnmOutreachesHeld;
+
+    @Column(name = "httnm_media_submitted", nullable = false)
+    private Integer httnmMediaSubmitted;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "zonal_pastor_directors_meeting", nullable = false)
+    private AttendanceStatus zonalPastorDirectorsMeeting;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "zonal_manager_directors_meeting", nullable = false)
+    private AttendanceStatus zonalManagerDirectorsMeeting;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "zonal_manager_strategy_meeting", nullable = false)
+    private AttendanceStatus zonalManagerStrategyMeeting;
+
+    @Column(name = "healing_crusade_sponsorship", nullable = false, precision = 12, scale = 2)
+    private BigDecimal healingCrusadeSponsorship;
+
+    @Column(name = "testimony_clarification_concern", columnDefinition = "TEXT")
+    private String testimonyClarificationConcern;
 
     @PrePersist
     protected void onCreate() {
-        if (this.rawDate == null) {
-            this.rawDate = LocalDate.now();
-        }
-        if (this.status == null) {
-            this.status = "submitted"; 
-        }
+        submittedAt = LocalDateTime.now();
     }
-
-    // Standard Getters and Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public LocalDate getRawDate() { return rawDate; }
-    public void setRawDate(LocalDate rawDate) { this.rawDate = rawDate; }
-
-    public String getRegion() { return region; }
-    public void setRegion(String region) { this.region = region; }
-
-    public String getZone() { return zone; }
-    public void setZone(String zone) { this.zone = zone; }
-
-    public String getCampaign() { return campaign; }
-    public void setCampaign(String campaign) { this.campaign = campaign; }
-
-    public String getSubmittedBy() { return submittedBy; }
-    public void setSubmittedBy(String submittedBy) { this.submittedBy = submittedBy; }
-
-    public String getAttendance() { return attendance; }
-    public void setAttendance(String attendance) { this.attendance = attendance; }
-
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }

@@ -3,10 +3,10 @@ package com.reporting.portal.repository;
 
 import com.reporting.portal.entity.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
-public interface ReportRepository extends JpaRepository<Report, String> {
-    long count();
+public interface ReportRepository extends JpaRepository<Report, Long> {
 
-    java.util.List<Report> findByRegion(String region);
-    java.util.List<Report> findBySubmittedBy(String submittedBy);
-}
+     List<Report> findBySubmitterEmail(String submitterEmail);
+    }
+
