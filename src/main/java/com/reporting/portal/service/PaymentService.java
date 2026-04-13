@@ -1,0 +1,41 @@
+package com.reporting.portal.service;
+
+import com.reporting.portal.dto.PaymentRequest;
+
+import com.reporting.portal.entity.Payment;
+import com.reporting.portal.repository.MagazineOrderRepository;
+import com.reporting.portal.repository.PaymentRepository;
+import org.springframework.stereotype.Service;
+
+
+
+@Service
+public class PaymentService {
+
+    private final PaymentRepository paymentRepository;
+    private final MagazineOrderRepository orderRepository;
+
+    public PaymentService(
+            PaymentRepository paymentRepository,
+            MagazineOrderRepository orderRepository) {
+        this.paymentRepository = paymentRepository;
+        this.orderRepository = orderRepository;
+    }
+
+    public Payment submitPayment(Long orderId, PaymentRequest request) {
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+
+        var payment = new Payment();
+        payment.setProofUrl(request.proofUrl());
+        payment.setStatus("pending");
+        payment.setOrder(order);
+
+        return paymentRepository.save(payment);
+    }
+
+    public Payment getPayment(Long orderId) {
+        return paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Payment not found for order: " + orderId));
+    }
+}
