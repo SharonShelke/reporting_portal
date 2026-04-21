@@ -1,5 +1,15 @@
 package com.reporting.portal.dto;
 
-public record PaymentRequest(
-        String proofUrl
-) {}
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class PaymentRequest {
+
+    private String proofUrl;
+    private String method;
+    private String paymentRef;
+
+
+}

@@ -2,6 +2,7 @@ package com.reporting.portal.service;
 
 import com.reporting.portal.dto.PaymentRequest;
 
+import com.reporting.portal.entity.MagazineOrder;
 import com.reporting.portal.entity.Payment;
 import com.reporting.portal.repository.MagazineOrderRepository;
 import com.reporting.portal.repository.PaymentRepository;
@@ -22,7 +23,7 @@ public class PaymentService {
         this.orderRepository = orderRepository;
     }
 
-    public Payment submitPayment(Long orderId, PaymentRequest request) {
+ /*   public Payment submitPayment(Long orderId, PaymentRequest request) {
         var order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
@@ -32,10 +33,37 @@ public class PaymentService {
         payment.setOrder(order);
 
         return paymentRepository.save(payment);
+    }*/
+
+
+    public Payment submitPayment(Long orderId, PaymentRequest request) {
+        MagazineOrder order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+
+        Payment payment = new Payment();
+        payment.setOrder(order);
+
+        // Payment details
+        payment.setMethod(request.getMethod()); // e.g. "paypal"
+        payment.setTransactionId(request.getPaymentRef());
+        payment.setAmount(order.getTotal());
+
+        // Optional: proof upload (if manual payment)
+        payment.setProofUrl(request.getProofUrl());
+
+        // Status handling
+        payment.setStatus("COMPLETED");
+
+        // Update order status
+        order.setStatus("approved");
+        orderRepository.save(order);
+
+        return paymentRepository.save(payment);
     }
 
     public Payment getPayment(Long orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found for order: " + orderId));
+                .orElseThrow(() -> new RuntimeException(
+                        "Payment not found for order: " + orderId));
     }
 }

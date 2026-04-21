@@ -9,5 +9,6 @@ public record UserDto(
     String role,
     String region,
     String status,
-    String joined
+    String joined,
+    String inviteToken
 ) {}

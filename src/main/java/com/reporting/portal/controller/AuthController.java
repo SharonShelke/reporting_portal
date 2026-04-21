@@ -3,13 +3,16 @@ package com.reporting.portal.controller;
 
 import com.reporting.portal.dto.LoginRequest;
 import com.reporting.portal.dto.RegisterRequest;
+import com.reporting.portal.dto.ForgotPasswordRequest;
+import com.reporting.portal.dto.VerifyOtpRequest;
+import com.reporting.portal.dto.ResetPasswordRequest;
 import com.reporting.portal.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}) 
 public class AuthController {
 
     private final UserService userService;
@@ -40,6 +43,40 @@ public class AuthController {
     public ResponseEntity<?> completeInvite(@RequestBody com.reporting.portal.dto.CompleteInviteRequest request) {
         try {
             return ResponseEntity.ok(userService.completeInvite(request));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            userService.forgotPassword(request);
+            return ResponseEntity.ok("OTP sent to email.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody VerifyOtpRequest request) {
+        try {
+            boolean isValid = userService.verifyOtp(request);
+            if (isValid) {
+                return ResponseEntity.ok("OTP verified.");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid OTP.");
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            userService.resetPassword(request);
+            return ResponseEntity.ok("Password reset successful.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

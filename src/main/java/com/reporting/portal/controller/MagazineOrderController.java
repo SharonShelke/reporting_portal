@@ -56,6 +56,7 @@ public class MagazineOrderController {
         return ResponseEntity.ok("Order cancelled successfully");
     }
 
+    // Payment APIs
     @PostMapping("/{id}/payment")
     public ResponseEntity<Payment> submitPayment(
             @PathVariable Long id,

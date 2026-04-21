@@ -28,4 +28,5 @@ public class MagazineOrder {
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
+    private Double total;
 }

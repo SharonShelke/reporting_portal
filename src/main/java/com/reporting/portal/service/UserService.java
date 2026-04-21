@@ -5,6 +5,8 @@ import com.reporting.portal.dto.RegisterRequest;
 import com.reporting.portal.dto.UserDto;
 import com.reporting.portal.entity.User;
 import com.reporting.portal.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -14,16 +16,24 @@ import java.util.List;
 import java.util.UUID;
 import com.reporting.portal.dto.InviteRequest;
 import com.reporting.portal.dto.CompleteInviteRequest;
+import com.reporting.portal.dto.ForgotPasswordRequest;
+import com.reporting.portal.dto.VerifyOtpRequest;
+import com.reporting.portal.dto.ResetPasswordRequest;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final AuditLogService auditLogService;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, AuditLogService auditLogService) {
+    public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService) {
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
+        this.emailService = emailService;
     }
 
     public UserDto login(LoginRequest request) {
@@ -31,8 +41,8 @@ public class UserService {
             throw new RuntimeException("Email and password are required.");
         }
 
-        var email = request.getEmail().trim();
-        var password = request.getPassword().trim();
+        var email = request.getEmail().trim().toLowerCase();
+        var password = request.getPassword();
 
         var user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email not found."));
@@ -44,7 +54,7 @@ public class UserService {
             throw new RuntimeException("Account is not active.");
         }
 
-        if (user.getPassword() == null || !user.getPassword().equals(password)) {
+        if (user.getPassword() == null || !passwordEncoder.matches(password, user.getPassword())) {
             try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Wrong password."); } catch (Exception e) {}
             throw new RuntimeException("Incorrect password.");
         }
@@ -90,8 +100,8 @@ public class UserService {
         }
 
         var user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // Hash this in production
+        user.setEmail(request.getEmail().trim().toLowerCase());
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash this in production
         user.setRole("zonal"); // Default role based on signup.jsx
         user.setStatus("active");
         
@@ -128,7 +138,7 @@ public class UserService {
         }
         
         var user = new User();
-        user.setEmail(request.getEmail());
+        user.setEmail(request.getEmail().trim().toLowerCase());
         user.setRole(request.getRole());
         user.setRegion(request.getRegion());
         user.setStatus("pending");
@@ -138,8 +148,10 @@ public class UserService {
         
         auditLogService.logActivity("System Administrator", 1L, "Created new user", "User Management", "—", user.getEmail(), "Admin generated an invitation link for " + user.getEmail() + " as a " + request.getRole() + ".");
         
-        // Simulating email dispatch
-        return "http://localhost:3000/invite?token=" + user.getInviteToken();
+        // Sending actual email
+        emailService.sendInvitation(user.getEmail(), user.getInviteToken());
+        
+        return "Invitation email sent to " + user.getEmail();
     }
 
     public UserDto completeInvite(CompleteInviteRequest request) {
@@ -149,7 +161,7 @@ public class UserService {
         String[] nameParts = request.getName() != null ? request.getName().trim().split(" ", 2) : new String[]{"User"};
         user.setFirstName(nameParts[0]);
         user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus("active");
         user.setInviteToken(null);
         
@@ -174,6 +186,48 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public void forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+        
+        String otp = String.format("%06d", new Random().nextInt(1000000));
+        user.setOtpCode(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+        
+        emailService.sendOtp(user.getEmail(), otp);
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Requested Password Reset", "Auth", "—", "—", "User requested an OTP for password reset.");
+    }
+
+    public boolean verifyOtp(VerifyOtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+        
+        if (user.getOtpCode() == null || !user.getOtpCode().equals(request.getOtp())) {
+            return false;
+        }
+        
+        if (user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP has expired.");
+        }
+        
+        return true;
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        if (!verifyOtp(new VerifyOtpRequest() {{ setEmail(request.getEmail().trim().toLowerCase()); setOtp(request.getOtp()); }})) {
+            throw new RuntimeException("Invalid or expired OTP.");
+        }
+        
+        User user = userRepository.findByEmail(request.getEmail().trim().toLowerCase()).orElseThrow();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset Successful", "Auth", "—", "—", "User successfully reset their password using OTP verification.");
+    }
+
     private UserDto mapToDto(User user) {
         var formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         var firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
@@ -188,7 +242,8 @@ public class UserService {
             user.getRole(),
             user.getRegion() != null ? user.getRegion() : "Global",
             user.getStatus() != null ? user.getStatus() : "active",
-            user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null
+            user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
+            user.getInviteToken()
         );
     }
 }

@@ -25,4 +25,9 @@ public class Payment {
     @OneToOne
     @JoinColumn(name = "order_id")
     private MagazineOrder order;
+
+    private String method;          // paypal / manual
+    private String transactionId;
+    private Double amount;
+
 }
