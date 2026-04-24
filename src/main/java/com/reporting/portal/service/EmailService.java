@@ -23,12 +23,12 @@ public class EmailService {
             mailSender.send(message);
         } catch (Exception e) {
             System.err.println("Failed to send email: " + e.getMessage());
-            // In a real app, you might want to throw an exception or log it properly
+            throw new RuntimeException("Failed to send email. Please check SMTP configuration: " + e.getMessage());
         }
     }
 
     public void sendInvitation(String to, String token) {
-        String link = "http://localhost:3000/invite?token=" + token;
+        String link = "http://65.0.71.13/invite?token=" + token;
         String subject = "Account Invitation - Kingsforms";
         String body = "You have been invited to join Kingsforms. Please click the link below to complete your registration and set your password:\n\n" + link;
         sendEmail(to, subject, body);
