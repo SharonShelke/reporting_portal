@@ -14,8 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reports")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping({"/api/reports", "/reports"})
+@CrossOrigin(origins = "http://65.0.71.13")
 public class ReportController {
 
     private final ReportService reportService;

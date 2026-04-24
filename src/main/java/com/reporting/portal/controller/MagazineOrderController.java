@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/magazine/orders")
-@CrossOrigin(origins = "*")
+@RequestMapping({"/api/magazine/orders", "/magazine/orders"})
+@CrossOrigin(origins = "http://65.0.71.13")
 public class MagazineOrderController {
 
     private final MagazineOrderService orderService;

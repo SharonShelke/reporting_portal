@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/notifications")
-@CrossOrigin(origins = "*")
+@RequestMapping({"/api/notifications", "/notifications"})
+@CrossOrigin(origins = "http://65.0.71.13")
 public class NotificationController {
 
     private final NotificationService notificationService;

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/magazine/types")
-@CrossOrigin(origins = "*")
+@RequestMapping({"/api/magazine/types", "/magazine/types"})
+@CrossOrigin(origins = "http://65.0.71.13")
 public class MagazineTypeController {
 
     private final MagazineTypeRepository magazineTypeRepository;
