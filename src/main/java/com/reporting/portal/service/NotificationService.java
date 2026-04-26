@@ -21,7 +21,7 @@ public class NotificationService {
         var notification = new Notification();
         notification.setMessage(request.message());
         notification.setTargetRole(request.targetRole());
-        notification.setUserId(request.userId());
+        notification.setUserEmail(request.userEmail());
         
         var saved = notificationRepository.save(notification);
         
@@ -36,8 +36,8 @@ public class NotificationService {
         System.out.println("[KingChat] Sending to role " + role + ": " + message);
     }
 
-    public List<Notification> getNotifications(Long userId, String role) {
-        return notificationRepository.findByUserIdOrTargetRole(userId, role);
+    public List<Notification> getNotifications(String userEmail, String role) {
+        return notificationRepository.findByUserEmailOrTargetRole(userEmail, role);
     }
 
     public Notification markAsRead(Long id) {
@@ -47,8 +47,8 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
-    public void markAllAsRead(Long userId) {
-        var list = notificationRepository.findByUserId(userId);
+    public void markAllAsRead(String userEmail) {
+        var list = notificationRepository.findByUserEmail(userEmail);
         list.forEach(n -> n.setIsRead(true));
         notificationRepository.saveAll(list);
     }

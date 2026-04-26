@@ -32,9 +32,9 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<Notification>> getNotifications(
-            @RequestParam Long userId,
+            @RequestParam String userEmail,
             @RequestParam String role) {
-        return ResponseEntity.ok(notificationService.getNotifications(userId, role));
+        return ResponseEntity.ok(notificationService.getNotifications(userEmail, role));
     }
 
     @PatchMapping("/{id}/read")
@@ -43,8 +43,8 @@ public class NotificationController {
     }
 
     @PatchMapping("/read-all")
-    public ResponseEntity<String> markAllAsRead(@RequestParam Long userId) {
-        notificationService.markAllAsRead(userId);
+    public ResponseEntity<String> markAllAsRead(@RequestParam String userEmail) {
+        notificationService.markAllAsRead(userEmail);
         return ResponseEntity.ok("All notifications marked as read");
     }
 

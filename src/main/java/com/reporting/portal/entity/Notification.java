@@ -20,7 +20,7 @@ public class Notification {
 
     private String message;
     private String targetRole;
-    private Long userId;
+    private String userEmail;
     private Boolean isRead = false;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
