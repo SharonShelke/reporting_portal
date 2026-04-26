@@ -122,8 +122,10 @@ public class MagazineOrderService {
         notificationService.push(new NotificationRequest("Payment received for order #" + id, "finance", null));
         notificationService.push(new NotificationRequest("New production task (Printing) for order #" + id, "publication", null));
         
+        // Notify User
+        notificationService.push(new NotificationRequest("Your payment for order #" + id + " has been confirmed. Production started.", "zonal", order.getOrderedBy()));
         emailService.sendSimpleEmail(order.getOrderedBy(), "Payment Receipt", 
-            "We have received your payment for order #" + id + ". Production has commenced.");
+            "We have received your payment for order #" + id + ". Production has commenced with an 8-day deadline.");
             
         return saved;
     }
@@ -136,6 +138,9 @@ public class MagazineOrderService {
         
         notificationService.push(new NotificationRequest("Printing completed for order #" + id + ". Ready for shipping.", "admin", null));
         notificationService.push(new NotificationRequest("Order #" + id + " printing finished.", "publication", null));
+        
+        // Notify User
+        notificationService.push(new NotificationRequest("Printing for your order #" + id + " is complete! Preparing for shipment.", "zonal", order.getOrderedBy()));
         
         return saved;
     }
@@ -174,8 +179,15 @@ public class MagazineOrderService {
         var saved = orderRepository.save(order);
         
         notificationService.push(new NotificationRequest("Order #" + id + " has been cancelled.", "admin", null));
+        
+        // Notify Zonal Manager (User)
+        notificationService.push(new NotificationRequest("Your order #" + id + " has been cancelled.", "zonal", order.getOrderedBy()));
         emailService.sendSimpleEmail(order.getOrderedBy(), "Order Cancelled", 
             "Your magazine order #" + id + " has been cancelled by the administrator.");
+        
+        // Notify Printing/Shipment Dept
+        emailService.sendSimpleEmail("sharonshelke7@gmail.com", "Order CANCELLED - #" + id, 
+            "The magazine order #" + id + " for " + order.getZone() + " has been CANCELLED. Please stop any production/shipment.");
         
         return saved;
     }
