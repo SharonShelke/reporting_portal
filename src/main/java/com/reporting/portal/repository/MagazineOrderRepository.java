@@ -12,6 +12,9 @@ public interface MagazineOrderRepository extends JpaRepository<MagazineOrder, Lo
     List<MagazineOrder> findByZone(String zone);
     List<MagazineOrder> findByOrderedBy(String email);
 
-    @Query("SELECT SUM(o.totalAmount) FROM MagazineOrder o")
-    Double sumTotalAmount();
+    @Query("SELECT SUM(o.totalAmount) FROM MagazineOrder o WHERE (:email IS NULL OR o.orderedBy = :email)")
+    Double sumTotalAmount(@Param("email") String email);
+
+    @Query("SELECT COUNT(o) FROM MagazineOrder o WHERE (:email IS NULL OR o.orderedBy = :email)")
+    Long countOrders(@Param("email") String email);
 }

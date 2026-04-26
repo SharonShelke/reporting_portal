@@ -22,37 +22,39 @@ public class DashboardService {
     private final MagazineOrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    public DashboardStatsDto getDashboardStats() {
-        Long totalReports = reportRepository.count();
+    public DashboardStatsDto getDashboardStats(String email) {
+        Long totalReports = reportRepository.countReports(email);
         Long totalUsers = userRepository.count();
         
         LocalDateTime startOfWeek = LocalDateTime.now()
             .with(DayOfWeek.MONDAY)
             .withHour(0).withMinute(0).withSecond(0);
-        Long reportsThisWeek = reportRepository.countReportsSince(startOfWeek);
+        Long reportsThisWeek = reportRepository.countReportsSince(startOfWeek, email);
         
-        Double totalFinance = orderRepository.sumTotalAmount();
+        Double totalFinance = orderRepository.sumTotalAmount(email);
         if (totalFinance == null) totalFinance = 0.0;
         
-        Long financeEntries = orderRepository.count();
+        Long financeEntries = orderRepository.countOrders(email);
         
-        Long totalAttendance = reportRepository.sumTotalAttendance();
+        Long totalAttendance = reportRepository.sumTotalAttendance(email);
         if (totalAttendance == null) totalAttendance = 0L;
         
         // Mocking completion rate logic: (submitted / expected)
-        // Let's assume 50 expected reports per week
         double expected = 50.0;
         double completionRate = (reportsThisWeek / expected) * 100.0;
         if (completionRate > 100) completionRate = 100.0;
 
         // Campaign stats (Mocking based on image requirements)
         List<DashboardStatsDto.CampaignStat> campaigns = new ArrayList<>();
-        campaigns.add(new DashboardStatsDto.CampaignStat("Spring Outreach", 1000, "#4f46e5"));
-        campaigns.add(new DashboardStatsDto.CampaignStat("Easter Campaign", 350, "#818cf8"));
-        campaigns.add(new DashboardStatsDto.CampaignStat("Healing Streams", 750, "#6366f1"));
+        campaigns.add(new DashboardStatsDto.CampaignStat("Spring Outreach", (int)(totalAttendance * 0.4), "#4f46e5"));
+        campaigns.add(new DashboardStatsDto.CampaignStat("Easter Campaign", (int)(totalAttendance * 0.2), "#818cf8"));
+        campaigns.add(new DashboardStatsDto.CampaignStat("Healing Streams", (int)(totalAttendance * 0.3), "#6366f1"));
 
         // Recent activity
-        List<Report> recent = reportRepository.findTop5ByOrderBySubmittedAtDesc();
+        List<Report> recent = (email == null) 
+            ? reportRepository.findTop5ByOrderBySubmittedAtDesc()
+            : reportRepository.findTop5BySubmitterEmailOrderBySubmittedAtDesc(email);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         List<DashboardStatsDto.RecentActivity> activities = recent.stream()
             .map(r -> new DashboardStatsDto.RecentActivity(

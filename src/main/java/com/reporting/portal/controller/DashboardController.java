@@ -20,7 +20,7 @@ public class DashboardController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<DashboardStatsDto> getStats() {
-        return ResponseEntity.ok(dashboardService.getDashboardStats());
+    public ResponseEntity<DashboardStatsDto> getStats(@org.springframework.web.bind.annotation.RequestParam(required = false) String email) {
+        return ResponseEntity.ok(dashboardService.getDashboardStats(email));
     }
 }

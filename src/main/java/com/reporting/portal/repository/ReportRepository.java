@@ -13,12 +13,16 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      List<Report> findBySubmitterEmail(String submitterEmail);
      List<Report> findByRegionName(String regionName);
 
-     @Query("SELECT SUM(r.newPartnersRecruited) FROM Report r")
-     Long sumTotalAttendance();
+     @Query("SELECT SUM(r.newPartnersRecruited) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
+     Long sumTotalAttendance(@Param("email") String email);
 
      List<Report> findTop5ByOrderBySubmittedAtDesc();
 
-     @Query("SELECT COUNT(r) FROM Report r WHERE r.submittedAt >= :start")
-     Long countReportsSince(@Param("start") LocalDateTime start);
-}
+     List<Report> findTop5BySubmitterEmailOrderBySubmittedAtDesc(String email);
 
+     @Query("SELECT COUNT(r) FROM Report r WHERE r.submittedAt >= :start AND (:email IS NULL OR r.submitterEmail = :email)")
+     Long countReportsSince(@Param("start") LocalDateTime start, @Param("email") String email);
+
+     @Query("SELECT COUNT(r) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
+     Long countReports(@Param("email") String email);
+}
