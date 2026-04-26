@@ -67,4 +67,6 @@ public class User {
 
     public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
+
+    public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
 }

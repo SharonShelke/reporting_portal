@@ -260,7 +260,8 @@ public class ReportService {
                         c[14],
                         c[15],
                         new BigDecimal(c[16]),
-                        c[17]
+                        c[17],
+                        c[18]
                 );
 
                 saved.add(submitReport(req));
@@ -297,7 +298,8 @@ public class ReportService {
                         cell(row, 14),
                         cell(row, 15),
                         new BigDecimal(cell(row, 16)),
-                        cell(row, 17)
+                        cell(row, 17),
+                        cell(row, 18)
                 );
 
                 saved.add(submitReport(req));

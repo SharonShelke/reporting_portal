@@ -49,7 +49,7 @@ public class PaymentService {
         // Payment details
         payment.setMethod(request.getMethod()); // e.g. "paypal"
         payment.setTransactionId(request.getPaymentRef());
-        payment.setAmount(order.getTotal());
+        payment.setAmount(order.getTotalAmount());
 
         // Optional: proof upload (if manual payment)
         payment.setProofUrl(request.getProofUrl());
