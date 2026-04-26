@@ -42,7 +42,7 @@ public class UserService {
         }
 
         var email = request.getEmail().trim().toLowerCase();
-        var password = request.getPassword();
+        var password = normalizePassword(request.getPassword());
 
         var user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email not found."));
@@ -54,7 +54,24 @@ public class UserService {
             throw new RuntimeException("Account is not active.");
         }
 
-        if (user.getPassword() == null || !passwordEncoder.matches(password, user.getPassword())) {
+        String storedPass = user.getPassword();
+        boolean matches = false;
+        
+        if (storedPass != null) {
+            // 1. Try standard BCrypt
+            try {
+                matches = passwordEncoder.matches(password, storedPass);
+            } catch (Exception e) {
+                // If storedPass is not a BCrypt hash, this might throw
+            }
+            
+            // 2. Fallback to normalized plain text comparison (for demo/legacy users)
+            if (!matches) {
+                matches = password.equals(normalizePassword(storedPass));
+            }
+        }
+
+        if (!matches) {
             try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Wrong password."); } catch (Exception e) {}
             throw new RuntimeException("Incorrect password.");
         }
