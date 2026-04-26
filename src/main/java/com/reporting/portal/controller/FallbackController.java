@@ -1,14 +1,14 @@
 package com.reporting.portal.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class FallbackController {
     
-    @RequestMapping("/**")
-    public ResponseEntity<String> fallback() {
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
         return ResponseEntity.ok("Backend is alive");
     }
 }
