@@ -8,5 +8,6 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
      List<Report> findBySubmitterEmail(String submitterEmail);
-    }
+     List<Report> findByRegionName(String regionName);
+}
 

@@ -15,12 +15,15 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final MagazineOrderRepository orderRepository;
+    private final MagazineOrderService magazineOrderService;
 
     public PaymentService(
             PaymentRepository paymentRepository,
-            MagazineOrderRepository orderRepository) {
+            MagazineOrderRepository orderRepository,
+            MagazineOrderService magazineOrderService) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
+        this.magazineOrderService = magazineOrderService;
     }
 
  /*   public Payment submitPayment(Long orderId, PaymentRequest request) {
@@ -54,11 +57,12 @@ public class PaymentService {
         // Status handling
         payment.setStatus("COMPLETED");
 
-        // Update order status
-        order.setStatus("approved");
-        orderRepository.save(order);
+        var savedPayment = paymentRepository.save(payment);
 
-        return paymentRepository.save(payment);
+        // Update order via service to trigger flow logic (deadlines, notifications)
+        magazineOrderService.confirmPayment(orderId);
+
+        return savedPayment;
     }
 
     public Payment getPayment(Long orderId) {

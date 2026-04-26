@@ -26,7 +26,26 @@ public class MagazineOrder {
     private String orderedBy;
     private LocalDateTime orderedAt = LocalDateTime.now();
 
+    // Delivery & Financial
+    private String deliveryAddress;
+    private String country;
+    private String stateProvince;
+    private Double shippingCost;
+    private Double taxAmount;
+    private Double weight;
+
+    // Timeline
+    private LocalDateTime invoiceSentAt;
+    private LocalDateTime paymentConfirmedAt;
+    private LocalDateTime productionStartAt;
+    private LocalDateTime productionDeadline;
+    private LocalDateTime shippedAt;
+    private LocalDateTime deliveredAt;
+
+    private Boolean feedbackReceived = false;
+    @Column(columnDefinition = "TEXT")
+    private String delayReport;
+
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
-    private Double total;
 }

@@ -6,8 +6,8 @@ public record OrderRequest(
         String magazineType,
         Integer quantity,
         Double totalAmount,
-        String orderedBy
-)
-{
-
-}
+        String orderedBy,
+        String deliveryAddress,
+        String country,
+        String stateProvince
+) {}

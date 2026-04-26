@@ -95,4 +95,9 @@ public class ReportController {
     public ResponseEntity<List<ReportDto>> uploadReports(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(reportService.uploadReports(file));
     }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<ReportDto> approveReport(@PathVariable Long id) {
+        return ResponseEntity.ok(reportService.approveReport(id));
+    }
 }

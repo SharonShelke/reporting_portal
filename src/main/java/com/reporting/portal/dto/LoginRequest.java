@@ -10,4 +10,6 @@ public class LoginRequest {
 
     @JsonAlias({"pwd", "pass", "userPassword", "user_password", "password"})
     private String password;
+
+    private String loginMethod; // 'kingchat' or 'password'
 }

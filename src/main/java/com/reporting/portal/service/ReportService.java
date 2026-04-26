@@ -33,6 +33,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     // ===================== SUBMIT =====================
     @Transactional
@@ -71,8 +72,20 @@ public class ReportService {
                         : BigDecimal.ZERO
         );
         report.setTestimonyClarificationConcern(request.testimonyClarificationConcern());
+        report.setRegionName(request.regionName());
+        report.setStatus("PENDING");
 
-        return mapToDto(reportRepository.save(report));
+        Report saved = reportRepository.save(report);
+
+        // Notify Sharon for approval
+        try {
+            emailService.sendSimpleEmail("sharonshelke7@gmail.com", "New Report for Approval",
+                "A new report has been submitted by " + report.getSubmittedBy() + " (" + report.getZoneName() + "). Please log in to approve it.");
+        } catch (Exception e) {
+            System.err.println("Approval email notification failed: " + e.getMessage());
+        }
+
+        return mapToDto(saved);
     }
 
     // ===================== FETCH =====================
@@ -87,7 +100,8 @@ public class ReportService {
         if (user == null) return List.of();
 
         return switch (user.getRole()) {
-            case "admin", "global" -> mapAll(reportRepository.findAll());
+            case "admin"  -> mapAll(reportRepository.findAll());
+            case "global" -> mapAll(reportRepository.findByRegionName(user.getRegion()));
             default -> mapAll(reportRepository.findBySubmitterEmail(user.getEmail()));
         };
     }
@@ -316,8 +330,18 @@ public class ReportService {
                 r.getZonalManagerStrategyMeeting().name(),
                 r.getHealingCrusadeSponsorship(),
                 r.getTestimonyClarificationConcern(),
-                r.getSubmitterEmail()
+                r.getSubmitterEmail(),
+                r.getRegionName(),
+                r.getStatus()
         );
+    }
+
+    @Transactional
+    public ReportDto approveReport(Long id) {
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        report.setStatus("APPROVED");
+        return mapToDto(reportRepository.save(report));
     }
 
     // ===================== HELPERS =====================

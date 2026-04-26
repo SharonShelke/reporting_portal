@@ -82,8 +82,15 @@ public class Report {
     @Column(name = "testimony_clarification_concern", columnDefinition = "TEXT")
     private String testimonyClarificationConcern;
 
+    @Column(name = "region_name", length = 150)
+    private String regionName;
+
+    @Column(name = "status", length = 20)
+    private String status; // PENDING, APPROVED
+
     @PrePersist
     protected void onCreate() {
         submittedAt = LocalDateTime.now();
+        if (this.status == null) this.status = "PENDING";
     }
 }

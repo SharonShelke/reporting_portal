@@ -18,5 +18,7 @@ public record ReportDto(
     String zonalManagerStrategyMeetingAttendance,
     BigDecimal sponsorshipHealingCrusade,
     String testimonyClarificationConcern,
-    String submittedByEmail
+    String submittedByEmail,
+    String regionName,
+    String status
 ) {}

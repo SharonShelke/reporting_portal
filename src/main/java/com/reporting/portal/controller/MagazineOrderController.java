@@ -56,6 +56,16 @@ public class MagazineOrderController {
         return ResponseEntity.ok("Order cancelled successfully");
     }
 
+    @PostMapping("/{id}/invoice")
+    public ResponseEntity<MagazineOrder> generateInvoice(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.generateInvoice(id));
+    }
+
+    @PostMapping("/{id}/ship")
+    public ResponseEntity<MagazineOrder> markAsShipped(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.markAsShipped(id));
+    }
+
     // Payment APIs
     @PostMapping("/{id}/payment")
     public ResponseEntity<Payment> submitPayment(

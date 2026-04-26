@@ -77,10 +77,15 @@ public class UserService {
         }
         
         try {
+            if ("kingchat".equalsIgnoreCase(request.getLoginMethod())) {
+                user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
+                userRepository.save(user);
+            }
+
             auditLogService.logActivity(
                 (user.getFirstName() != null ? user.getFirstName() : "") + " " + (user.getLastName() != null ? user.getLastName() : ""), 
                 user.getId(), 
-                "Login",  "Auth", "—", "Success", "User successfully logged into the platform."
+                "Login",  "Auth", "—", "Success", "User successfully logged into the platform." + ("kingchat".equalsIgnoreCase(request.getLoginMethod()) ? " (via KingChat)" : "")
             );
         } catch (Exception e) {}
         

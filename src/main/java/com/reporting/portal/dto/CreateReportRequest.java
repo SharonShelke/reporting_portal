@@ -27,7 +27,6 @@ public record CreateReportRequest(
         String zonalManagerStrategyMeeting,
 
         BigDecimal healingCrusadeSponsorship,
-
-        String testimonyClarificationConcern
-
+        String testimonyClarificationConcern,
+        String regionName
 ) {}

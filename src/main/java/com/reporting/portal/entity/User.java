@@ -28,6 +28,8 @@ public class User {
     private String region;
     
     private String status; // 'active', 'inactive', 'pending'
+    
+    private Integer kingchatLoginCount = 0;
 
     private String inviteToken;
 

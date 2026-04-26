@@ -22,7 +22,18 @@ public class NotificationService {
         notification.setMessage(request.message());
         notification.setTargetRole(request.targetRole());
         notification.setUserId(request.userId());
-        return notificationRepository.save(notification);
+        
+        var saved = notificationRepository.save(notification);
+        
+        // Mock KingChat Integration
+        sendToKingChat(request.message(), request.targetRole());
+        
+        return saved;
+    }
+
+    private void sendToKingChat(String message, String role) {
+        // In a real implementation, this would call the KingChat Webhook/API
+        System.out.println("[KingChat] Sending to role " + role + ": " + message);
     }
 
     public List<Notification> getNotifications(Long userId, String role) {
