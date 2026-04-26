@@ -68,17 +68,27 @@ public class MagazineOrderService {
     public MagazineOrder generateInvoice(Long id) {
         var order = getOrderById(id);
         
-        // Dynamic Tax Calculation (Mock logic)
-        double taxRate = 0.05; // 5% default
-        if ("USA".equalsIgnoreCase(order.getCountry())) taxRate = 0.08;
-        if ("UK".equalsIgnoreCase(order.getCountry())) taxRate = 0.20;
+        // Dynamic Tax Calculation based on Country/State
+        double taxRate = 0.05; // Base 5%
+        String country = order.getCountry();
+        if ("USA".equalsIgnoreCase(country)) taxRate = 0.08;
+        else if ("UK".equalsIgnoreCase(country)) taxRate = 0.20;
+        else if ("Nigeria".equalsIgnoreCase(country)) taxRate = 0.075;
+        else if ("South Africa".equalsIgnoreCase(country)) taxRate = 0.15;
         
         order.setTaxAmount(order.getTotalAmount() * taxRate);
         
-        // Dynamic Shipping Calculation (Mock logic)
-        double baseShipping = 10.0;
-        double weightRate = 2.0; // $2 per kg
-        order.setShippingCost(baseShipping + (order.getWeight() * weightRate));
+        // Dynamic Shipping Calculation based on weight and location
+        double baseShipping = 15.0; // Minimum base
+        double weightRate = 1.5; // $1.5 per kg
+        
+        // Distance/Region multiplier (Mock logic for different continents)
+        double regionMultiplier = 1.0;
+        if ("USA".equalsIgnoreCase(country) || "Canada".equalsIgnoreCase(country)) regionMultiplier = 1.2;
+        else if ("Australia".equalsIgnoreCase(country)) regionMultiplier = 2.0;
+        else if ("Germany".equalsIgnoreCase(country) || "France".equalsIgnoreCase(country)) regionMultiplier = 1.5;
+        
+        order.setShippingCost((baseShipping + (order.getWeight() * weightRate)) * regionMultiplier);
         
         // Total = Original + Tax + Shipping
         order.setTotalAmount(order.getTotalAmount() + order.getTaxAmount() + order.getShippingCost());
@@ -88,7 +98,12 @@ public class MagazineOrderService {
         var saved = orderRepository.save(order);
         
         emailService.sendSimpleEmail(order.getOrderedBy(), "Invoice Generated", 
-            "Your invoice for order #" + id + " has been generated. Total: " + order.getTotalAmount());
+            "Your invoice for order #" + id + " has been generated. \n" +
+            "Tax: " + order.getTaxAmount() + "\n" +
+            "Shipping: " + order.getShippingCost() + "\n" +
+            "Total Due: " + order.getTotalAmount());
+            
+        notificationService.push(new NotificationRequest("Invoice generated for order #" + id, "zonal", order.getOrderedBy()));
             
         return saved;
     }
@@ -153,11 +168,28 @@ public class MagazineOrderService {
         return orderRepository.save(order);
     }
 
-    public void cancelOrder(Long id) {
+    public MagazineOrder cancelOrder(Long id) {
         var order = getOrderById(id);
-        if (!order.getStatus().equals("pending")) {
-            throw new RuntimeException("Only pending orders can be cancelled");
-        }
-        orderRepository.deleteById(id);
+        order.setStatus("CANCELLED");
+        var saved = orderRepository.save(order);
+        
+        notificationService.push(new NotificationRequest("Order #" + id + " has been cancelled.", "admin", null));
+        emailService.sendSimpleEmail(order.getOrderedBy(), "Order Cancelled", 
+            "Your magazine order #" + id + " has been cancelled by the administrator.");
+        
+        return saved;
+    }
+
+    public MagazineOrder reportDelay(Long id, String reason) {
+        var order = getOrderById(id);
+        order.setDelayReport(reason);
+        order.setStatus("DELAYED");
+        
+        var saved = orderRepository.save(order);
+        
+        notificationService.push(new NotificationRequest("Delay reported for order #" + id + ": " + reason, "admin", null));
+        notificationService.push(new NotificationRequest("URGENT: Production delay for order #" + id, "publication", null));
+        
+        return saved;
     }
 }

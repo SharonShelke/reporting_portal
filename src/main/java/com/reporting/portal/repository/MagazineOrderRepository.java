@@ -12,6 +12,7 @@ import java.util.List;
 public interface MagazineOrderRepository extends JpaRepository<MagazineOrder, Long> {
     List<MagazineOrder> findByZone(String zone);
     List<MagazineOrder> findByOrderedBy(String email);
+    List<MagazineOrder> findByStatus(String status);
 
     @Query("SELECT SUM(o.totalAmount) FROM MagazineOrder o WHERE (:email IS NULL OR o.orderedBy = :email)")
     Double sumTotalAmount(@Param("email") String email);

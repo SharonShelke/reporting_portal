@@ -50,10 +50,16 @@ public class MagazineOrderController {
         return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
-        orderService.cancelOrder(id);
-        return ResponseEntity.ok("Order cancelled successfully");
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<MagazineOrder> cancelOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.cancelOrder(id));
+    }
+
+    @PostMapping("/{id}/delay")
+    public ResponseEntity<MagazineOrder> reportDelay(
+            @PathVariable Long id,
+            @RequestParam String reason) {
+        return ResponseEntity.ok(orderService.reportDelay(id, reason));
     }
 
     @PostMapping("/{id}/invoice")
