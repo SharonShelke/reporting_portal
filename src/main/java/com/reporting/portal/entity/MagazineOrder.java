@@ -30,6 +30,9 @@ public class MagazineOrder {
     private String deliveryAddress;
     private String country;
     private String stateProvince;
+    private String postalCode;
+    private String contactEmail;
+    private String contactPhone;
     private Double shippingCost;
     private Double taxAmount;
     private Double weight;

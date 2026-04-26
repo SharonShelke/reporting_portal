@@ -61,6 +61,11 @@ public class MagazineOrderController {
         return ResponseEntity.ok(orderService.generateInvoice(id));
     }
 
+    @PostMapping("/{id}/print")
+    public ResponseEntity<MagazineOrder> markAsPrintingDone(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.markAsPrintingDone(id));
+    }
+
     @PostMapping("/{id}/ship")
     public ResponseEntity<MagazineOrder> markAsShipped(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.markAsShipped(id));

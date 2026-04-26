@@ -9,5 +9,8 @@ public record OrderRequest(
         String orderedBy,
         String deliveryAddress,
         String country,
-        String stateProvince
+        String stateProvince,
+        String postalCode,
+        String contactEmail,
+        String contactPhone
 ) {}

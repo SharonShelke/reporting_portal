@@ -48,6 +48,9 @@ public class MagazineOrderService {
         order.setDeliveryAddress(request.deliveryAddress());
         order.setCountry(request.country());
         order.setStateProvince(request.stateProvince());
+        order.setPostalCode(request.postalCode());
+        order.setContactEmail(request.contactEmail());
+        order.setContactPhone(request.contactPhone());
         order.setWeight(request.quantity() * 0.5); // Assume 0.5kg per magazine
         order.setStatus("ORDERED");
 
@@ -101,11 +104,24 @@ public class MagazineOrderService {
         
         // Notifications to Admin, Finance, Publication
         notificationService.push(new NotificationRequest("Payment confirmed for order #" + id, "admin", null));
-        notificationService.push(new NotificationRequest("New production task for order #" + id, "publication", null));
+        notificationService.push(new NotificationRequest("Payment received for order #" + id, "finance", null));
+        notificationService.push(new NotificationRequest("New production task (Printing) for order #" + id, "publication", null));
         
         emailService.sendSimpleEmail(order.getOrderedBy(), "Payment Receipt", 
             "We have received your payment for order #" + id + ". Production has commenced.");
             
+        return saved;
+    }
+
+    public MagazineOrder markAsPrintingDone(Long id) {
+        var order = getOrderById(id);
+        order.setStatus("PRINTED");
+        
+        var saved = orderRepository.save(order);
+        
+        notificationService.push(new NotificationRequest("Printing completed for order #" + id + ". Ready for shipping.", "admin", null));
+        notificationService.push(new NotificationRequest("Order #" + id + " printing finished.", "publication", null));
+        
         return saved;
     }
 
@@ -116,7 +132,13 @@ public class MagazineOrderService {
         
         var saved = orderRepository.save(order);
         
-        notificationService.push(new NotificationRequest("Order #" + id + " has been shipped.", "zonal", null));
+        // Notify Zonal Manager (User)
+        notificationService.push(new NotificationRequest("Your order #" + id + " has been shipped!", "zonal", order.getOrderedBy()));
+        emailService.sendSimpleEmail(order.getOrderedBy(), "Order Shipped", 
+            "Your magazine order #" + id + " has been shipped and is on its way!");
+        
+        // Notify Admin
+        notificationService.push(new NotificationRequest("Order #" + id + " has been shipped by publication department.", "admin", null));
         
         return saved;
     }
