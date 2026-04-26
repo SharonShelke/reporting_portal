@@ -140,6 +140,10 @@ public class MagazineOrderService {
         // Notify Admin
         notificationService.push(new NotificationRequest("Order #" + id + " has been shipped by publication department.", "admin", null));
         
+        // Notify specific email as requested
+        emailService.sendSimpleEmail("sharonshelke7@gmail.com", "Order Shipped - #" + id, 
+            "The magazine order #" + id + " for " + order.getZone() + " has been shipped.");
+        
         return saved;
     }
 
