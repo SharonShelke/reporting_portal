@@ -2,7 +2,6 @@ package com.reporting.portal.service;
 
 import com.reporting.portal.dto.DashboardStatsDto;
 import com.reporting.portal.entity.Report;
-import com.reporting.portal.repository.MagazineOrderRepository;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import java.util.List;
 public class DashboardService {
 
     private final ReportRepository reportRepository;
-    private final MagazineOrderRepository orderRepository;
     private final UserRepository userRepository;
 
     public DashboardStatsDto getDashboardStats(String email) {
@@ -30,11 +28,6 @@ public class DashboardService {
             .with(DayOfWeek.MONDAY)
             .withHour(0).withMinute(0).withSecond(0);
         Long reportsThisWeek = reportRepository.countReportsSince(startOfWeek, email);
-        
-        Double totalFinance = orderRepository.sumTotalAmount(email);
-        if (totalFinance == null) totalFinance = 0.0;
-        
-        Long financeEntries = orderRepository.countOrders(email);
         
         Long totalAttendance = reportRepository.sumTotalAttendance(email);
         if (totalAttendance == null) totalAttendance = 0L;
@@ -66,8 +59,6 @@ public class DashboardService {
         return new DashboardStatsDto(
             totalReports,
             reportsThisWeek,
-            totalFinance,
-            financeEntries,
             totalAttendance,
             completionRate,
             totalUsers,

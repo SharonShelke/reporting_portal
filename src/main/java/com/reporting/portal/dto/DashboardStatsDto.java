@@ -6,8 +6,6 @@ import java.util.Map;
 public record DashboardStatsDto(
     Long totalReports,
     Long reportsThisWeek,
-    Double totalFinance,
-    Long financeEntries,
     Long totalAttendance,
     Double completionRate,
     Long totalUsers,
