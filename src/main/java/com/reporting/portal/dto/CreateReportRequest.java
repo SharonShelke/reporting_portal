@@ -28,5 +28,9 @@ public record CreateReportRequest(
 
         BigDecimal healingCrusadeSponsorship,
         String testimonyClarificationConcern,
-        String regionName
+        String regionName,
+        
+        String remittancePurpose,
+        Integer trumpetsBlown,
+        String popMediaUrl
 ) {}

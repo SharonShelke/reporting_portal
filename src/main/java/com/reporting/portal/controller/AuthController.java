@@ -39,6 +39,16 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/kingchat")
+    public ResponseEntity<?> kingchatLogin(@RequestBody java.util.Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            return ResponseEntity.ok(userService.loginWithKingChatToken(token));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/complete-invite")
     public ResponseEntity<?> completeInvite(@RequestBody com.reporting.portal.dto.CompleteInviteRequest request) {
         try {

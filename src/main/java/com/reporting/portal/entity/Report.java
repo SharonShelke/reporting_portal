@@ -85,6 +85,15 @@ public class Report {
     @Column(name = "region_name", length = 150)
     private String regionName;
 
+    @Column(name = "remittance_purpose", columnDefinition = "TEXT")
+    private String remittancePurpose;
+
+    @Column(name = "trumpets_blown")
+    private Integer trumpetsBlown;
+
+    @Column(name = "pop_media_url", columnDefinition = "TEXT")
+    private String popMediaUrl;
+
     @Column(name = "status", length = 20)
     private String status; // PENDING, APPROVED
 

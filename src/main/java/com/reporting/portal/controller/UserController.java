@@ -45,6 +45,15 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<?> approveUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.approveUser(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

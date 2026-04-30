@@ -1,0 +1,36 @@
+package com.reporting.portal.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "outreach_reports")
+public class OutreachReport {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "submitted_date")
+    private LocalDate submittedDate;
+
+    @Column(name = "category", length = 150)
+    private String category;
+
+    @Column(name = "locations", columnDefinition = "TEXT")
+    private String locations;
+
+    @Column(name = "story", columnDefinition = "TEXT")
+    private String story;
+
+    @Column(name = "media_count")
+    private Integer mediaCount;
+
+    @Column(name = "status", length = 20)
+    private String status = "PENDING";
+}

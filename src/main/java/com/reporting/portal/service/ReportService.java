@@ -73,6 +73,11 @@ public class ReportService {
         );
         report.setTestimonyClarificationConcern(request.testimonyClarificationConcern());
         report.setRegionName(request.regionName());
+        
+        report.setRemittancePurpose(request.remittancePurpose());
+        report.setTrumpetsBlown(request.trumpetsBlown() != null ? request.trumpetsBlown() : 0);
+        report.setPopMediaUrl(request.popMediaUrl());
+        
         report.setStatus("PENDING");
 
         Report saved = reportRepository.save(report);
@@ -132,7 +137,10 @@ public class ReportService {
                     "Strategy Meeting",
                     "Crusade Sponsorship",
                     "Notes",
-                    "Submitted Email"
+                    "Submitted Email",
+                    "Remittance Purpose",
+                    "Trumpets Blown",
+                    "POP Media URL"
             };
 
             Row headerRow = sheet.createRow(0);
@@ -160,6 +168,9 @@ public class ReportService {
                 row.createCell(13).setCellValue(toDoubleSafe(r.sponsorshipHealingCrusade()));
                 row.createCell(14).setCellValue(orEmpty(r.testimonyClarificationConcern()));
                 row.createCell(15).setCellValue(orEmpty(r.submittedByEmail()));
+                row.createCell(16).setCellValue(orEmpty(r.remittancePurpose()));
+                row.createCell(17).setCellValue(toIntSafe(r.trumpetsBlown()));
+                row.createCell(18).setCellValue(orEmpty(r.popMediaUrl()));
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -261,7 +272,10 @@ public class ReportService {
                         c[15],
                         new BigDecimal(c[16]),
                         c[17],
-                        c[18]
+                        c[18],
+                        c.length > 19 ? c[19] : null,
+                        c.length > 20 ? toInt(c[20]) : null,
+                        c.length > 21 ? c[21] : null
                 );
 
                 saved.add(submitReport(req));
@@ -299,7 +313,10 @@ public class ReportService {
                         cell(row, 15),
                         new BigDecimal(cell(row, 16)),
                         cell(row, 17),
-                        cell(row, 18)
+                        cell(row, 18),
+                        cell(row, 19),
+                        toInt(cell(row, 20)),
+                        cell(row, 21)
                 );
 
                 saved.add(submitReport(req));
@@ -334,7 +351,10 @@ public class ReportService {
                 r.getTestimonyClarificationConcern(),
                 r.getSubmitterEmail(),
                 r.getRegionName(),
-                r.getStatus()
+                r.getStatus(),
+                r.getRemittancePurpose(),
+                r.getTrumpetsBlown(),
+                r.getPopMediaUrl()
         );
     }
 

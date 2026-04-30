@@ -20,5 +20,8 @@ public record ReportDto(
     String testimonyClarificationConcern,
     String submittedByEmail,
     String regionName,
-    String status
+    String status,
+    String remittancePurpose,
+    Integer trumpetsBlown,
+    String popMediaUrl
 ) {}

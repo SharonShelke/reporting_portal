@@ -14,6 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import java.util.List;
+import java.util.UUID;
 import com.reporting.portal.dto.InviteRequest;
 import com.reporting.portal.dto.CompleteInviteRequest;
 import com.reporting.portal.dto.ForgotPasswordRequest;
@@ -28,12 +35,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuditLogService auditLogService;
     private final EmailService emailService;
+    private final NotificationService notificationService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService) {
+    public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
         this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
     public UserDto login(LoginRequest request) {
@@ -47,10 +56,13 @@ public class UserService {
         var user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email not found."));
 
-        boolean isActive = user.getStatus() == null || "active".equals(user.getStatus());
+        boolean isActive = "active".equals(user.getStatus());
 
         if (!isActive) {
-            try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Inactive account."); } catch (Exception e) {}
+            try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Account not active (status: " + user.getStatus() + ")."); } catch (Exception e) {}
+            if ("inactive".equals(user.getStatus())) {
+                throw new RuntimeException("Your account is pending admin approval or has been deactivated.");
+            }
             throw new RuntimeException("Account is not active.");
         }
 
@@ -125,7 +137,7 @@ public class UserService {
         user.setEmail(request.getEmail().trim().toLowerCase());
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash this in production
         user.setRole("zonal"); // Default role based on signup.jsx
-        user.setStatus("active");
+        user.setStatus("inactive");
         
         // Prefer explicit first/last name, fall back to legacy "name" field.
         var firstName = request.getFirstName() != null ? request.getFirstName().trim() : "";
@@ -139,6 +151,84 @@ public class UserService {
         user.setLastName(lastName);
 
         user = userRepository.save(user);
+        
+        try {
+            notificationService.push(new com.reporting.portal.dto.NotificationRequest("New account registration pending approval: " + user.getEmail(), "admin", null));
+        } catch (Exception e) {}
+
+        return mapToDto(user);
+    }
+
+    public UserDto loginWithKingChatToken(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new RuntimeException("Invalid KingsChat token");
+        }
+        
+        String profileUrl = "https://connect.kingsch.at/api/profile"; // NOTE: Adjust if official API URL is different
+        
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        HttpEntity<String> entity = new HttpEntity<>("", headers);
+        
+        try {
+            ResponseEntity<java.util.Map> response = restTemplate.exchange(profileUrl, HttpMethod.GET, entity, java.util.Map.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                java.util.Map<String, Object> profile = response.getBody();
+                String email = (String) profile.get("email"); 
+                String firstName = (String) profile.get("first_name");
+                String lastName = (String) profile.get("last_name");
+                
+                if (email == null || email.isEmpty()) {
+                    email = profile.get("username") + "@kingschat.com"; 
+                }
+                
+                return processKingChatUser(email, firstName, lastName);
+            } else {
+                throw new RuntimeException("Failed to verify KingsChat token.");
+            }
+        } catch (Exception e) {
+            System.err.println("KingsChat API Error: " + e.getMessage());
+            throw new RuntimeException("Could not verify KingsChat profile. Ensure the Profile API URL is correct. Error: " + e.getMessage());
+        }
+    }
+
+    private UserDto processKingChatUser(String email, String firstName, String lastName) {
+        email = email.trim().toLowerCase();
+        var userOpt = userRepository.findByEmail(email);
+        
+        User user;
+        if (userOpt.isEmpty()) {
+            user = new User();
+            user.setEmail(email);
+            user.setFirstName(firstName != null ? firstName : "KingsChat");
+            user.setLastName(lastName != null ? lastName : "User");
+            user.setRole("zonal");
+            user.setStatus("inactive");
+            user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+            user = userRepository.save(user);
+            
+            try {
+                notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
+            } catch (Exception ignored) {}
+            
+            throw new RuntimeException("Your KingsChat account has been created and is pending admin approval.");
+        } else {
+            user = userOpt.get();
+        }
+        
+        if (!"active".equals(user.getStatus())) {
+            if ("inactive".equals(user.getStatus())) {
+                throw new RuntimeException("Your account is pending admin approval or has been deactivated.");
+            }
+            throw new RuntimeException("Account is not active.");
+        }
+        
+        user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
+        userRepository.save(user);
+        
+        try { auditLogService.logActivity(user.getFirstName() + " " + user.getLastName(), user.getId(), "Login", "Auth", "—", "Success", "Logged in via KingsChat."); } catch (Exception ignored) {}
+        
         return mapToDto(user);
     }
 
@@ -163,7 +253,7 @@ public class UserService {
         user.setEmail(request.getEmail().trim().toLowerCase());
         user.setRole(request.getRole());
         user.setRegion(request.getRegion());
-        user.setStatus("pending");
+        user.setStatus("inactive");
         user.setInviteToken(UUID.randomUUID().toString());
         
         userRepository.save(user);
@@ -189,7 +279,7 @@ public class UserService {
         
         userRepository.save(user);
         
-        auditLogService.logActivity(request.getName(), user.getId(), "Completed Registration", "Auth", "pending", "active", "User completed their account setup and set their custom password.");
+        auditLogService.logActivity(request.getName(), user.getId(), "Completed Registration", "Auth", "inactive", "active", "User completed their account setup and set their custom password.");
         
         return mapToDto(user);
     }
@@ -206,6 +296,19 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public UserDto approveUser(Long id) {
+        var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus("active");
+        user = userRepository.save(user);
+        
+        try {
+            auditLogService.logActivity("System Administrator", 1L, "Approved user", "User Management", "inactive", "active", "Admin approved account for " + user.getEmail());
+            emailService.sendSimpleEmail(user.getEmail(), "Account Approved", "Your account on Loveworld Reports has been approved by the administrator. You can now log in.");
+        } catch (Exception e) {}
+        
+        return mapToDto(user);
     }
 
     public void forgotPassword(ForgotPasswordRequest request) {
