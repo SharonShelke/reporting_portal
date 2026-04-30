@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "magazine_reports")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public class MagazineReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

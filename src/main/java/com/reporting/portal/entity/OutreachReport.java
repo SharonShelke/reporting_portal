@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "outreach_reports")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public class OutreachReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

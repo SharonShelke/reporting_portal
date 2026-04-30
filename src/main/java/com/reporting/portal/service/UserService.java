@@ -109,13 +109,7 @@ public class UserService {
     // Normalizing prevents login failures in development.
     private String normalizePassword(String value) {
         if (value == null) return null;
-        return value
-            .replace("\u0000", "")     // strip null chars (if any)
-            .replace('\u00A0', ' ')    // non-breaking space -> regular space
-            .replace("\u200B", "")    // zero-width space
-            .replace("\uFEFF", "")    // zero-width no-break space (BOM)
-            .trim()
-            .replaceAll("\\s+", "");   // remove all whitespace (space/tab/newline)
+        return value.trim();
     }
 
     private String sha256Hex(String value) throws Exception {
