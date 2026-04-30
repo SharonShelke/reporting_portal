@@ -43,7 +43,11 @@ public class AuthController {
     public ResponseEntity<?> kingchatLogin(@RequestBody java.util.Map<String, String> request) {
         try {
             String token = request.get("token");
-            return ResponseEntity.ok(userService.loginWithKingChatToken(token));
+            String email = request.get("email");
+            String firstName = request.get("firstName");
+            String lastName = request.get("lastName");
+            String username = request.get("username");
+            return ResponseEntity.ok(userService.loginWithKingChatToken(token, email, firstName, lastName, username));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

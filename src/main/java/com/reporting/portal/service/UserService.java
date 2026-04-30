@@ -176,38 +176,28 @@ public class UserService {
         return mapToDto(user);
     }
 
-    public UserDto loginWithKingChatToken(String token) {
+    public UserDto loginWithKingChatToken(String token, String email, String firstName, String lastName, String username) {
         if (token == null || token.isEmpty()) {
             throw new RuntimeException("Invalid KingsChat token");
         }
         
-        String profileUrl = "https://connect.kingsch.at/api/profile"; // NOTE: Adjust if official API URL is different
-        
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        HttpEntity<String> entity = new HttpEntity<>("", headers);
-        
-        try {
-            ResponseEntity<java.util.Map> response = restTemplate.exchange(profileUrl, HttpMethod.GET, entity, java.util.Map.class);
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                java.util.Map<String, Object> profile = response.getBody();
-                String email = (String) profile.get("email"); 
-                String firstName = (String) profile.get("first_name");
-                String lastName = (String) profile.get("last_name");
-                
-                if (email == null || email.isEmpty()) {
-                    email = profile.get("username") + "@kingschat.com"; 
-                }
-                
-                return processKingChatUser(email, firstName, lastName);
+        // Use profile data sent from the frontend SDK
+        if (email == null || email.isEmpty()) {
+            if (username != null && !username.isEmpty()) {
+                email = username + "@kingschat.com";
             } else {
-                throw new RuntimeException("Failed to verify KingsChat token.");
+                throw new RuntimeException("Could not determine email from KingsChat profile. Please try again.");
             }
-        } catch (Exception e) {
-            System.err.println("KingsChat API Error: " + e.getMessage());
-            throw new RuntimeException("Could not verify KingsChat profile. Ensure the Profile API URL is correct. Error: " + e.getMessage());
         }
+        
+        if (firstName == null || firstName.isEmpty()) {
+            firstName = "KingsChat";
+        }
+        if (lastName == null || lastName.isEmpty()) {
+            lastName = "User";
+        }
+        
+        return processKingChatUser(email, firstName, lastName);
     }
 
     private UserDto processKingChatUser(String email, String firstName, String lastName) {
