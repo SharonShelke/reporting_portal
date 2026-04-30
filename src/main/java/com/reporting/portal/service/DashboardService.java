@@ -4,7 +4,6 @@ import com.reporting.portal.dto.DashboardStatsDto;
 import com.reporting.portal.entity.Report;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -14,11 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class DashboardService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+
+    public DashboardService(ReportRepository reportRepository, UserRepository userRepository) {
+        this.reportRepository = reportRepository;
+        this.userRepository = userRepository;
+    }
 
     public DashboardStatsDto getDashboardStats(String email) {
         Long totalReports = reportRepository.countReports(email);

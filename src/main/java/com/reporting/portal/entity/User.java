@@ -1,16 +1,14 @@
 package com.reporting.portal.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+
 
 import java.time.LocalDate;
 
-@Getter
 @Entity
 @Table(name = "users")
 public class User {
 
-    // Standard Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,6 +35,20 @@ public class User {
     
     private String otpCode;
     private java.time.LocalDateTime otpExpiry;
+
+    public Long getId() { return id; }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public String getEmail() { return email; }
+    public String getPassword() { return password; }
+    public String getRole() { return role; }
+    public String getRegion() { return region; }
+    public String getStatus() { return status; }
+    public Integer getKingchatLoginCount() { return kingchatLoginCount; }
+    public String getInviteToken() { return inviteToken; }
+    public LocalDate getJoinedDate() { return joinedDate; }
+    public String getOtpCode() { return otpCode; }
+    public java.time.LocalDateTime getOtpExpiry() { return otpExpiry; }
     
     @PrePersist
     protected void onCreate() {

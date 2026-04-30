@@ -7,7 +7,6 @@ import com.reporting.portal.entity.Report;
 import com.reporting.portal.entity.User;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,12 +27,17 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Service
-@RequiredArgsConstructor
 public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+
+    public ReportService(ReportRepository reportRepository, UserRepository userRepository, EmailService emailService) {
+        this.reportRepository = reportRepository;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+    }
 
     // ===================== SUBMIT =====================
     @Transactional

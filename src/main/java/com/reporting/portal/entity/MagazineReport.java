@@ -1,14 +1,8 @@
 package com.reporting.portal.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "magazine_reports")
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
