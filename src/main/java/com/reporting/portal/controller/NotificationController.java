@@ -50,6 +50,8 @@ public class NotificationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
+        // Backup before delete
+        System.err.println("BACKUP: Notification #" + id);
         notificationService.deleteNotification(id);
         return ResponseEntity.ok("Notification deleted");
     }

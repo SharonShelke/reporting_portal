@@ -7,8 +7,7 @@ import com.reporting.portal.entity.Report;
 import com.reporting.portal.entity.User;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+251import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.ClassPathResource;
@@ -28,12 +27,22 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Service
-@RequiredArgsConstructor
 public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final com.reporting.portal.repository.ReportBackupRepository backupRepo;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper()
+            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+    public ReportService(ReportRepository reportRepository, UserRepository userRepository, EmailService emailService, 
+                        com.reporting.portal.repository.ReportBackupRepository backupRepo) {
+        this.reportRepository = reportRepository;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+        this.backupRepo = backupRepo;
+    }
 
     // ===================== SUBMIT =====================
     @Transactional
@@ -367,7 +376,7 @@ public class ReportService {
     }
 
     @Transactional
-    public ReportDto clarifyReport(Long id, String note) {
+222    public ReportDto clarifyReport(Long id, String note) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
         report.setStatus("CLARIFICATION_NEEDED");
@@ -377,10 +386,17 @@ public class ReportService {
 
     @Transactional
     public void deleteReport(Long id) {
-        if (!reportRepository.existsById(id)) {
-            throw new RuntimeException("Report not found");
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        
+        try {
+            String json = objectMapper.writeValueAsString(report);
+            backupRepo.save(new com.reporting.portal.entity.ReportBackup(report.getId(), "Zonal", json, "Admin"));
+        } catch (Exception e) {
+            System.err.println("Backup failed: " + e.getMessage());
         }
-        reportRepository.deleteById(id);
+        
+        reportRepository.delete(report);
     }
 
 

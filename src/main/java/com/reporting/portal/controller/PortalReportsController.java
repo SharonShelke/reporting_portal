@@ -19,15 +19,19 @@ public class PortalReportsController {
     private final MagazineReportRepository mrRepo;
     private final OutreachReportRepository orRepo;
     private final UserRepository userRepository;
+    private final ReportBackupRepository backupRepo;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper()
+            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
     public PortalReportsController(PartnershipReportRepository prRepo, TestimonialReportRepository trRepo,
                                    MagazineReportRepository mrRepo, OutreachReportRepository orRepo,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository, ReportBackupRepository backupRepo) {
         this.prRepo = prRepo;
         this.trRepo = trRepo;
         this.mrRepo = mrRepo;
         this.orRepo = orRepo;
         this.userRepository = userRepository;
+        this.backupRepo = backupRepo;
     }
 
     // ── Partnership ───────────────────────────────────────
@@ -61,9 +65,14 @@ public class PortalReportsController {
 
     @DeleteMapping("/partnership/{id}")
     public ResponseEntity<?> deletePartnership(@PathVariable Long id) {
-        if (!prRepo.existsById(id)) return ResponseEntity.notFound().build();
-        prRepo.deleteById(id);
-        return ResponseEntity.ok().build();
+        return prRepo.findById(id).map(r -> {
+            try {
+                String json = objectMapper.writeValueAsString(r);
+                backupRepo.save(new ReportBackup(r.getId(), "Partnership", json, "Admin"));
+            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            prRepo.delete(r);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     // ── Testimonials ──────────────────────────────────────
@@ -97,9 +106,14 @@ public class PortalReportsController {
 
     @DeleteMapping("/testimonials/{id}")
     public ResponseEntity<?> deleteTestimonial(@PathVariable Long id) {
-        if (!trRepo.existsById(id)) return ResponseEntity.notFound().build();
-        trRepo.deleteById(id);
-        return ResponseEntity.ok().build();
+        return trRepo.findById(id).map(r -> {
+            try {
+                String json = objectMapper.writeValueAsString(r);
+                backupRepo.save(new ReportBackup(r.getId(), "Testimonial", json, "Admin"));
+            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            trRepo.delete(r);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     // ── Magazine ──────────────────────────────────────────
@@ -133,9 +147,14 @@ public class PortalReportsController {
 
     @DeleteMapping("/magazine/{id}")
     public ResponseEntity<?> deleteMagazine(@PathVariable Long id) {
-        if (!mrRepo.existsById(id)) return ResponseEntity.notFound().build();
-        mrRepo.deleteById(id);
-        return ResponseEntity.ok().build();
+        return mrRepo.findById(id).map(r -> {
+            try {
+                String json = objectMapper.writeValueAsString(r);
+                backupRepo.save(new ReportBackup(r.getId(), "Magazine", json, "Admin"));
+            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            mrRepo.delete(r);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     // ── Outreach ──────────────────────────────────────────
@@ -169,9 +188,14 @@ public class PortalReportsController {
 
     @DeleteMapping("/outreach/{id}")
     public ResponseEntity<?> deleteOutreach(@PathVariable Long id) {
-        if (!orRepo.existsById(id)) return ResponseEntity.notFound().build();
-        orRepo.deleteById(id);
-        return ResponseEntity.ok().build();
+        return orRepo.findById(id).map(r -> {
+            try {
+                String json = objectMapper.writeValueAsString(r);
+                backupRepo.save(new ReportBackup(r.getId(), "Outreach", json, "Admin"));
+            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            orRepo.delete(r);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }
 

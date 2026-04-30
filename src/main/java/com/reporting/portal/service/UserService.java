@@ -234,8 +234,13 @@ public class UserService {
             user = userOpt.get();
         }
         
-        if (!"active".equals(user.getStatus())) {
-            if ("inactive".equals(user.getStatus())) {
+        String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
+        boolean isActive = "active".equals(status);
+        
+        System.err.println("KingsChat login status check for " + email + ": status='" + status + "', isActive=" + isActive);
+        
+        if (!isActive) {
+            if ("inactive".equals(status) || "pending".equals(status)) {
                 throw new RuntimeException("Your account is pending admin approval or has been deactivated.");
             }
             throw new RuntimeException("Account is not active.");
