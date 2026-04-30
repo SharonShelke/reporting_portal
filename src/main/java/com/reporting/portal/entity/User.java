@@ -33,7 +33,7 @@ public class User {
     
     private String region;
     
-    private String status; // 'active', 'inactive', 'pending'
+    private String status = "inactive"; // 'active', 'inactive', 'pending'
     
     private Integer kingchatLoginCount = 0;
 
