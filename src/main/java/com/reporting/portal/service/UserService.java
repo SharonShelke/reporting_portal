@@ -56,13 +56,16 @@ public class UserService {
         var user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email not found."));
 
-        String status = user.getStatus() != null ? user.getStatus() : "inactive";
+        String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
         boolean isActive = "active".equals(status);
 
+        System.err.println("Login status check for " + email + ": status='" + status + "', isActive=" + isActive);
+
         if (!isActive) {
-            System.err.println("Login failed: Account not active for " + email + " (Status: " + user.getStatus() + ")");
-            try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Account not active (status: " + user.getStatus() + ")."); } catch (Exception e) {}
-            if ("inactive".equals(user.getStatus())) {
+            System.err.println("Login BLOCKED: Account not active for " + email + " (Status: " + status + ")");
+            try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Account not active (status: " + status + ")."); } catch (Exception e) {}
+            
+            if ("inactive".equals(status) || "pending".equals(status)) {
                 throw new RuntimeException("Your account is pending admin approval or has been deactivated.");
             }
             throw new RuntimeException("Account is not active.");
@@ -150,7 +153,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash this in production
         user.setRole("zonal"); // Default role based on signup.jsx
         user.setStatus("inactive");
-        
+        System.err.println("Registering new user: email=" + user.getEmail() + ", initial_status=" + user.getStatus());
+
         // Prefer explicit first/last name, fall back to legacy "name" field.
         var firstName = request.getFirstName() != null ? request.getFirstName().trim() : "";
         var lastName = request.getLastName() != null ? request.getLastName().trim() : "";
@@ -163,6 +167,7 @@ public class UserService {
         user.setLastName(lastName);
 
         user = userRepository.save(user);
+        System.err.println("User saved to database: id=" + user.getId() + ", saved_status=" + user.getStatus());
         
         try {
             notificationService.push(new com.reporting.portal.dto.NotificationRequest("New account registration pending approval: " + user.getEmail(), "admin", null));
