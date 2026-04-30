@@ -33,6 +33,7 @@ public class User {
     
     private String region;
     
+    @Column(columnDefinition = "VARCHAR(30) DEFAULT 'inactive'")
     private String status = "inactive"; // 'active', 'inactive', 'pending'
     
     private Integer kingchatLoginCount = 0;
