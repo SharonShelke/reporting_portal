@@ -46,6 +46,9 @@ public class MagazineReport {
     @Column(name = "healing_outreaches")
     private Integer healingOutreaches;
 
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 30)
     private String status = "PENDING";
+
+    @Column(name = "admin_note", columnDefinition = "TEXT")
+    private String adminNote;
 }

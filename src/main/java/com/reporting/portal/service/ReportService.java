@@ -366,6 +366,24 @@ public class ReportService {
         return mapToDto(reportRepository.save(report));
     }
 
+    @Transactional
+    public ReportDto clarifyReport(Long id, String note) {
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        report.setStatus("CLARIFICATION_NEEDED");
+        report.setAdminNote(note);
+        return mapToDto(reportRepository.save(report));
+    }
+
+    @Transactional
+    public void deleteReport(Long id) {
+        if (!reportRepository.existsById(id)) {
+            throw new RuntimeException("Report not found");
+        }
+        reportRepository.deleteById(id);
+    }
+
+
     // ===================== HELPERS =====================
     private String orEmpty(String v) {
         return v == null ? "" : v;

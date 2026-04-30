@@ -37,6 +37,9 @@ public class OutreachReport {
     @Column(name = "media_count")
     private Integer mediaCount;
 
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 30)
     private String status = "PENDING";
+
+    @Column(name = "admin_note", columnDefinition = "TEXT")
+    private String adminNote;
 }

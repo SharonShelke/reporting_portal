@@ -241,6 +241,7 @@ public class UserService {
             throw new RuntimeException("Email already exists.");
         }
         request.setPassword("default123"); 
+        request.setStatus("inactive");
         return mapToDto(userRepository.save(request));
     }
 
@@ -274,7 +275,7 @@ public class UserService {
         user.setFirstName(nameParts[0]);
         user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setStatus("active");
+        user.setStatus("inactive");
         user.setInviteToken(null);
         
         userRepository.save(user);

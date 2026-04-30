@@ -94,8 +94,11 @@ public class Report {
     @Column(name = "pop_media_url", columnDefinition = "TEXT")
     private String popMediaUrl;
 
-    @Column(name = "status", length = 20)
-    private String status; // PENDING, APPROVED
+    @Column(name = "status", length = 30)
+    private String status; // PENDING, APPROVED, CLARIFICATION_NEEDED
+
+    @Column(name = "admin_note", columnDefinition = "TEXT")
+    private String adminNote;
 
     @PrePersist
     protected void onCreate() {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping({"/api/reports", "/reports"})
@@ -99,5 +100,16 @@ public class ReportController {
     @PutMapping("/{id}/approve")
     public ResponseEntity<ReportDto> approveReport(@PathVariable Long id) {
         return ResponseEntity.ok(reportService.approveReport(id));
+    }
+
+    @PostMapping("/{id}/clarification")
+    public ResponseEntity<?> clarifyReport(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(reportService.clarifyReport(id, body.getOrDefault("note", "")));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReport(@PathVariable Long id) {
+        reportService.deleteReport(id);
+        return ResponseEntity.ok().build();
     }
 }

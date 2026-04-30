@@ -35,6 +35,9 @@ public class PartnershipReport {
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 30)
     private String status = "PENDING";
+
+    @Column(name = "admin_note", columnDefinition = "TEXT")
+    private String adminNote;
 }
