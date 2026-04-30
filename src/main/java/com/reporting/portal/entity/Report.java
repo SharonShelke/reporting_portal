@@ -2,6 +2,9 @@ package com.reporting.portal.entity;
 
 import com.reporting.portal.AttendanceStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import java.math.BigDecimal;
@@ -9,6 +12,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "zone_weekly_reports")
 public class Report {
