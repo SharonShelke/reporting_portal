@@ -46,7 +46,7 @@ public class UserService {
     }
 
     public UserDto login(LoginRequest request) {
-        if (request == null || request.getEmail() == null || request.getPassword() == null) {
+        if (request.getEmail() == null || request.getPassword() == null) {
             throw new RuntimeException("Email and password are required.");
         }
 

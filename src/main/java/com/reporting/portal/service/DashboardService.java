@@ -51,9 +51,9 @@ public class DashboardService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         List<DashboardStatsDto.RecentActivity> activities = recent.stream()
             .map(r -> new DashboardStatsDto.RecentActivity(
-                r.getSubmittedBy(),
-                r.getZoneName(),
-                r.getSubmittedAt().format(formatter)
+                r.getSubmittedBy() != null ? r.getSubmittedBy() : "User",
+                r.getZoneName() != null ? r.getZoneName() : "Zone",
+                r.getSubmittedAt() != null ? r.getSubmittedAt().format(formatter) : "—"
             )).toList();
 
         return new DashboardStatsDto(

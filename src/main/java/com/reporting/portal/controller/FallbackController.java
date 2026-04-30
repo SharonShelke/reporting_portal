@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FallbackController {
     
     @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Backend is alive");
+    public ResponseEntity<java.util.Map<String, String>> health() {
+        return ResponseEntity.ok(java.util.Map.of("status", "UP", "message", "Backend is alive"));
     }
 }

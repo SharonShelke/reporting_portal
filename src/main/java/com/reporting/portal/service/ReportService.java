@@ -57,13 +57,13 @@ public class ReportService {
         report.setHttnmMediaSubmitted(request.httnmMediaSubmitted());
 
         report.setZonalPastorDirectorsMeeting(
-                AttendanceStatus.valueOf(formatEnum(request.zonalPastorDirectorsMeeting()))
+                parseAttendance(request.zonalPastorDirectorsMeeting())
         );
         report.setZonalManagerDirectorsMeeting(
-                AttendanceStatus.valueOf(formatEnum(request.zonalManagerDirectorsMeeting()))
+                parseAttendance(request.zonalManagerDirectorsMeeting())
         );
         report.setZonalManagerStrategyMeeting(
-                AttendanceStatus.valueOf(formatEnum(request.zonalManagerStrategyMeeting()))
+                parseAttendance(request.zonalManagerStrategyMeeting())
         );
 
         report.setHealingCrusadeSponsorship(
@@ -406,8 +406,18 @@ public class ReportService {
     }
 
     private String formatEnum(String value) {
+        if (value == null || value.isBlank()) return "No"; // Default to No if empty
         return value
                 .trim()
                 .replace(" ", "_");
+    }
+
+    private AttendanceStatus parseAttendance(String value) {
+        try {
+            String formatted = formatEnum(value);
+            return AttendanceStatus.valueOf(formatted);
+        } catch (Exception e) {
+            return AttendanceStatus.No; // Fallback
+        }
     }
 }
