@@ -376,6 +376,42 @@ public class UserService {
         auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset Successful", "Auth", "—", "—", "User successfully reset their password using OTP verification.");
     }
 
+    public void changePassword(com.reporting.portal.dto.ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        // Verify current password
+        String currentPassword = request.getCurrentPassword() != null ? request.getCurrentPassword().trim() : "";
+        String storedPass = user.getPassword();
+        boolean matches = false;
+
+        if (storedPass != null) {
+            try {
+                matches = passwordEncoder.matches(currentPassword, storedPass);
+            } catch (Exception e) {
+                // storedPass may not be BCrypt
+            }
+            if (!matches) {
+                matches = currentPassword.equals(normalizePassword(storedPass));
+            }
+        }
+
+        if (!matches) {
+            throw new RuntimeException("Current password is incorrect.");
+        }
+
+        // Validate new password
+        String newPassword = request.getNewPassword() != null ? request.getNewPassword().trim() : "";
+        if (newPassword.length() < 6) {
+            throw new RuntimeException("New password must be at least 6 characters.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Password Changed", "Auth", "—", "—", "User changed their password from Settings.");
+    }
+
     private UserDto mapToDto(User user) {
         var formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         var firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
