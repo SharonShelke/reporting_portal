@@ -42,4 +42,11 @@ public class OutreachReport {
 
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
+
+    public LocalDate getSubmittedDate() { return submittedDate; }
+    public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
+    public String getZoneName() { return zoneName; }
+    public void setZoneName(String zoneName) { this.zoneName = zoneName; }
+    public Integer getMediaCount() { return mediaCount; }
+    public void setMediaCount(Integer mediaCount) { this.mediaCount = mediaCount; }
 }

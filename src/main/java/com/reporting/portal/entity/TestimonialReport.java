@@ -45,4 +45,17 @@ public class TestimonialReport {
 
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
+
+    public LocalDate getSubmittedDate() { return submittedDate; }
+    public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
+    public String getZoneName() { return zoneName; }
+    public void setZoneName(String zoneName) { this.zoneName = zoneName; }
+    public Integer getTestimoniesCount() { return testimoniesCount; }
+    public void setTestimoniesCount(Integer testimoniesCount) { this.testimoniesCount = testimoniesCount; }
+    public Integer getBeforeImages() { return beforeImages; }
+    public void setBeforeImages(Integer beforeImages) { this.beforeImages = beforeImages; }
+    public Integer getAfterImages() { return afterImages; }
+    public void setAfterImages(Integer afterImages) { this.afterImages = afterImages; }
+    public Integer getDocuments() { return documents; }
+    public void setDocuments(Integer documents) { this.documents = documents; }
 }

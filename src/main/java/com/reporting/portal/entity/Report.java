@@ -100,6 +100,19 @@ public class Report {
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
+    public LocalDate getSubmittedDate() { return submittedDate; }
+    public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
+    public String getZoneName() { return zoneName; }
+    public void setZoneName(String zoneName) { this.zoneName = zoneName; }
+    public Integer getNewPartnersRecruited() { return newPartnersRecruited; }
+    public void setNewPartnersRecruited(Integer newPartnersRecruited) { this.newPartnersRecruited = newPartnersRecruited; }
+    public BigDecimal getTotalPartnershipRemittance() { return totalPartnershipRemittance; }
+    public void setTotalPartnershipRemittance(BigDecimal totalPartnershipRemittance) { this.totalPartnershipRemittance = totalPartnershipRemittance; }
+    public Integer getTestimoniesSubmitted() { return testimoniesSubmitted; }
+    public void setTestimoniesSubmitted(Integer testimoniesSubmitted) { this.testimoniesSubmitted = testimoniesSubmitted; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     @PrePersist
     protected void onCreate() {
         submittedAt = LocalDateTime.now();

@@ -51,4 +51,13 @@ public class MagazineReport {
 
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
+
+    public LocalDate getSubmittedDate() { return submittedDate; }
+    public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
+    public String getZoneName() { return zoneName; }
+    public void setZoneName(String zoneName) { this.zoneName = zoneName; }
+    public Integer getOrdered() { return ordered; }
+    public void setOrdered(Integer ordered) { this.ordered = ordered; }
+    public Integer getReceived() { return received; }
+    public void setReceived(Integer received) { this.received = received; }
 }
