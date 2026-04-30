@@ -41,8 +41,8 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.36</version>
-			<optional>true</optional>
+			<version>1.18.36</version> <!-- Use 1.18.30+ for Java 21 support -->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
