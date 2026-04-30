@@ -43,6 +43,9 @@ public class User {
         if (this.joinedDate == null) {
             this.joinedDate = LocalDate.now();
         }
+        if (this.status == null) {
+            this.status = "inactive";
+        }
     }
 
     public void setId(Long id) { this.id = id; }

@@ -56,7 +56,8 @@ public class UserService {
         var user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email not found."));
 
-        boolean isActive = "active".equals(user.getStatus());
+        String status = user.getStatus() != null ? user.getStatus() : "inactive";
+        boolean isActive = "active".equals(status);
 
         if (!isActive) {
             try { auditLogService.logActivity(user.getEmail(), user.getId(), "Failed login attempt", "Auth", "—", "Failed", "Account not active (status: " + user.getStatus() + ")."); } catch (Exception e) {}
@@ -367,7 +368,7 @@ public class UserService {
             user.getEmail(),
             user.getRole(),
             user.getRegion() != null ? user.getRegion() : "Global",
-            user.getStatus() != null ? user.getStatus() : "active",
+            user.getStatus() != null ? user.getStatus() : "inactive",
             user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
             user.getInviteToken()
         );
