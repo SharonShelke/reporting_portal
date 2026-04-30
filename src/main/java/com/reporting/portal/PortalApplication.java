@@ -15,6 +15,9 @@ import java.sql.ResultSet;
 public class PortalApplication {
 
 	public static void main(String[] args) {
+		System.out.println("==============================================");
+		System.out.println("Portal Backend Starting - VERSION: 2.1 (FIXED)");
+		System.out.println("==============================================");
 		SpringApplication.run(PortalApplication.class, args);
 	}
 
