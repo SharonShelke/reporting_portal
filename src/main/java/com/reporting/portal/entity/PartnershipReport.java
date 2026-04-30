@@ -20,6 +20,12 @@ public class PartnershipReport {
     @Column(name = "submitted_date")
     private LocalDate submittedDate;
 
+    @Column(name = "submitter_email")
+    private String submitterEmail;
+
+    @Column(name = "zone_name")
+    private String zoneName;
+
     @Column(name = "arms", columnDefinition = "TEXT")
     private String arms;
 

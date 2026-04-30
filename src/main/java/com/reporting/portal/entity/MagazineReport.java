@@ -19,6 +19,12 @@ public class MagazineReport {
     @Column(name = "submitted_date")
     private LocalDate submittedDate;
 
+    @Column(name = "submitter_email")
+    private String submitterEmail;
+
+    @Column(name = "zone_name")
+    private String zoneName;
+
     @Column(name = "language", length = 50)
     private String language;
 

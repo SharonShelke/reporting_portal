@@ -19,6 +19,12 @@ public class OutreachReport {
     @Column(name = "submitted_date")
     private LocalDate submittedDate;
 
+    @Column(name = "submitter_email")
+    private String submitterEmail;
+
+    @Column(name = "zone_name")
+    private String zoneName;
+
     @Column(name = "category", length = 150)
     private String category;
 
