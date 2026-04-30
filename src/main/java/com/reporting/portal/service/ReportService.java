@@ -7,7 +7,7 @@ import com.reporting.portal.entity.Report;
 import com.reporting.portal.entity.User;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
-251import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.ClassPathResource;
@@ -376,7 +376,7 @@ public class ReportService {
     }
 
     @Transactional
-222    public ReportDto clarifyReport(Long id, String note) {
+    public ReportDto clarifyReport(Long id, String note) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
         report.setStatus("CLARIFICATION_NEEDED");
