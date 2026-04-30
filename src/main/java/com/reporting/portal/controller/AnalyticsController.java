@@ -25,7 +25,8 @@ public class AnalyticsController {
     public ResponseEntity<Map<String, Object>> getStats(
             @RequestParam(defaultValue = "overview")    String tab,
             @RequestParam(defaultValue = "This Month")  String timeRange,
-            @RequestParam(defaultValue = "All Zones")   String zone) {
-        return ResponseEntity.ok(analyticsService.getStats(tab, timeRange, zone));
+            @RequestParam(defaultValue = "All Zones")   String zone,
+            @RequestParam(defaultValue = "All Campaigns") String campaign) {
+        return ResponseEntity.ok(analyticsService.getStats(tab, timeRange, zone, campaign));
     }
 }

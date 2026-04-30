@@ -35,19 +35,20 @@ public class AnalyticsService {
     // ─────────────────────────────────────────────────────
     // Public entry-point
     // ─────────────────────────────────────────────────────
-    public Map<String, Object> getStats(String tab, String timeRange, String zone) {
+    public Map<String, Object> getStats(String tab, String timeRange, String zone, String campaign) {
         LocalDate[] range = dateRange(timeRange);
         LocalDate from = range[0];
         LocalDate to   = range[1];
         String zoneFilter = "All Zones".equalsIgnoreCase(zone) ? null : zone;
+        String campaignFilter = "All Campaigns".equalsIgnoreCase(campaign) ? null : campaign;
 
         return switch (tab.toLowerCase()) {
             case "zonal"        -> zonalStats(from, to, zoneFilter);
-            case "partnership"  -> partnershipStats(from, to, zoneFilter);
+            case "partnership"  -> partnershipStats(from, to, zoneFilter, campaignFilter);
             case "testimonials" -> testimonialStats(from, to, zoneFilter);
             case "magazine"     -> magazineStats(from, to, zoneFilter);
             case "outreach"     -> outreachStats(from, to, zoneFilter);
-            default             -> overviewStats(from, to, zoneFilter);
+            default             -> overviewStats(from, to, zoneFilter, campaignFilter);
         };
     }
 
@@ -75,9 +76,9 @@ public class AnalyticsService {
     // ─────────────────────────────────────────────────────
     // Overview
     // ─────────────────────────────────────────────────────
-    private Map<String, Object> overviewStats(LocalDate from, LocalDate to, String zone) {
+    private Map<String, Object> overviewStats(LocalDate from, LocalDate to, String zone, String campaign) {
         long zonalCount    = countReports(from, to, zone);
-        long partnerCount  = countPartnership(from, to, zone);
+        long partnerCount  = countPartnership(from, to, zone, campaign);
         long testCount     = countTestimonials(from, to, zone);
         long magCount      = countMagazine(from, to, zone);
         long outCount      = countOutreach(from, to, zone);
@@ -131,9 +132,9 @@ public class AnalyticsService {
     // ─────────────────────────────────────────────────────
     // Partnership
     // ─────────────────────────────────────────────────────
-    private Map<String, Object> partnershipStats(LocalDate from, LocalDate to, String zone) {
-        long reportsFiled = countPartnership(from, to, zone);
-        BigDecimal remit  = sumPartnershipRemittance(from, to, zone);
+    private Map<String, Object> partnershipStats(LocalDate from, LocalDate to, String zone, String campaign) {
+        long reportsFiled = countPartnership(from, to, zone, campaign);
+        BigDecimal remit  = sumPartnershipRemittance(from, to, zone, campaign);
         long newPartners  = sumNewPartners(from, to, zone);
 
         Map<String, Object> m = new LinkedHashMap<>();
@@ -260,21 +261,23 @@ public class AnalyticsService {
     // ─────────────────────────────────────────────────────
     // Query helpers — partnership_reports
     // ─────────────────────────────────────────────────────
-    private long countPartnership(LocalDate from, LocalDate to, String zone) {
+    private long countPartnership(LocalDate from, LocalDate to, String zone, String campaign) {
         return prRepo.findAll().stream()
                 .filter(r -> r.getSubmittedDate() != null
                           && !r.getSubmittedDate().isBefore(from)
                           && !r.getSubmittedDate().isAfter(to)
-                          && (zone == null || zone.equalsIgnoreCase(r.getZoneName())))
+                          && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))
+                          && (campaign == null || (r.getArms() != null && r.getArms().contains(campaign))))
                 .count();
     }
 
-    private BigDecimal sumPartnershipRemittance(LocalDate from, LocalDate to, String zone) {
+    private BigDecimal sumPartnershipRemittance(LocalDate from, LocalDate to, String zone, String campaign) {
         return prRepo.findAll().stream()
                 .filter(r -> r.getSubmittedDate() != null
                           && !r.getSubmittedDate().isBefore(from)
                           && !r.getSubmittedDate().isAfter(to)
-                          && (zone == null || zone.equalsIgnoreCase(r.getZoneName())))
+                          && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))
+                          && (campaign == null || (r.getArms() != null && r.getArms().contains(campaign))))
                 .map(r -> r.getTotalRemittance() != null ? r.getTotalRemittance() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

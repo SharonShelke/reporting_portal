@@ -181,7 +181,29 @@ public class UserService {
             throw new RuntimeException("Invalid KingsChat token");
         }
         
-        // Use profile data sent from the frontend SDK
+        // If frontend didn't send profile data, try to decode the JWT token payload
+        if ((email == null || email.isEmpty()) && (username == null || username.isEmpty())) {
+            try {
+                String[] chunks = token.split("\\.");
+                if (chunks.length >= 2) {
+                    java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
+                    String payload = new String(decoder.decode(chunks[1]));
+                    
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    java.util.Map<String, Object> claims = mapper.readValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+                    
+                    if (claims.containsKey("email")) email = (String) claims.get("email");
+                    if (claims.containsKey("username")) username = (String) claims.get("username");
+                    if (claims.containsKey("sub")) username = (String) claims.get("sub");
+                    if (claims.containsKey("first_name")) firstName = (String) claims.get("first_name");
+                    if (claims.containsKey("last_name")) lastName = (String) claims.get("last_name");
+                }
+            } catch (Exception e) {
+                System.err.println("Could not decode KingsChat JWT: " + e.getMessage());
+            }
+        }
+        
+        // Use profile data sent from the frontend SDK or decoded from token
         if (email == null || email.isEmpty()) {
             if (username != null && !username.isEmpty()) {
                 email = username + "@kingschat.com";
