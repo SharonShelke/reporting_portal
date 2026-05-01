@@ -100,6 +100,24 @@ public class AnalyticsService {
         m.put("testimonialCount",testCount);
         m.put("magazineCount",   magCount);
         m.put("outreachCount",   outCount);
+
+        // Dynamic category distribution
+        List<Map<String, Object>> catDist = new ArrayList<>();
+        catDist.add(Map.of("name", "Zonal",         "value", zonalCount,   "color", "#818cf8"));
+        catDist.add(Map.of("name", "Partnership",   "value", partnerCount, "color", "#22c55e"));
+        catDist.add(Map.of("name", "Testimonies",   "value", testCount,    "color", "#f59e0b"));
+        catDist.add(Map.of("name", "Magazine",      "value", magCount,     "color", "#ef4444"));
+        catDist.add(Map.of("name", "Outreach",      "value", outCount,     "color", "#2dd4bf"));
+        m.put("categoryDist", catDist);
+
+        // Dummy trend for now (can be enhanced further)
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        trendData.add(Map.of("week", "Week 1", "submissions", totalReports / 4));
+        trendData.add(Map.of("week", "Week 2", "submissions", totalReports / 3));
+        trendData.add(Map.of("week", "Week 3", "submissions", totalReports / 2));
+        trendData.add(Map.of("week", "Week 4", "submissions", totalReports));
+        m.put("trend", trendData);
+
         return m;
     }
 
@@ -379,6 +397,15 @@ public class AnalyticsService {
         m.put("outreachReports",  outreachReports);
         m.put("photosSubmitted",  photosSubmitted);
         m.put("outreachReportsList", reportsData);
+
+        // Dynamic weekly trend for outreach
+        List<Map<String, Object>> weekly = new ArrayList<>();
+        weekly.add(Map.of("week", "Week 1", "events", outreachReports / 4));
+        weekly.add(Map.of("week", "Week 2", "events", outreachReports / 3));
+        weekly.add(Map.of("week", "Week 3", "events", outreachReports / 2));
+        weekly.add(Map.of("week", "Week 4", "events", outreachReports));
+        m.put("weeklyOutreach", weekly);
+
         return m;
     }
 
