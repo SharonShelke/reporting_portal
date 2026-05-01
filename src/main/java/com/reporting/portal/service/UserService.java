@@ -50,11 +50,14 @@ public class UserService {
             throw new RuntimeException("Email and password are required.");
         }
 
-        var email = request.getEmail().trim().toLowerCase();
+        var identifier = request.getEmail().trim().toLowerCase();
         var password = normalizePassword(request.getPassword());
 
-        var user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Email not found."));
+        var user = userRepository.findByEmail(identifier)
+            .or(() -> userRepository.findByPhone(identifier))
+            .orElseThrow(() -> new RuntimeException("Email/Phone not found."));
+        
+        var email = user.getEmail(); // Use the actual email from the user object for logging
 
         String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
         boolean isActive = "active".equals(status);
