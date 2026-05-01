@@ -315,7 +315,7 @@ public class UserService {
         user.setFirstName(nameParts[0]);
         user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setStatus("inactive");
+        user.setStatus("active");
         user.setInviteToken(null);
         
         userRepository.save(user);
