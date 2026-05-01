@@ -37,6 +37,7 @@ public class User {
     private String status = "inactive"; // 'active', 'inactive', 'pending'
     
     private Integer kingchatLoginCount = 0;
+    @Column(unique = true)
     private String kingschatId;
 
     private String inviteToken;
