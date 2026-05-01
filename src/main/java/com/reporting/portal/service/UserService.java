@@ -165,6 +165,7 @@ public class UserService {
         }
         user.setFirstName(firstName);
         user.setLastName(lastName);
+        user.setPhone(request.getPhone() != null ? request.getPhone().trim() : null);
 
         user = userRepository.save(user);
         System.err.println("User saved to database: id=" + user.getId() + ", saved_status=" + user.getStatus());

@@ -39,7 +39,7 @@ public class User {
     private Integer kingchatLoginCount = 0;
     @Column(unique = true)
     private String kingschatId;
-
+    private String phone;
     private String inviteToken;
 
     private LocalDate joinedDate;
@@ -57,6 +57,7 @@ public class User {
     public String getStatus() { return status; }
     public Integer getKingchatLoginCount() { return kingchatLoginCount; }
     public String getKingschatId() { return kingschatId; }
+    public String getPhone() { return phone; }
     public String getInviteToken() { return inviteToken; }
     public LocalDate getJoinedDate() { return joinedDate; }
     public String getOtpCode() { return otpCode; }
@@ -97,4 +98,5 @@ public class User {
 
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
     public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }
+    public void setPhone(String phone) { this.phone = phone; }
 }
