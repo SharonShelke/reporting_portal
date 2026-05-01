@@ -180,9 +180,10 @@ public class UserService {
         if (token == null || token.isEmpty()) {
             throw new RuntimeException("Invalid KingsChat token");
         }
+        String kcId = (username != null && !username.isEmpty()) ? username : null;
         
         // If frontend didn't send profile data, try to decode the JWT token payload
-        if ((email == null || email.isEmpty()) && (username == null || username.isEmpty())) {
+        if ((email == null || email.isEmpty()) && (kcId == null)) {
             try {
                 String[] chunks = token.split("\\.");
                 if (chunks.length >= 2) {
@@ -193,8 +194,8 @@ public class UserService {
                     java.util.Map<String, Object> claims = mapper.readValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
                     
                     if (claims.containsKey("email")) email = (String) claims.get("email");
-                    if (claims.containsKey("username")) username = (String) claims.get("username");
-                    if (claims.containsKey("sub")) username = (String) claims.get("sub");
+                    if (claims.containsKey("username")) kcId = (String) claims.get("username");
+                    if (claims.containsKey("sub")) kcId = (String) claims.get("sub");
                     if (claims.containsKey("first_name")) firstName = (String) claims.get("first_name");
                     if (claims.containsKey("last_name")) lastName = (String) claims.get("last_name");
                 }
@@ -203,59 +204,64 @@ public class UserService {
             }
         }
         
-        // Use profile data sent from the frontend SDK or decoded from token
+        if (kcId == null || kcId.isEmpty()) {
+            throw new RuntimeException("Could not determine KingsChat ID. Please try again.");
+        }
+
+        // Default email if none provided
         if (email == null || email.isEmpty()) {
-            if (username != null && !username.isEmpty()) {
-                email = username + "@kingschat.com";
-            } else {
-                throw new RuntimeException("Could not determine email from KingsChat profile. Please try again.");
-            }
+            email = kcId + "@kingschat.com";
         }
         
-        if (firstName == null || firstName.isEmpty()) {
-            firstName = "KingsChat";
-        }
-        if (lastName == null || lastName.isEmpty()) {
-            lastName = "User";
-        }
+        if (firstName == null || firstName.isEmpty()) firstName = "KingsChat";
+        if (lastName == null || lastName.isEmpty()) lastName = "User";
         
-        return processKingChatUser(email, firstName, lastName);
+        return processKingChatUser(kcId, email, firstName, lastName);
     }
 
-    private UserDto processKingChatUser(String email, String firstName, String lastName) {
+    private UserDto processKingChatUser(String kcId, String email, String firstName, String lastName) {
         email = email.trim().toLowerCase();
-        var userOpt = userRepository.findByEmail(email);
+        
+        // 1. Try finding by KingsChat ID first (already linked)
+        var userByKcId = userRepository.findByKingschatId(kcId);
         
         User user;
-        if (userOpt.isEmpty()) {
-            user = new User();
-            user.setEmail(email);
-            user.setFirstName(firstName != null ? firstName : "KingsChat");
-            user.setLastName(lastName != null ? lastName : "User");
-            user.setRole("zonal");
-            user.setStatus("inactive");
-            user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
-            user = userRepository.save(user);
-            
-            try {
-                notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
-            } catch (Exception ignored) {}
-            
-            throw new RuntimeException("Your KingsChat account has been created and is pending admin approval.");
+        if (userByKcId.isPresent()) {
+            user = userByKcId.get();
+            // Optional: update names if they changed on KingsChat
+            if (firstName != null && !firstName.equalsIgnoreCase("KingsChat")) user.setFirstName(firstName);
+            if (lastName != null && !lastName.equalsIgnoreCase("User")) user.setLastName(lastName);
         } else {
-            user = userOpt.get();
+            // 2. Try finding by email (auto-link existing account)
+            var userByEmail = userRepository.findByEmail(email);
+            if (userByEmail.isPresent()) {
+                user = userByEmail.get();
+                user.setKingschatId(kcId); // Link it!
+            } else {
+                // 3. Create new inactive account
+                user = new User();
+                user.setEmail(email);
+                user.setKingschatId(kcId);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setRole("zonal");
+                user.setStatus("inactive");
+                user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+                user = userRepository.save(user);
+                
+                try {
+                    notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
+                } catch (Exception ignored) {}
+                
+                throw new RuntimeException("Your KingsChat account has been created (" + email + ") and is pending admin approval.");
+            }
         }
         
         String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
         boolean isActive = "active".equals(status);
         
-        System.err.println("KingsChat login status check for " + email + ": status='" + status + "', isActive=" + isActive);
-        
         if (!isActive) {
-            if ("inactive".equals(status) || "pending".equals(status)) {
-                throw new RuntimeException("Your account is pending admin approval or has been deactivated.");
-            }
-            throw new RuntimeException("Account is not active.");
+            throw new RuntimeException("Account is pending admin approval or deactivated. (ID: " + email + ")");
         }
         
         user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
@@ -439,7 +445,8 @@ public class UserService {
             user.getRegion() != null ? user.getRegion() : "Global",
             user.getStatus() != null ? user.getStatus() : "inactive",
             user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
-            user.getInviteToken()
+            user.getInviteToken(),
+            user.getKingschatId()
         );
     }
 }

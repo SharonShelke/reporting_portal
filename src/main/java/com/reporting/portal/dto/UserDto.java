@@ -10,5 +10,6 @@ public record UserDto(
     String region,
     String status,
     String joined,
-    String inviteToken
+    String inviteToken,
+    String kingschatId
 ) {}

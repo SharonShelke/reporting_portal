@@ -37,6 +37,7 @@ public class User {
     private String status = "inactive"; // 'active', 'inactive', 'pending'
     
     private Integer kingchatLoginCount = 0;
+    private String kingschatId;
 
     private String inviteToken;
 
@@ -54,6 +55,7 @@ public class User {
     public String getRegion() { return region; }
     public String getStatus() { return status; }
     public Integer getKingchatLoginCount() { return kingchatLoginCount; }
+    public String getKingschatId() { return kingschatId; }
     public String getInviteToken() { return inviteToken; }
     public LocalDate getJoinedDate() { return joinedDate; }
     public String getOtpCode() { return otpCode; }
@@ -93,4 +95,5 @@ public class User {
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
 
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
+    public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }
 }
