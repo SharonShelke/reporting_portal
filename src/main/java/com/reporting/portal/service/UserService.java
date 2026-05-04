@@ -186,7 +186,44 @@ public class UserService {
         }
         String kcId = (username != null && !username.isEmpty()) ? username : null;
         
-        // If frontend didn't send profile data, try to decode the JWT token payload
+        String phone = null;
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            java.net.http.HttpRequest profileReq = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("https://connect.kingsch.at/developer/api/profile"))
+                .header("authorization", "Bearer " + token)
+                .GET()
+                .build();
+            
+            java.net.http.HttpResponse<String> response = client.send(profileReq, java.net.http.HttpResponse.BodyHandlers.ofString());
+            
+            if (response.statusCode() == 200) {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                java.util.Map<String, Object> body = mapper.readValue(response.body(), new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+                if (body.containsKey("profile")) {
+                    java.util.Map<String, Object> profile = (java.util.Map<String, Object>) body.get("profile");
+                    if (profile.containsKey("email")) email = (String) profile.get("email");
+                    if (profile.containsKey("username")) username = (String) profile.get("username");
+                    if (profile.containsKey("id")) kcId = (String) profile.get("id");
+                    if (profile.containsKey("phone_number")) {
+                        String rawPhone = (String) profile.get("phone_number");
+                        if (rawPhone != null) {
+                            phone = rawPhone.replace("+", "").replace(" ", "").trim();
+                        }
+                    }
+                    if (profile.containsKey("name")) {
+                        String name = (String) profile.get("name");
+                        String[] parts = name.split(" ", 2);
+                        firstName = parts[0];
+                        if (parts.length > 1) lastName = parts[1];
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("API Profile fetch failed: " + e.getMessage());
+        }
+
+        // 2. Fallback to decoding the JWT token locally if API failed
         if ((email == null || email.isEmpty()) && (kcId == null)) {
             try {
                 String[] chunks = token.split("\\.");
@@ -198,13 +235,13 @@ public class UserService {
                     java.util.Map<String, Object> claims = mapper.readValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
                     
                     if (claims.containsKey("email")) email = (String) claims.get("email");
-                    if (claims.containsKey("username")) kcId = (String) claims.get("username");
+                    if (claims.containsKey("username")) username = (String) claims.get("username");
                     if (claims.containsKey("sub")) kcId = (String) claims.get("sub");
                     if (claims.containsKey("first_name")) firstName = (String) claims.get("first_name");
                     if (claims.containsKey("last_name")) lastName = (String) claims.get("last_name");
                 }
             } catch (Exception e) {
-                System.err.println("Could not decode KingsChat JWT: " + e.getMessage());
+                System.err.println("Local JWT decode failed: " + e.getMessage());
             }
         }
         
@@ -212,18 +249,17 @@ public class UserService {
             throw new RuntimeException("Could not determine KingsChat ID. Please try again.");
         }
 
-        // Default email if none provided
         if (email == null || email.isEmpty()) {
-            email = kcId + "@kingschat.com";
+            email = (username != null && !username.isEmpty()) ? username + "@kingschat.com" : kcId + "@kingschat.com";
         }
         
         if (firstName == null || firstName.isEmpty()) firstName = "KingsChat";
         if (lastName == null || lastName.isEmpty()) lastName = "User";
         
-        return processKingChatUser(kcId, email, firstName, lastName);
+        return processKingChatUser(kcId, email, firstName, lastName, phone);
     }
 
-    private UserDto processKingChatUser(String kcId, String email, String firstName, String lastName) {
+    private UserDto processKingChatUser(String kcId, String email, String firstName, String lastName, String phone) {
         email = email.trim().toLowerCase();
         
         // 1. Try finding by KingsChat ID first (already linked)
@@ -238,9 +274,17 @@ public class UserService {
         } else {
             // 2. Try finding by email (auto-link existing account)
             var userByEmail = userRepository.findByEmail(email);
+            
+            // 3. NEW: Try finding by phone (auto-link existing account)
+            var userByPhone = (phone != null) ? userRepository.findByPhone(phone) : java.util.Optional.<User>empty();
+
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
                 user.setKingschatId(kcId); // Link it!
+            } else if (userByPhone.isPresent()) {
+                user = userByPhone.get();
+                user.setKingschatId(kcId); // Link it!
+                System.err.println("Auto-linked KingsChat ID " + kcId + " to existing user by phone: " + phone);
             } else {
                 // 3. Create new inactive account
                 user = new User();
@@ -319,7 +363,12 @@ public class UserService {
         user.setFirstName(nameParts[0]);
         user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setStatus("active");
+        
+        // Protect status: Once active, don't reset to inactive
+        if (!"active".equalsIgnoreCase(user.getStatus())) {
+            user.setStatus("active");
+            System.err.println("User " + user.getEmail() + " status set to ACTIVE via completeInvite");
+        }
         user.setInviteToken(null);
         
         userRepository.save(user);
@@ -335,7 +384,14 @@ public class UserService {
         user.setLastName(details.getLastName());
         user.setRole(details.getRole());
         user.setRegion(details.getRegion());
-        user.setStatus(details.getStatus());
+        
+        // Prevent accidental status reset if already active
+        if ("active".equalsIgnoreCase(user.getStatus()) && "inactive".equalsIgnoreCase(details.getStatus())) {
+            System.err.println("Blocked attempt to reset ACTIVE user " + user.getEmail() + " to INACTIVE via update");
+        } else if (details.getStatus() != null) {
+            user.setStatus(details.getStatus());
+        }
+        
         return mapToDto(userRepository.save(user));
     }
 
