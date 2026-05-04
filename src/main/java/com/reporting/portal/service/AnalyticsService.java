@@ -110,12 +110,23 @@ public class AnalyticsService {
         catDist.add(Map.of("name", "Outreach",      "value", outCount,     "color", "#2dd4bf"));
         m.put("categoryDist", catDist);
 
-        // Dummy trend for now (can be enhanced further)
+        // Real trend calculation
         List<Map<String, Object>> trendData = new ArrayList<>();
-        trendData.add(Map.of("week", "Week 1", "submissions", totalReports / 4));
-        trendData.add(Map.of("week", "Week 2", "submissions", totalReports / 3));
-        trendData.add(Map.of("week", "Week 3", "submissions", totalReports / 2));
-        trendData.add(Map.of("week", "Week 4", "submissions", totalReports));
+        LocalDate current = from;
+        int weekNum = 1;
+        while (!current.isAfter(to)) {
+            LocalDate weekEnd = current.plusDays(6);
+            if (weekEnd.isAfter(to)) weekEnd = to;
+            
+            final LocalDate f = current;
+            final LocalDate t = weekEnd;
+            long weekCount = countReports(f, t, zone) + countPartnership(f, t, zone, campaign) + countTestimonials(f, t, zone) + countMagazine(f, t, zone) + countOutreach(f, t, zone);
+            
+            trendData.add(Map.of("week", "Week " + weekNum, "submissions", weekCount));
+            current = current.plusWeeks(1);
+            weekNum++;
+            if (weekNum > 8) break; // cap at 8 weeks
+        }
         m.put("trend", trendData);
 
         return m;
@@ -264,12 +275,43 @@ public class AnalyticsService {
             idx++;
         }
 
+        // Real Monthly Trend
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(5).withDayOfMonth(1);
+        for (int i = 0; i < 6; i++) {
+            LocalDate monthStart = sixMonthsAgo.plusMonths(i);
+            LocalDate monthEnd = monthStart.with(TemporalAdjusters.lastDayOfMonth());
+            String monthName = monthStart.getMonth().name().substring(0, 3);
+            
+            Map<String, Object> monthMap = new HashMap<>();
+            monthMap.put("month", monthName);
+            
+            for (String arm : armTotals.keySet()) {
+                BigDecimal armMonthTotal = prRepo.findAll().stream()
+                    .filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(monthStart) && !r.getSubmittedDate().isAfter(monthEnd) 
+                            && (zone == null || zone.equalsIgnoreCase(r.getZoneName())) && r.getArms() != null && r.getArms().contains(arm))
+                    .map(r -> {
+                        BigDecimal amt = r.getTotalRemittance() != null ? r.getTotalRemittance() : BigDecimal.ZERO;
+                        String[] split = r.getArms().split(",");
+                        return amt.divide(new BigDecimal(Math.max(1, split.length)), 2, RoundingMode.HALF_UP);
+                    })
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                
+                String armKey = arm.toLowerCase().contains("healing") ? "healingSchool" : 
+                               arm.toLowerCase().contains("rhapsody") ? "rhapsody" : 
+                               arm.toLowerCase().contains("inner") ? "innerCity" : "lbn";
+                monthMap.put(armKey, armMonthTotal.divide(new BigDecimal("1000"), 0, RoundingMode.HALF_UP));
+            }
+            trendData.add(monthMap);
+        }
+
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("totalRemittance", remit);
         m.put("reportsFiled",    reportsFiled);
         m.put("newPartners",     newPartners);
         m.put("arms", armsData);
         m.put("dist", distData);
+        m.put("trend", trendData);
         return m;
     }
 
@@ -306,6 +348,27 @@ public class AnalyticsService {
             ));
         }
 
+        // Weekly actual vs target
+        List<Map<String, Object>> weekly = new ArrayList<>();
+        LocalDate current = from;
+        int weekNum = 1;
+        while (!current.isAfter(to)) {
+            LocalDate weekEnd = current.plusDays(6);
+            if (weekEnd.isAfter(to)) weekEnd = to;
+            
+            final LocalDate f = current;
+            final LocalDate t = weekEnd;
+            long weekActual = reports.stream()
+                .filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(f) && !r.getSubmittedDate().isAfter(t))
+                .mapToLong(r -> r.getTestimoniesCount() != null ? r.getTestimoniesCount() : 0)
+                .sum();
+            
+            weekly.add(Map.of("week", "Week " + weekNum, "target", 50, "actual", weekActual));
+            current = current.plusWeeks(1);
+            weekNum++;
+            if (weekNum > 8) break;
+        }
+
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("totalTestimonies", totalTestimonies);
         m.put("withMedia",        withMedia);
@@ -313,6 +376,7 @@ public class AnalyticsService {
         m.put("avgPerZone",       String.format("%.1f", avgPerZone));
         m.put("reportsFiled",     reportsFiled);
         m.put("zones",            zonesData);
+        m.put("weekly",           weekly);
         return m;
     }
 
