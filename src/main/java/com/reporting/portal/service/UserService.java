@@ -150,6 +150,9 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists.");
         }
+        if (request.getPhone() != null && !request.getPhone().isBlank() && userRepository.findByPhone(request.getPhone()).isPresent()) {
+            throw new RuntimeException("Phone number already registered.");
+        }
 
         var user = new User();
         user.setEmail(request.getEmail().trim().toLowerCase());
