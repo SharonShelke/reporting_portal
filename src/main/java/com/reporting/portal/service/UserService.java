@@ -216,7 +216,15 @@ public class UserService {
                 }
 
                 if (profileData != null) {
-                    if (profileData.containsKey("email")) email = String.valueOf(profileData.get("email"));
+                    if (profileData.containsKey("email")) {
+                        Object emailObj = profileData.get("email");
+                        if (emailObj instanceof java.util.Map) {
+                            java.util.Map<String, Object> emailMap = (java.util.Map<String, Object>) emailObj;
+                            email = String.valueOf(emailMap.getOrDefault("address", ""));
+                        } else {
+                            email = String.valueOf(emailObj);
+                        }
+                    }
                     if (profileData.containsKey("username")) username = String.valueOf(profileData.get("username"));
                     if (profileData.containsKey("id")) kcId = String.valueOf(profileData.get("id"));
                     if (profileData.containsKey("sub")) kcId = String.valueOf(profileData.get("sub"));
