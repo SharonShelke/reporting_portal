@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.username}")
+    private String fromEmail;
 
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -20,7 +23,7 @@ public class EmailService {
     public void sendSimpleEmail(String to, String subject, String body) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("sharonshelke7@gmail.com");
+            message.setFrom(fromEmail);
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
