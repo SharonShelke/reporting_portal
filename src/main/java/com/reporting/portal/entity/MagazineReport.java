@@ -49,6 +49,15 @@ public class MagazineReport {
     @Column(name = "status", length = 30)
     private String status = "PENDING";
 
+    @Column(name = "is_adult")
+    private Boolean isAdult = false;
+
+    @Column(name = "is_teevolution")
+    private Boolean isTeevolution = false;
+
+    @Column(name = "is_kids_magazine")
+    private Boolean isKidsMagazine = false;
+
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
@@ -60,4 +69,11 @@ public class MagazineReport {
     public void setOrdered(Integer ordered) { this.ordered = ordered; }
     public Integer getReceived() { return received; }
     public void setReceived(Integer received) { this.received = received; }
+
+    public Boolean getIsAdult() { return isAdult; }
+    public void setIsAdult(Boolean isAdult) { this.isAdult = isAdult; }
+    public Boolean getIsTeevolution() { return isTeevolution; }
+    public void setIsTeevolution(Boolean isTeevolution) { this.isTeevolution = isTeevolution; }
+    public Boolean getIsKidsMagazine() { return isKidsMagazine; }
+    public void setIsKidsMagazine(Boolean isKidsMagazine) { this.isKidsMagazine = isKidsMagazine; }
 }

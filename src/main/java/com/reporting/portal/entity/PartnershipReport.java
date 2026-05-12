@@ -33,6 +33,21 @@ public class PartnershipReport {
     @Column(name = "total_remittance", precision = 12, scale = 2)
     private BigDecimal totalRemittance;
 
+    @Column(name = "zonal_partnership", precision = 12, scale = 2)
+    private BigDecimal zonalPartnership;
+
+    @Column(name = "zonal_partnership_details", columnDefinition = "TEXT")
+    private String zonalPartnershipDetails;
+
+    @Column(name = "groups_partnership", precision = 12, scale = 2)
+    private BigDecimal groupsPartnership;
+
+    @Column(name = "churches_partnership", precision = 12, scale = 2)
+    private BigDecimal churchesPartnership;
+
+    @Column(name = "cell_partnership", precision = 12, scale = 2)
+    private BigDecimal cellPartnership;
+
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
@@ -61,4 +76,15 @@ public class PartnershipReport {
     public void setZoneName(String zoneName) { this.zoneName = zoneName; }
     public BigDecimal getTotalRemittance() { return totalRemittance; }
     public void setTotalRemittance(BigDecimal totalRemittance) { this.totalRemittance = totalRemittance; }
+
+    public BigDecimal getZonalPartnership() { return zonalPartnership; }
+    public void setZonalPartnership(BigDecimal zonalPartnership) { this.zonalPartnership = zonalPartnership; }
+    public String getZonalPartnershipDetails() { return zonalPartnershipDetails; }
+    public void setZonalPartnershipDetails(String zonalPartnershipDetails) { this.zonalPartnershipDetails = zonalPartnershipDetails; }
+    public BigDecimal getGroupsPartnership() { return groupsPartnership; }
+    public void setGroupsPartnership(BigDecimal groupsPartnership) { this.groupsPartnership = groupsPartnership; }
+    public BigDecimal getChurchesPartnership() { return churchesPartnership; }
+    public void setChurchesPartnership(BigDecimal churchesPartnership) { this.churchesPartnership = churchesPartnership; }
+    public BigDecimal getCellPartnership() { return cellPartnership; }
+    public void setCellPartnership(BigDecimal cellPartnership) { this.cellPartnership = cellPartnership; }
 }
