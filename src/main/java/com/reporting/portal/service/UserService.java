@@ -313,30 +313,34 @@ public class UserService {
                 user.setKingschatId(kcId); // Link it!
                 System.err.println("Auto-linked KingsChat ID " + kcId + " to existing user by phone: " + phone);
             } else {
-                // 3. Create new inactive account
+                // 3. Create new account (Auto-activated for KingsChat)
                 user = new User();
                 user.setEmail(email);
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
                 user.setRole("zonal");
-                user.setStatus("inactive");
+                user.setStatus("active"); // Auto-activate
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                 user = userRepository.save(user);
                 
                 try {
-                    notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
+                    notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account auto-activated: " + user.getEmail(), "admin", null));
                 } catch (Exception ignored) {}
                 
-                throw new RuntimeException("Your KingsChat account has been created (" + email + ") and is pending admin approval.");
+                // No longer throwing - allow immediate login
             }
         }
         
-        String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
-        boolean isActive = "active".equals(status);
-        
-        if (!isActive) {
-            throw new RuntimeException("Account is pending admin approval or deactivated. (ID: " + email + ")");
+        // Ensure KingsChat users are always active when they log in
+        if (!"active".equalsIgnoreCase(user.getStatus())) {
+            String oldStatus = user.getStatus();
+            user.setStatus("active");
+            userRepository.save(user);
+            System.err.println("Auto-activated existing user " + user.getEmail() + " (was " + oldStatus + ") via KingsChat login.");
+            try {
+                notificationService.push(new com.reporting.portal.dto.NotificationRequest("Existing account auto-activated via KingsChat: " + user.getEmail(), "admin", null));
+            } catch (Exception ignored) {}
         }
         
         user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
