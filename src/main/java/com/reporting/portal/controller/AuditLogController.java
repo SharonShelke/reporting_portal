@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping({"/api/audit-logs", "/audit-logs"})
-@CrossOrigin(origins = "http://65.0.71.13")
+@CrossOrigin(origins = "http://65.1.248.88")
 public class AuditLogController {
 
     private final AuditLogService auditLogService;

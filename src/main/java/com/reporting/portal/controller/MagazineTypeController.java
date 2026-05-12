@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping({"/api/magazine/types", "/magazine/types"})
-@CrossOrigin(origins = "http://65.0.71.13")
+@CrossOrigin(origins = "http://65.1.248.88")
 public class MagazineTypeController {
 
     private final MagazineTypeRepository magazineTypeRepository;

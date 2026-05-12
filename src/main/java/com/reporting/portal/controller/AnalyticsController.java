@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping({"/api/analytics", "/analytics"})
-@CrossOrigin(origins = "http://65.0.71.13")
+@CrossOrigin(origins = "http://65.1.248.88")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
