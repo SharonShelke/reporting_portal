@@ -37,6 +37,9 @@ public class UserService {
     private final EmailService emailService;
     private final NotificationService notificationService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder()
+        .connectTimeout(java.time.Duration.ofSeconds(5))
+        .build();
 
     public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService, NotificationService notificationService) {
         this.userRepository = userRepository;
@@ -192,14 +195,15 @@ public class UserService {
         
         // 1. Try fetching from KingsChat API
         try {
-            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            System.err.println("Fetching profile from KingsChat API for token: " + (token != null ? token.substring(0, Math.min(token.length(), 10)) + "..." : "null"));
             java.net.http.HttpRequest profileReq = java.net.http.HttpRequest.newBuilder()
-                .uri(java.net.URI.create("https://connect.kingsch.at/api/profile")) // Standard production endpoint
+                .uri(java.net.URI.create("https://connect.kingsch.at/api/profile")) 
                 .header("authorization", "Bearer " + token)
+                .timeout(java.time.Duration.ofSeconds(10))
                 .GET()
                 .build();
             
-            java.net.http.HttpResponse<String> response = client.send(profileReq, java.net.http.HttpResponse.BodyHandlers.ofString());
+            java.net.http.HttpResponse<String> response = httpClient.send(profileReq, java.net.http.HttpResponse.BodyHandlers.ofString());
             System.err.println("KingsChat API Response (" + response.statusCode() + "): " + response.body());
             
             if (response.statusCode() == 200) {
