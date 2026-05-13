@@ -190,44 +190,54 @@ public class UserService {
         if (token == null || token.isEmpty()) {
             throw new RuntimeException("Invalid KingsChat token");
         }
+        
         String kcId = (username != null && !username.isEmpty()) ? username : null;
         String phone = null;
         
-        // 1. Try fetching from KingsChat API
+        // 0. Pre-decode JWT to get kcId (sub) and other info immediately as fallback
         try {
-            System.err.println("Fetching profile from KingsChat API for token: " + (token != null ? token.substring(0, Math.min(token.length(), 10)) + "..." : "null"));
+            String[] chunks = token.split("\\.");
+            if (chunks.length >= 2) {
+                java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
+                String payload = new String(decoder.decode(chunks[1]));
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                java.util.Map<String, Object> claims = mapper.readValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
+                
+                if (kcId == null && claims.containsKey("sub")) kcId = String.valueOf(claims.get("sub"));
+                if (email == null && claims.containsKey("email")) email = String.valueOf(claims.get("email"));
+                if (firstName == null && claims.containsKey("first_name")) firstName = String.valueOf(claims.get("first_name"));
+                if (lastName == null && claims.containsKey("last_name")) lastName = String.valueOf(claims.get("last_name"));
+                if (username == null && claims.containsKey("username")) username = String.valueOf(claims.get("username"));
+                
+                System.err.println("Pre-decoded JWT: sub=" + kcId + ", email=" + email);
+            }
+        } catch (Exception e) {
+            System.err.println("Initial JWT decode failed: " + e.getMessage());
+        }
+
+        // 1. Try fetching from KingsChat API for verification and profile updates
+        try {
+            System.err.println("[" + java.time.LocalTime.now() + "] Fetching profile from KingsChat API...");
             java.net.http.HttpRequest profileReq = java.net.http.HttpRequest.newBuilder()
                 .uri(java.net.URI.create("https://connect.kingsch.at/api/profile")) 
                 .header("authorization", "Bearer " + token)
-                .timeout(java.time.Duration.ofSeconds(10))
+                .timeout(java.time.Duration.ofSeconds(5)) // Reduced from 10s to 5s
                 .GET()
                 .build();
             
             java.net.http.HttpResponse<String> response = httpClient.send(profileReq, java.net.http.HttpResponse.BodyHandlers.ofString());
-            System.err.println("KingsChat API Response (" + response.statusCode() + "): " + response.body());
+            System.err.println("[" + java.time.LocalTime.now() + "] KingsChat API Response (" + response.statusCode() + ")");
             
             if (response.statusCode() == 200) {
                 com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                 java.util.Map<String, Object> body = mapper.readValue(response.body(), new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
                 
-                java.util.Map<String, Object> profileData = null;
-                if (body.containsKey("profile")) {
-                    profileData = (java.util.Map<String, Object>) body.get("profile");
-                } else if (body.containsKey("user")) {
-                    profileData = (java.util.Map<String, Object>) body.get("user");
-                } else {
-                    profileData = body;
-                }
+                java.util.Map<String, Object> profileData = (java.util.Map<String, Object>) (body.getOrDefault("profile", body.getOrDefault("user", body)));
 
                 if (profileData != null) {
                     if (profileData.containsKey("email")) {
                         Object emailObj = profileData.get("email");
-                        if (emailObj instanceof java.util.Map) {
-                            java.util.Map<String, Object> emailMap = (java.util.Map<String, Object>) emailObj;
-                            email = String.valueOf(emailMap.getOrDefault("address", ""));
-                        } else {
-                            email = String.valueOf(emailObj);
-                        }
+                        email = (emailObj instanceof java.util.Map) ? String.valueOf(((java.util.Map)emailObj).getOrDefault("address", email)) : String.valueOf(emailObj);
                     }
                     if (profileData.containsKey("username")) username = String.valueOf(profileData.get("username"));
                     if (profileData.containsKey("id")) kcId = String.valueOf(profileData.get("id"));
@@ -240,9 +250,9 @@ public class UserService {
                         }
                     }
                     if (profileData.containsKey("name")) {
-                        String name = String.valueOf(profileData.get("name"));
-                        if (name != null && !"null".equals(name)) {
-                            String[] parts = name.split(" ", 2);
+                        String nameStr = String.valueOf(profileData.get("name"));
+                        if (nameStr != null && !"null".equals(nameStr)) {
+                            String[] parts = nameStr.split(" ", 2);
                             firstName = parts[0];
                             if (parts.length > 1) lastName = parts[1];
                         }
@@ -250,32 +260,10 @@ public class UserService {
                 }
             }
         } catch (Exception e) {
-            System.err.println("API Profile fetch failed: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("API Profile fetch failed or timed out: " + e.getMessage());
+            // We continue using pre-decoded values if API fails
         }
 
-        // 2. Fallback to decoding the JWT token locally if API failed or missing fields
-        if (kcId == null || kcId.isEmpty()) {
-            try {
-                String[] chunks = token.split("\\.");
-                if (chunks.length >= 2) {
-                    java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
-                    String payload = new String(decoder.decode(chunks[1]));
-                    
-                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                    java.util.Map<String, Object> claims = mapper.readValue(payload, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
-                    
-                    if (claims.containsKey("email") && (email == null)) email = String.valueOf(claims.get("email"));
-                    if (claims.containsKey("username") && (username == null)) username = String.valueOf(claims.get("username"));
-                    if (claims.containsKey("sub")) kcId = String.valueOf(claims.get("sub"));
-                    if (claims.containsKey("first_name") && (firstName == null)) firstName = String.valueOf(claims.get("first_name"));
-                    if (claims.containsKey("last_name") && (lastName == null)) lastName = String.valueOf(claims.get("last_name"));
-                }
-            } catch (Exception e) {
-                System.err.println("Local JWT decode failed: " + e.getMessage());
-            }
-        }
-        
         if (kcId == null || kcId.isEmpty()) {
             throw new RuntimeException("Authentication Failed: Could not verify KingsChat identity. Please login again.");
         }
@@ -284,8 +272,8 @@ public class UserService {
             email = (username != null && !username.isEmpty()) ? username + "@kingschat.com" : kcId + "@kingschat.com";
         }
         
-        if (firstName == null || firstName.isEmpty()) firstName = "KingsChat";
-        if (lastName == null || lastName.isEmpty()) lastName = "User";
+        firstName = (firstName != null && !firstName.isEmpty()) ? firstName : "KingsChat";
+        lastName = (lastName != null && !lastName.isEmpty()) ? lastName : "User";
         
         return processKingChatUser(kcId, email, firstName, lastName, phone);
     }
@@ -297,11 +285,19 @@ public class UserService {
         var userByKcId = userRepository.findByKingschatId(kcId);
         
         User user;
+        boolean needsSave = false;
+
         if (userByKcId.isPresent()) {
             user = userByKcId.get();
             // Optional: update names if they changed on KingsChat
-            if (firstName != null && !firstName.equalsIgnoreCase("KingsChat")) user.setFirstName(firstName);
-            if (lastName != null && !lastName.equalsIgnoreCase("User")) user.setLastName(lastName);
+            if (firstName != null && !firstName.equalsIgnoreCase("KingsChat") && !firstName.equals(user.getFirstName())) {
+                user.setFirstName(firstName);
+                needsSave = true;
+            }
+            if (lastName != null && !lastName.equalsIgnoreCase("User") && !lastName.equals(user.getLastName())) {
+                user.setLastName(lastName);
+                needsSave = true;
+            }
         } else {
             // 2. Try finding by email (auto-link existing account)
             var userByEmail = userRepository.findByEmail(email);
@@ -312,9 +308,11 @@ public class UserService {
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
                 user.setKingschatId(kcId); // Link it!
+                needsSave = true;
             } else if (userByPhone.isPresent()) {
                 user = userByPhone.get();
                 user.setKingschatId(kcId); // Link it!
+                needsSave = true;
                 System.err.println("Auto-linked KingsChat ID " + kcId + " to existing user by phone: " + phone);
             } else {
                 // 3. Create new account (Auto-activated for KingsChat)
@@ -326,13 +324,11 @@ public class UserService {
                 user.setRole("zonal");
                 user.setStatus("active"); // Auto-activate
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-                user = userRepository.save(user);
+                needsSave = true;
                 
                 try {
                     notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account auto-activated: " + user.getEmail(), "admin", null));
                 } catch (Exception ignored) {}
-                
-                // No longer throwing - allow immediate login
             }
         }
         
@@ -340,15 +336,20 @@ public class UserService {
         if (!"active".equalsIgnoreCase(user.getStatus())) {
             String oldStatus = user.getStatus();
             user.setStatus("active");
-            userRepository.save(user);
+            needsSave = true;
             System.err.println("Auto-activated existing user " + user.getEmail() + " (was " + oldStatus + ") via KingsChat login.");
             try {
                 notificationService.push(new com.reporting.portal.dto.NotificationRequest("Existing account auto-activated via KingsChat: " + user.getEmail(), "admin", null));
             } catch (Exception ignored) {}
         }
         
+        // Always increment login count
         user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
-        userRepository.save(user);
+        needsSave = true;
+
+        if (needsSave) {
+            user = userRepository.save(user);
+        }
         
         try { auditLogService.logActivity(user.getFirstName() + " " + user.getLastName(), user.getId(), "Login", "Auth", "—", "Success", "Logged in via KingsChat."); } catch (Exception ignored) {}
         
