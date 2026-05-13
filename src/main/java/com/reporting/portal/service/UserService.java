@@ -558,6 +558,20 @@ public class UserService {
         auditLogService.logActivity(user.getEmail(), user.getId(), "Password Changed", "Auth", "—", "—", "User changed their password from Settings.");
     }
 
+    public void updateSecuritySettings(String email, String question, String answer) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("User not found."));
+        
+        if (question == null || question.isBlank()) throw new RuntimeException("Security question cannot be empty.");
+        if (answer == null || answer.isBlank()) throw new RuntimeException("Security answer cannot be empty.");
+        
+        user.setSecurityQuestion(question.trim());
+        user.setSecurityAnswer(answer.trim());
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Security Settings Updated", "Auth", "—", "—", "User updated their security question and answer.");
+    }
+
     private UserDto mapToDto(User user) {
         var formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         var firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";

@@ -128,5 +128,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/update-security-settings")
+    public ResponseEntity<?> updateSecuritySettings(@RequestBody java.util.Map<String, String> request) {
+        try {
+            userService.updateSecuritySettings(
+                request.get("email"),
+                request.get("question"),
+                request.get("answer")
+            );
+            return ResponseEntity.ok("Security settings updated.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 
