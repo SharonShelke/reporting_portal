@@ -46,6 +46,9 @@ public class User {
     
     private String otpCode;
     private java.time.LocalDateTime otpExpiry;
+    
+    private String securityQuestion;
+    private String securityAnswer;
 
     public Long getId() { return id; }
     public String getFirstName() { return firstName; }
@@ -62,6 +65,8 @@ public class User {
     public LocalDate getJoinedDate() { return joinedDate; }
     public String getOtpCode() { return otpCode; }
     public java.time.LocalDateTime getOtpExpiry() { return otpExpiry; }
+    public String getSecurityQuestion() { return securityQuestion; }
+    public String getSecurityAnswer() { return securityAnswer; }
     
     @PrePersist
     protected void onCreate() {
@@ -95,6 +100,8 @@ public class User {
 
     public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
+    public void setSecurityQuestion(String securityQuestion) { this.securityQuestion = securityQuestion; }
+    public void setSecurityAnswer(String securityAnswer) { this.securityAnswer = securityAnswer; }
 
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
     public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }

@@ -448,6 +448,31 @@ public class UserService {
         return mapToDto(user);
     }
 
+    public String getSecurityQuestion(String email) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+        if (user.getSecurityQuestion() == null || user.getSecurityQuestion().isEmpty()) {
+            throw new RuntimeException("No security question set for this account. Please use email recovery.");
+        }
+        return user.getSecurityQuestion();
+    }
+
+    public void resetPasswordWithSecurityAnswer(String email, String answer, String newPassword) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+        
+        if (user.getSecurityAnswer() == null || !user.getSecurityAnswer().equalsIgnoreCase(answer.trim())) {
+            throw new RuntimeException("Incorrect security answer.");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset via Security Question", "Auth", "—", "—", "User successfully reset their password using their security question.");
+    }
+
     public void forgotPassword(ForgotPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail().trim().toLowerCase())
                 .orElseThrow(() -> new RuntimeException("Email not found."));
@@ -457,8 +482,15 @@ public class UserService {
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
         
-        emailService.sendOtp(user.getEmail(), otp);
-        auditLogService.logActivity(user.getEmail(), user.getId(), "Requested Password Reset", "Auth", "—", "—", "User requested an OTP for password reset.");
+        try {
+            emailService.sendOtp(user.getEmail(), otp);
+            auditLogService.logActivity(user.getEmail(), user.getId(), "Requested Password Reset", "Auth", "—", "—", "User requested an OTP for password reset.");
+        } catch (Exception e) {
+            System.err.println("Failed to send OTP email: " + e.getMessage());
+            // We still save the OTP in case the user can get it via other means, 
+            // but we allow the frontend to know that email failed.
+            throw new RuntimeException("Failed to send OTP email. Please try recovery via Security Question instead.");
+        }
     }
 
     public boolean verifyOtp(VerifyOtpRequest request) {
