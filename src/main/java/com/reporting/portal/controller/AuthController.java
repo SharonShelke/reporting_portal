@@ -105,5 +105,28 @@ public class AuthController {
             return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/security-question")
+    public ResponseEntity<?> getSecurityQuestion(@RequestParam String email) {
+        try {
+            return ResponseEntity.ok(java.util.Map.of("question", userService.getSecurityQuestion(email)));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password-security")
+    public ResponseEntity<?> resetPasswordSecurity(@RequestBody java.util.Map<String, String> request) {
+        try {
+            userService.resetPasswordWithSecurityAnswer(
+                request.get("email"), 
+                request.get("answer"), 
+                request.get("newPassword")
+            );
+            return ResponseEntity.ok("Password reset successful.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 
