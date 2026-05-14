@@ -177,5 +177,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping("/admin-set-questions")
+    public ResponseEntity<?> adminSetQuestions(@RequestBody java.util.Map<String, String> request) {
+        try {
+            userService.updateSecuritySettings(
+                request.get("email"),
+                request.get("answer1"),
+                request.get("answer2"),
+                request.get("answer3")
+            );
+            return ResponseEntity.ok("Security questions updated successfully (Admin).");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 
