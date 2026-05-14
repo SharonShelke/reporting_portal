@@ -166,7 +166,6 @@ public class AuthController {
         try {
             userService.resetPasswordAndSetQuestions(
                 request.get("email"),
-                request.get("otp"),
                 request.get("answer1"),
                 request.get("answer2"),
                 request.get("answer3"),

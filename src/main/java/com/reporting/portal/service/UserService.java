@@ -495,12 +495,9 @@ public class UserService {
         auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset via Security Question", "Auth", "—", "—", "User successfully reset their password using their security question.");
     }
 
-    public void resetPasswordAndSetQuestions(String email, String otp, String a1, String a2, String a3, String newPassword) {
-        if (!verifyOtp(new VerifyOtpRequest() {{ setEmail(email.trim().toLowerCase()); setOtp(otp); }})) {
-            throw new RuntimeException("Invalid or expired OTP.");
-        }
-        
-        User user = userRepository.findByEmail(email.trim().toLowerCase()).orElseThrow();
+    public void resetPasswordAndSetQuestions(String email, String a1, String a2, String a3, String newPassword) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
         
         if (a1 == null || a1.isBlank() || a2 == null || a2.isBlank() || a3 == null || a3.isBlank()) {
             throw new RuntimeException("All 3 security answers are required to set them for the first time.");
