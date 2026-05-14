@@ -451,10 +451,31 @@ public class UserService {
     public String getSecurityQuestion(String email) {
         User user = userRepository.findByEmail(email.trim().toLowerCase())
                 .orElseThrow(() -> new RuntimeException("Email not found."));
-        if (user.getSecurityQuestion() == null || user.getSecurityQuestion().isEmpty()) {
+        if ((user.getSecurityQuestion() == null || user.getSecurityQuestion().isEmpty()) && 
+            (user.getSecurityAnswer1() == null || user.getSecurityAnswer1().isEmpty())) {
             throw new RuntimeException("No security question set for this account. Please use email recovery.");
         }
-        return user.getSecurityQuestion();
+        return user.getSecurityQuestion() != null ? user.getSecurityQuestion() : "SET_3_QUESTIONS";
+    }
+
+    public void resetPasswordWithSecurityAnswers(String email, String a1, String a2, String a3, String newPassword) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+        
+        boolean match1 = user.getSecurityAnswer1() != null && user.getSecurityAnswer1().equalsIgnoreCase(a1 != null ? a1.trim() : "");
+        boolean match2 = user.getSecurityAnswer2() != null && user.getSecurityAnswer2().equalsIgnoreCase(a2 != null ? a2.trim() : "");
+        boolean match3 = user.getSecurityAnswer3() != null && user.getSecurityAnswer3().equalsIgnoreCase(a3 != null ? a3.trim() : "");
+
+        if (!match1 || !match2 || !match3) {
+            throw new RuntimeException("One or more security answers are incorrect.");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset via 3 Security Questions", "Auth", "—", "—", "User successfully reset their password using 3 security questions.");
     }
 
     public void resetPasswordWithSecurityAnswer(String email, String answer, String newPassword) {
@@ -570,6 +591,23 @@ public class UserService {
         userRepository.save(user);
         
         auditLogService.logActivity(user.getEmail(), user.getId(), "Security Settings Updated", "Auth", "—", "—", "User updated their security question and answer.");
+    }
+
+    public void updateSecuritySettings(String email, String a1, String a2, String a3) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("User not found."));
+        
+        if (a1 == null || a1.isBlank() || a2 == null || a2.isBlank() || a3 == null || a3.isBlank()) {
+            throw new RuntimeException("All 3 security answers are required.");
+        }
+        
+        user.setSecurityAnswer1(a1.trim());
+        user.setSecurityAnswer2(a2.trim());
+        user.setSecurityAnswer3(a3.trim());
+        user.setSecurityQuestion("SET_3_QUESTIONS");
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "Security Settings Updated", "Auth", "—", "—", "User updated 3 security questions.");
     }
 
     private UserDto mapToDto(User user) {

@@ -118,11 +118,21 @@ public class AuthController {
     @PostMapping("/reset-password-security")
     public ResponseEntity<?> resetPasswordSecurity(@RequestBody java.util.Map<String, String> request) {
         try {
-            userService.resetPasswordWithSecurityAnswer(
-                request.get("email"), 
-                request.get("answer"), 
-                request.get("newPassword")
-            );
+            if (request.containsKey("answer1")) {
+                userService.resetPasswordWithSecurityAnswers(
+                    request.get("email"), 
+                    request.get("answer1"),
+                    request.get("answer2"),
+                    request.get("answer3"),
+                    request.get("newPassword")
+                );
+            } else {
+                userService.resetPasswordWithSecurityAnswer(
+                    request.get("email"), 
+                    request.get("answer"), 
+                    request.get("newPassword")
+                );
+            }
             return ResponseEntity.ok("Password reset successful.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -132,11 +142,20 @@ public class AuthController {
     @PostMapping("/update-security-settings")
     public ResponseEntity<?> updateSecuritySettings(@RequestBody java.util.Map<String, String> request) {
         try {
-            userService.updateSecuritySettings(
-                request.get("email"),
-                request.get("question"),
-                request.get("answer")
-            );
+            if (request.containsKey("answer1")) {
+                userService.updateSecuritySettings(
+                    request.get("email"),
+                    request.get("answer1"),
+                    request.get("answer2"),
+                    request.get("answer3")
+                );
+            } else {
+                userService.updateSecuritySettings(
+                    request.get("email"),
+                    request.get("question"),
+                    request.get("answer")
+                );
+            }
             return ResponseEntity.ok("Security settings updated.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

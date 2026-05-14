@@ -49,6 +49,10 @@ public class User {
     
     private String securityQuestion;
     private String securityAnswer;
+    
+    private String securityAnswer1;
+    private String securityAnswer2;
+    private String securityAnswer3;
 
     public Long getId() { return id; }
     public String getFirstName() { return firstName; }
@@ -67,6 +71,9 @@ public class User {
     public java.time.LocalDateTime getOtpExpiry() { return otpExpiry; }
     public String getSecurityQuestion() { return securityQuestion; }
     public String getSecurityAnswer() { return securityAnswer; }
+    public String getSecurityAnswer1() { return securityAnswer1; }
+    public String getSecurityAnswer2() { return securityAnswer2; }
+    public String getSecurityAnswer3() { return securityAnswer3; }
     
     @PrePersist
     protected void onCreate() {
@@ -102,6 +109,9 @@ public class User {
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
     public void setSecurityQuestion(String securityQuestion) { this.securityQuestion = securityQuestion; }
     public void setSecurityAnswer(String securityAnswer) { this.securityAnswer = securityAnswer; }
+    public void setSecurityAnswer1(String securityAnswer1) { this.securityAnswer1 = securityAnswer1; }
+    public void setSecurityAnswer2(String securityAnswer2) { this.securityAnswer2 = securityAnswer2; }
+    public void setSecurityAnswer3(String securityAnswer3) { this.securityAnswer3 = securityAnswer3; }
 
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
     public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }
