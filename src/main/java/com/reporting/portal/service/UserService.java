@@ -175,6 +175,14 @@ public class UserService {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPhone(request.getPhone() != null ? request.getPhone().trim() : null);
+        
+        // Save security questions if provided
+        if (request.getAnswer1() != null) {
+            user.setSecurityAnswer1(request.getAnswer1().trim());
+            user.setSecurityAnswer2(request.getAnswer2() != null ? request.getAnswer2().trim() : "");
+            user.setSecurityAnswer3(request.getAnswer3() != null ? request.getAnswer3().trim() : "");
+            user.setSecurityQuestion("SET_3_QUESTIONS");
+        }
 
         user = userRepository.save(user);
         System.err.println("User saved to database: id=" + user.getId() + ", saved_status=" + user.getStatus());
