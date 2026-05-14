@@ -472,6 +472,7 @@ public class UserService {
         }
         
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setStatus("active");
         user.setOtpCode(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
@@ -488,6 +489,7 @@ public class UserService {
         }
         
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setStatus("active");
         user.setOtpCode(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
