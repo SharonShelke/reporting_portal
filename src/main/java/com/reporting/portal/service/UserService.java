@@ -507,6 +507,7 @@ public class UserService {
         user.setSecurityAnswer2(a2.trim());
         user.setSecurityAnswer3(a3.trim());
         user.setSecurityQuestion("SET_3_QUESTIONS");
+        user.setStatus("active"); // Automatically activate account on first-time setup
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setOtpCode(null);
         user.setOtpExpiry(null);
