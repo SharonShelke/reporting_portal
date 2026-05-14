@@ -161,5 +161,21 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping("/reset-password-set-questions")
+    public ResponseEntity<?> resetPasswordSetQuestions(@RequestBody java.util.Map<String, String> request) {
+        try {
+            userService.resetPasswordAndSetQuestions(
+                request.get("email"),
+                request.get("otp"),
+                request.get("answer1"),
+                request.get("answer2"),
+                request.get("answer3"),
+                request.get("newPassword")
+            );
+            return ResponseEntity.ok("Security questions set and password reset successful.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 

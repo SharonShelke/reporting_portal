@@ -224,22 +224,22 @@ public class UserService {
         }
 
         // 1. Try fetching from KingsChat API for verification and profile updates
+        // We only DO this if we are missing critical info (email or kcId) or to verify token validity.
+        // If we already have the info from the JWT decode, we can be more lenient with timeouts.
         try {
-            System.err.println("[" + java.time.LocalTime.now() + "] Fetching profile from KingsChat API...");
+            System.err.println("[" + java.time.LocalTime.now() + "] Verifying KingsChat profile...");
             java.net.http.HttpRequest profileReq = java.net.http.HttpRequest.newBuilder()
                 .uri(java.net.URI.create("https://connect.kingsch.at/api/profile")) 
                 .header("authorization", "Bearer " + token)
-                .timeout(java.time.Duration.ofSeconds(5)) // Reduced from 10s to 5s
+                .timeout(java.time.Duration.ofSeconds(3)) // Reduced to 3s for faster failover
                 .GET()
                 .build();
             
             java.net.http.HttpResponse<String> response = httpClient.send(profileReq, java.net.http.HttpResponse.BodyHandlers.ofString());
-            System.err.println("[" + java.time.LocalTime.now() + "] KingsChat API Response (" + response.statusCode() + ")");
             
             if (response.statusCode() == 200) {
                 com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                 java.util.Map<String, Object> body = mapper.readValue(response.body(), new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {});
-                
                 java.util.Map<String, Object> profileData = (java.util.Map<String, Object>) (body.getOrDefault("profile", body.getOrDefault("user", body)));
 
                 if (profileData != null) {
@@ -250,30 +250,15 @@ public class UserService {
                     if (profileData.containsKey("username")) username = String.valueOf(profileData.get("username"));
                     if (profileData.containsKey("id")) kcId = String.valueOf(profileData.get("id"));
                     if (profileData.containsKey("sub")) kcId = String.valueOf(profileData.get("sub"));
-                    
-                    if (profileData.containsKey("phone_number")) {
-                        String rawPhone = String.valueOf(profileData.get("phone_number"));
-                        if (rawPhone != null && !"null".equals(rawPhone)) {
-                            phone = rawPhone.replace("+", "").replace(" ", "").trim();
-                        }
-                    }
-                    if (profileData.containsKey("name")) {
-                        String nameStr = String.valueOf(profileData.get("name"));
-                        if (nameStr != null && !"null".equals(nameStr)) {
-                            String[] parts = nameStr.split(" ", 2);
-                            firstName = parts[0];
-                            if (parts.length > 1) lastName = parts[1];
-                        }
-                    }
                 }
             }
         } catch (Exception e) {
-            System.err.println("API Profile fetch failed or timed out: " + e.getMessage());
-            // We continue using pre-decoded values if API fails
+            System.err.println("KingsChat API verification skipped/failed: " + e.getMessage());
+            // We continue using pre-decoded values from JWT if available
         }
 
         if (kcId == null || kcId.isEmpty()) {
-            throw new RuntimeException("Authentication Failed: Could not verify KingsChat identity. Please login again.");
+            throw new RuntimeException("Authentication Failed: KingsChat identity could not be verified.");
         }
 
         if (email == null || email.isEmpty()) {
@@ -459,11 +444,19 @@ public class UserService {
     public String getSecurityQuestion(String email) {
         User user = userRepository.findByEmail(email.trim().toLowerCase())
                 .orElseThrow(() -> new RuntimeException("Email not found."));
-        if ((user.getSecurityQuestion() == null || user.getSecurityQuestion().isEmpty()) && 
-            (user.getSecurityAnswer1() == null || user.getSecurityAnswer1().isEmpty())) {
-            throw new RuntimeException("No security question set for this account. Please use email recovery.");
+        
+        // If they have the 3-answer fields populated, return the flag
+        if (user.getSecurityAnswer1() != null && !user.getSecurityAnswer1().isEmpty()) {
+            return "SET_3_QUESTIONS";
         }
-        return user.getSecurityQuestion() != null ? user.getSecurityQuestion() : "SET_3_QUESTIONS";
+        
+        // Otherwise return the single question if set
+        if (user.getSecurityQuestion() != null && !user.getSecurityQuestion().isEmpty()) {
+            return user.getSecurityQuestion();
+        }
+
+        // Return NOT_SET instead of throwing error, so frontend can initiate the first-time setup flow
+        return "NOT_SET";
     }
 
     public void resetPasswordWithSecurityAnswers(String email, String a1, String a2, String a3, String newPassword) {
@@ -500,6 +493,29 @@ public class UserService {
         userRepository.save(user);
         
         auditLogService.logActivity(user.getEmail(), user.getId(), "Password Reset via Security Question", "Auth", "—", "—", "User successfully reset their password using their security question.");
+    }
+
+    public void resetPasswordAndSetQuestions(String email, String otp, String a1, String a2, String a3, String newPassword) {
+        if (!verifyOtp(new VerifyOtpRequest() {{ setEmail(email.trim().toLowerCase()); setOtp(otp); }})) {
+            throw new RuntimeException("Invalid or expired OTP.");
+        }
+        
+        User user = userRepository.findByEmail(email.trim().toLowerCase()).orElseThrow();
+        
+        if (a1 == null || a1.isBlank() || a2 == null || a2.isBlank() || a3 == null || a3.isBlank()) {
+            throw new RuntimeException("All 3 security answers are required to set them for the first time.");
+        }
+
+        user.setSecurityAnswer1(a1.trim());
+        user.setSecurityAnswer2(a2.trim());
+        user.setSecurityAnswer3(a3.trim());
+        user.setSecurityQuestion("SET_3_QUESTIONS");
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+        
+        auditLogService.logActivity(user.getEmail(), user.getId(), "First-time Security Questions Set & Password Reset", "Auth", "—", "—", "User verified via OTP, set their 3 security questions, and reset their password.");
     }
 
     public void forgotPassword(ForgotPasswordRequest request) {
