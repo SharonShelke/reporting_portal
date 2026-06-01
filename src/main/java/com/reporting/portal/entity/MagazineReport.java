@@ -61,6 +61,12 @@ public class MagazineReport {
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
+    @Column(name = "monthly_minimum_order")
+    private Integer monthlyMinimumOrder;
+
+    @Column(name = "amount_paid_magazine", precision = 12, scale = 2)
+    private java.math.BigDecimal amountPaidMagazine;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -76,4 +82,9 @@ public class MagazineReport {
     public void setIsTeevolution(Boolean isTeevolution) { this.isTeevolution = isTeevolution; }
     public Boolean getIsKidsMagazine() { return isKidsMagazine; }
     public void setIsKidsMagazine(Boolean isKidsMagazine) { this.isKidsMagazine = isKidsMagazine; }
+
+    public Integer getMonthlyMinimumOrder() { return monthlyMinimumOrder; }
+    public void setMonthlyMinimumOrder(Integer monthlyMinimumOrder) { this.monthlyMinimumOrder = monthlyMinimumOrder; }
+    public java.math.BigDecimal getAmountPaidMagazine() { return amountPaidMagazine; }
+    public void setAmountPaidMagazine(java.math.BigDecimal amountPaidMagazine) { this.amountPaidMagazine = amountPaidMagazine; }
 }

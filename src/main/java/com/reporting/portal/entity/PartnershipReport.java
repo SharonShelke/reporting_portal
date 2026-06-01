@@ -48,6 +48,9 @@ public class PartnershipReport {
     @Column(name = "cell_partnership", precision = 12, scale = 2)
     private BigDecimal cellPartnership;
 
+    @Column(name = "healing_crusade_sponsorship", precision = 12, scale = 2)
+    private BigDecimal healingCrusadeSponsorship;
+
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
@@ -56,6 +59,12 @@ public class PartnershipReport {
 
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
+
+    @Column(name = "group_pastors_milestones", columnDefinition = "TEXT")
+    private String groupPastorsMilestones;
+
+    @Column(name = "sponsored_teenspiration_kidsspiration", columnDefinition = "TEXT")
+    private String sponsoredTeenspirationKidsspiration;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -87,4 +96,12 @@ public class PartnershipReport {
     public void setChurchesPartnership(BigDecimal churchesPartnership) { this.churchesPartnership = churchesPartnership; }
     public BigDecimal getCellPartnership() { return cellPartnership; }
     public void setCellPartnership(BigDecimal cellPartnership) { this.cellPartnership = cellPartnership; }
+
+    public BigDecimal getHealingCrusadeSponsorship() { return healingCrusadeSponsorship; }
+    public void setHealingCrusadeSponsorship(BigDecimal healingCrusadeSponsorship) { this.healingCrusadeSponsorship = healingCrusadeSponsorship; }
+
+    public String getGroupPastorsMilestones() { return groupPastorsMilestones; }
+    public void setGroupPastorsMilestones(String groupPastorsMilestones) { this.groupPastorsMilestones = groupPastorsMilestones; }
+    public String getSponsoredTeenspirationKidsspiration() { return sponsoredTeenspirationKidsspiration; }
+    public void setSponsoredTeenspirationKidsspiration(String sponsoredTeenspirationKidsspiration) { this.sponsoredTeenspirationKidsspiration = sponsoredTeenspirationKidsspiration; }
 }

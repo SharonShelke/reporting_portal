@@ -26,11 +26,13 @@ public record CreateReportRequest(
         String zonalManagerDirectorsMeeting,
         String zonalManagerStrategyMeeting,
 
-        BigDecimal healingCrusadeSponsorship,
         String testimonyClarificationConcern,
         String regionName,
         
         String remittancePurpose,
         Integer trumpetsBlown,
-        String popMediaUrl
+        String popMediaUrl,
+        String participationPrayWithMe,
+        Integer totalRegistrationHslhs,
+        String heraldConference
 ) {}

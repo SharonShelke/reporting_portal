@@ -77,9 +77,6 @@ public class Report {
     @Column(name = "zonal_manager_strategy_meeting", nullable = false)
     private AttendanceStatus zonalManagerStrategyMeeting;
 
-    @Column(name = "healing_crusade_sponsorship", nullable = false, precision = 12, scale = 2)
-    private BigDecimal healingCrusadeSponsorship;
-
     @Column(name = "testimony_clarification_concern", columnDefinition = "TEXT")
     private String testimonyClarificationConcern;
 
@@ -101,6 +98,15 @@ public class Report {
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
+    @Column(name = "participation_pray_with_me", columnDefinition = "TEXT")
+    private String participationPrayWithMe;
+
+    @Column(name = "total_registration_hslhs")
+    private Integer totalRegistrationHslhs;
+
+    @Column(name = "herald_conference", length = 100)
+    private String heraldConference;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -113,6 +119,13 @@ public class Report {
     public void setTestimoniesSubmitted(Integer testimoniesSubmitted) { this.testimoniesSubmitted = testimoniesSubmitted; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getParticipationPrayWithMe() { return participationPrayWithMe; }
+    public void setParticipationPrayWithMe(String participationPrayWithMe) { this.participationPrayWithMe = participationPrayWithMe; }
+    public Integer getTotalRegistrationHslhs() { return totalRegistrationHslhs; }
+    public void setTotalRegistrationHslhs(Integer totalRegistrationHslhs) { this.totalRegistrationHslhs = totalRegistrationHslhs; }
+    public String getHeraldConference() { return heraldConference; }
+    public void setHeraldConference(String heraldConference) { this.heraldConference = heraldConference; }
 
     @PrePersist
     protected void onCreate() {

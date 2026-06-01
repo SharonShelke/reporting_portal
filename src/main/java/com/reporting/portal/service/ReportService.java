@@ -75,17 +75,14 @@ public class ReportService {
                 parseAttendance(request.zonalManagerStrategyMeeting())
         );
 
-        report.setHealingCrusadeSponsorship(
-                request.healingCrusadeSponsorship() != null
-                        ? request.healingCrusadeSponsorship()
-                        : BigDecimal.ZERO
-        );
         report.setTestimonyClarificationConcern(request.testimonyClarificationConcern());
         report.setRegionName(request.regionName());
-        
         report.setRemittancePurpose(request.remittancePurpose());
         report.setTrumpetsBlown(request.trumpetsBlown() != null ? request.trumpetsBlown() : 0);
         report.setPopMediaUrl(request.popMediaUrl());
+        report.setParticipationPrayWithMe(request.participationPrayWithMe());
+        report.setTotalRegistrationHslhs(request.totalRegistrationHslhs() != null ? request.totalRegistrationHslhs() : 0);
+        report.setHeraldConference(request.heraldConference());
         
         report.setStatus("PENDING");
 
@@ -144,12 +141,14 @@ public class ReportService {
                     "Pastor Meeting",
                     "Director Meeting",
                     "Strategy Meeting",
-                    "Crusade Sponsorship",
                     "Notes",
                     "Submitted Email",
                     "Remittance Purpose",
                     "Trumpets Blown",
-                    "POP Media URL"
+                    "POP Media URL",
+                    "Pray With Me Participation",
+                    "HSLHS Registration",
+                    "Herald Conference"
             };
 
             Row headerRow = sheet.createRow(0);
@@ -174,12 +173,14 @@ public class ReportService {
                 row.createCell(10).setCellValue(orEmpty(r.zonalPastorAttendance()));
                 row.createCell(11).setCellValue(orEmpty(r.zonalManagerDirectorMeetingAttendance()));
                 row.createCell(12).setCellValue(orEmpty(r.zonalManagerStrategyMeetingAttendance()));
-                row.createCell(13).setCellValue(toDoubleSafe(r.sponsorshipHealingCrusade()));
-                row.createCell(14).setCellValue(orEmpty(r.testimonyClarificationConcern()));
-                row.createCell(15).setCellValue(orEmpty(r.submittedByEmail()));
-                row.createCell(16).setCellValue(orEmpty(r.remittancePurpose()));
-                row.createCell(17).setCellValue(toIntSafe(r.trumpetsBlown()));
-                row.createCell(18).setCellValue(orEmpty(r.popMediaUrl()));
+                row.createCell(13).setCellValue(orEmpty(r.testimonyClarificationConcern()));
+                row.createCell(14).setCellValue(orEmpty(r.submittedByEmail()));
+                row.createCell(15).setCellValue(orEmpty(r.remittancePurpose()));
+                row.createCell(16).setCellValue(toIntSafe(r.trumpetsBlown()));
+                row.createCell(17).setCellValue(orEmpty(r.popMediaUrl()));
+                row.createCell(18).setCellValue(orEmpty(r.participationPrayWithMe()));
+                row.createCell(19).setCellValue(toIntSafe(r.totalRegistrationHslhs()));
+                row.createCell(20).setCellValue(orEmpty(r.heraldConference()));
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -279,12 +280,14 @@ public class ReportService {
                         c[13],
                         c[14],
                         c[15],
-                        new BigDecimal(c[16]),
+                        c[16],
                         c[17],
-                        c[18],
-                        c.length > 19 ? c[19] : null,
-                        c.length > 20 ? toInt(c[20]) : null,
-                        c.length > 21 ? c[21] : null
+                        c.length > 18 ? c[18] : null,
+                        c.length > 19 ? toInt(c[19]) : null,
+                        c.length > 20 ? c[20] : null,
+                        c.length > 21 ? c[21] : null,
+                        c.length > 22 ? toInt(c[22]) : null,
+                        c.length > 23 ? c[23] : null
                 );
 
                 saved.add(submitReport(req));
@@ -320,12 +323,14 @@ public class ReportService {
                         cell(row, 13),
                         cell(row, 14),
                         cell(row, 15),
-                        new BigDecimal(cell(row, 16)),
+                        cell(row, 16),
                         cell(row, 17),
                         cell(row, 18),
-                        cell(row, 19),
-                        toInt(cell(row, 20)),
-                        cell(row, 21)
+                        toInt(cell(row, 19)),
+                        cell(row, 20),
+                        cell(row, 21),
+                        toInt(cell(row, 22)),
+                        cell(row, 23)
                 );
 
                 saved.add(submitReport(req));
@@ -356,14 +361,16 @@ public class ReportService {
                 r.getZonalPastorDirectorsMeeting().name(),
                 r.getZonalManagerDirectorsMeeting().name(),
                 r.getZonalManagerStrategyMeeting().name(),
-                r.getHealingCrusadeSponsorship(),
                 r.getTestimonyClarificationConcern(),
                 r.getSubmitterEmail(),
                 r.getRegionName(),
                 r.getStatus(),
                 r.getRemittancePurpose(),
                 r.getTrumpetsBlown(),
-                r.getPopMediaUrl()
+                r.getPopMediaUrl(),
+                r.getParticipationPrayWithMe(),
+                r.getTotalRegistrationHslhs(),
+                r.getHeraldConference()
         );
     }
 

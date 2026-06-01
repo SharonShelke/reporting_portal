@@ -47,6 +47,15 @@ public class TestimonialReport {
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
+    @Column(name = "pray_with_me_testimonies", columnDefinition = "TEXT")
+    private String prayWithMeTestimonies;
+
+    @Column(name = "translation_testimonies", columnDefinition = "TEXT")
+    private String translationTestimonies;
+
+    @Column(name = "partnership_testimonies", columnDefinition = "TEXT")
+    private String partnershipTestimonies;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -59,4 +68,11 @@ public class TestimonialReport {
     public void setAfterImages(Integer afterImages) { this.afterImages = afterImages; }
     public Integer getDocuments() { return documents; }
     public void setDocuments(Integer documents) { this.documents = documents; }
+
+    public String getPrayWithMeTestimonies() { return prayWithMeTestimonies; }
+    public void setPrayWithMeTestimonies(String prayWithMeTestimonies) { this.prayWithMeTestimonies = prayWithMeTestimonies; }
+    public String getTranslationTestimonies() { return translationTestimonies; }
+    public void setTranslationTestimonies(String translationTestimonies) { this.translationTestimonies = translationTestimonies; }
+    public String getPartnershipTestimonies() { return partnershipTestimonies; }
+    public void setPartnershipTestimonies(String partnershipTestimonies) { this.partnershipTestimonies = partnershipTestimonies; }
 }

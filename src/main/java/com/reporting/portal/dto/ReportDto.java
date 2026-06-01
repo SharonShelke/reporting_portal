@@ -16,12 +16,14 @@ public record ReportDto(
     String zonalPastorAttendance,
     String zonalManagerDirectorMeetingAttendance,
     String zonalManagerStrategyMeetingAttendance,
-    BigDecimal sponsorshipHealingCrusade,
     String testimonyClarificationConcern,
     String submittedByEmail,
     String regionName,
     String status,
     String remittancePurpose,
     Integer trumpetsBlown,
-    String popMediaUrl
+    String popMediaUrl,
+    String participationPrayWithMe,
+    Integer totalRegistrationHslhs,
+    String heraldConference
 ) {}
