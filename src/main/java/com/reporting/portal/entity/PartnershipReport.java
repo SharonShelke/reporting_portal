@@ -63,8 +63,8 @@ public class PartnershipReport {
     @Column(name = "group_pastors_milestones", columnDefinition = "TEXT")
     private String groupPastorsMilestones;
 
-    @Column(name = "sponsored_teenspiration_kidsspiration", columnDefinition = "TEXT")
-    private String sponsoredTeenspirationKidsspiration;
+    @Column(name = "sponsored_teenspiration_kidspiration", columnDefinition = "TEXT")
+    private String sponsoredTeenspirationKidspiration;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -102,6 +102,6 @@ public class PartnershipReport {
 
     public String getGroupPastorsMilestones() { return groupPastorsMilestones; }
     public void setGroupPastorsMilestones(String groupPastorsMilestones) { this.groupPastorsMilestones = groupPastorsMilestones; }
-    public String getSponsoredTeenspirationKidsspiration() { return sponsoredTeenspirationKidsspiration; }
-    public void setSponsoredTeenspirationKidsspiration(String sponsoredTeenspirationKidsspiration) { this.sponsoredTeenspirationKidsspiration = sponsoredTeenspirationKidsspiration; }
+    public String getSponsoredTeenspirationKidspiration() { return sponsoredTeenspirationKidspiration; }
+    public void setSponsoredTeenspirationKidspiration(String sponsoredTeenspirationKidspiration) { this.sponsoredTeenspirationKidspiration = sponsoredTeenspirationKidspiration; }
 }

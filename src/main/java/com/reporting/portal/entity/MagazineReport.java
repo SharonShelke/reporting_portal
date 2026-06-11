@@ -67,6 +67,30 @@ public class MagazineReport {
     @Column(name = "amount_paid_magazine", precision = 12, scale = 2)
     private java.math.BigDecimal amountPaidMagazine;
 
+    @Column(name = "adult_copies")
+    private Integer adultCopies = 0;
+
+    @Column(name = "adult_languages")
+    private String adultLanguages;
+
+    @Column(name = "teens_copies")
+    private Integer teensCopies = 0;
+
+    @Column(name = "teens_languages")
+    private String teensLanguages;
+
+    @Column(name = "kids_copies")
+    private Integer kidsCopies = 0;
+
+    @Column(name = "kids_languages")
+    private String kidsLanguages;
+
+    @Column(name = "monthly_copies_ordered")
+    private Integer monthlyCopiesOrdered = 0;
+
+    @Column(name = "praise_reports", columnDefinition = "TEXT")
+    private String praiseReports;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -87,4 +111,25 @@ public class MagazineReport {
     public void setMonthlyMinimumOrder(Integer monthlyMinimumOrder) { this.monthlyMinimumOrder = monthlyMinimumOrder; }
     public java.math.BigDecimal getAmountPaidMagazine() { return amountPaidMagazine; }
     public void setAmountPaidMagazine(java.math.BigDecimal amountPaidMagazine) { this.amountPaidMagazine = amountPaidMagazine; }
+
+    public Integer getAdultCopies() { return adultCopies; }
+    public void setAdultCopies(Integer adultCopies) { this.adultCopies = adultCopies; }
+    public String getAdultLanguages() { return adultLanguages; }
+    public void setAdultLanguages(String adultLanguages) { this.adultLanguages = adultLanguages; }
+
+    public Integer getTeensCopies() { return teensCopies; }
+    public void setTeensCopies(Integer teensCopies) { this.teensCopies = teensCopies; }
+    public String getTeensLanguages() { return teensLanguages; }
+    public void setTeensLanguages(String teensLanguages) { this.teensLanguages = teensLanguages; }
+
+    public Integer getKidsCopies() { return kidsCopies; }
+    public void setKidsCopies(Integer kidsCopies) { this.kidsCopies = kidsCopies; }
+    public String getKidsLanguages() { return kidsLanguages; }
+    public void setKidsLanguages(String kidsLanguages) { this.kidsLanguages = kidsLanguages; }
+
+    public Integer getMonthlyCopiesOrdered() { return monthlyCopiesOrdered; }
+    public void setMonthlyCopiesOrdered(Integer monthlyCopiesOrdered) { this.monthlyCopiesOrdered = monthlyCopiesOrdered; }
+
+    public String getPraiseReports() { return praiseReports; }
+    public void setPraiseReports(String praiseReports) { this.praiseReports = praiseReports; }
 }

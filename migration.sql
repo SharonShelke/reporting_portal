@@ -33,4 +33,19 @@ ADD COLUMN amount_paid_magazine DECIMAL(12,2) DEFAULT 0.00;
 -- ALTER partnership_reports (Partnership Report)
 ALTER TABLE partnership_reports 
 ADD COLUMN group_pastors_milestones TEXT DEFAULT NULL,
-ADD COLUMN sponsored_teenspiration_kidsspiration TEXT DEFAULT NULL;
+ADD COLUMN sponsored_teenspiration_kidspiration TEXT DEFAULT NULL;
+
+-- ALTER magazine_reports (New Magazines Report Updates)
+ALTER TABLE magazine_reports
+ADD COLUMN adult_copies INT DEFAULT 0,
+ADD COLUMN adult_languages VARCHAR(255) DEFAULT NULL,
+ADD COLUMN teens_copies INT DEFAULT 0,
+ADD COLUMN teens_languages VARCHAR(255) DEFAULT NULL,
+ADD COLUMN kids_copies INT DEFAULT 0,
+ADD COLUMN kids_languages VARCHAR(255) DEFAULT NULL,
+ADD COLUMN monthly_copies_ordered INT DEFAULT 0,
+ADD COLUMN praise_reports TEXT DEFAULT NULL;
+
+-- Rename meeting columns in zone_weekly_reports to reflect Executive Minister
+ALTER TABLE zone_weekly_reports RENAME COLUMN zonal_pastor_directors_meeting TO zonal_pastor_executive_ministers_meeting;
+ALTER TABLE zone_weekly_reports RENAME COLUMN zonal_manager_directors_meeting TO zonal_manager_executive_ministers_meeting;

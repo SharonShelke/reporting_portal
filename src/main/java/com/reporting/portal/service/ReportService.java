@@ -65,11 +65,11 @@ public class ReportService {
         report.setHttnmOutreachesHeld(request.httnmOutreachesHeld());
         report.setHttnmMediaSubmitted(request.httnmMediaSubmitted());
 
-        report.setZonalPastorDirectorsMeeting(
-                parseAttendance(request.zonalPastorDirectorsMeeting())
+        report.setZonalPastorExecutiveMinistersMeeting(
+                parseAttendance(request.zonalPastorExecutiveMinistersMeeting())
         );
-        report.setZonalManagerDirectorsMeeting(
-                parseAttendance(request.zonalManagerDirectorsMeeting())
+        report.setZonalManagerExecutiveMinistersMeeting(
+                parseAttendance(request.zonalManagerExecutiveMinistersMeeting())
         );
         report.setZonalManagerStrategyMeeting(
                 parseAttendance(request.zonalManagerStrategyMeeting())
@@ -139,7 +139,7 @@ public class ReportService {
                     "HTTNM Outreaches",
                     "Media Submitted",
                     "Pastor Meeting",
-                    "Director Meeting",
+                    "Executive Minister Meeting",
                     "Strategy Meeting",
                     "Notes",
                     "Submitted Email",
@@ -170,8 +170,8 @@ public class ReportService {
                 row.createCell(7).setCellValue(toIntSafe(r.httnmTranslations()));
                 row.createCell(8).setCellValue(toIntSafe(r.httnmOutreaches()));
                 row.createCell(9).setCellValue(toIntSafe(r.outreachMediaSubmitted()));
-                row.createCell(10).setCellValue(orEmpty(r.zonalPastorAttendance()));
-                row.createCell(11).setCellValue(orEmpty(r.zonalManagerDirectorMeetingAttendance()));
+                row.createCell(10).setCellValue(orEmpty(r.zonalPastorExecutiveMinistersMeeting()));
+                row.createCell(11).setCellValue(orEmpty(r.zonalManagerExecutiveMinistersMeeting()));
                 row.createCell(12).setCellValue(orEmpty(r.zonalManagerStrategyMeetingAttendance()));
                 row.createCell(13).setCellValue(orEmpty(r.testimonyClarificationConcern()));
                 row.createCell(14).setCellValue(orEmpty(r.submittedByEmail()));
@@ -358,8 +358,8 @@ public class ReportService {
                 r.getHttnmTranslations(),
                 r.getHttnmOutreachesHeld(),
                 r.getHttnmMediaSubmitted(),
-                r.getZonalPastorDirectorsMeeting().name(),
-                r.getZonalManagerDirectorsMeeting().name(),
+                r.getZonalPastorExecutiveMinistersMeeting().name(),
+                r.getZonalManagerExecutiveMinistersMeeting().name(),
                 r.getZonalManagerStrategyMeeting().name(),
                 r.getTestimonyClarificationConcern(),
                 r.getSubmitterEmail(),

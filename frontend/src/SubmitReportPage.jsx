@@ -12,8 +12,8 @@ const initialForm = {
   httnmTranslations: "",
   httnmOutreaches: "",
   outreachMediaSubmitted: "",
-  zonalPastorAttendance: "",
-  zonalManagerDirectorMeetingAttendance: "",
+  zonalPastorExecutiveMinistersMeeting: "",
+  zonalManagerExecutiveMinistersMeeting: "",
   zonalManagerStrategyMeetingAttendance: "",
   testimonyClarificationConcern: "",
   submittedByEmail: "",
@@ -38,8 +38,8 @@ export default function SubmitReportPage() {
       "httnmTranslations",
       "httnmOutreaches",
       "outreachMediaSubmitted",
-      "zonalPastorAttendance",
-      "zonalManagerDirectorMeetingAttendance",
+      "zonalPastorExecutiveMinistersMeeting",
+      "zonalManagerExecutiveMinistersMeeting",
       "zonalManagerStrategyMeetingAttendance",
       "submittedByEmail",
       "participationPrayWithMe",
@@ -133,14 +133,14 @@ export default function SubmitReportPage() {
         <label>Pictures/Videos Submitted (Target 10) *
           <input type="number" name="outreachMediaSubmitted" value={form.outreachMediaSubmitted} onChange={onInputChange} />
         </label>
-        <label>Zonal Pastor attendance in weekly meeting? *
-          <select name="zonalPastorAttendance" value={form.zonalPastorAttendance} onChange={onInputChange}>
+        <label>Zonal Pastor attendance in Executive Minister's weekly meeting? *
+          <select name="zonalPastorExecutiveMinistersMeeting" value={form.zonalPastorExecutiveMinistersMeeting} onChange={onInputChange}>
             <option value="">Please select</option>
             {attendanceOptions.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
         </label>
-        <label>Zonal Manager attendance in Director's weekly meeting? *
-          <select name="zonalManagerDirectorMeetingAttendance" value={form.zonalManagerDirectorMeetingAttendance} onChange={onInputChange}>
+        <label>Zonal Manager attendance in Executive Minister's weekly meeting? *
+          <select name="zonalManagerExecutiveMinistersMeeting" value={form.zonalManagerExecutiveMinistersMeeting} onChange={onInputChange}>
             <option value="">Please select</option>
             {attendanceOptions.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
@@ -193,7 +193,7 @@ export default function SubmitReportPage() {
                 <th>Outreaches</th>
                 <th>Media</th>
                 <th>Pastor Attendance</th>
-                <th>Director Meeting</th>
+                <th>Executive Minister Meeting</th>
                 <th>Strategy Meeting</th>
                 <th>Pray With Me</th>
                 <th>HSLHS Reg</th>
@@ -215,8 +215,8 @@ export default function SubmitReportPage() {
                   <td>{r.httnmTranslations}</td>
                   <td>{r.httnmOutreaches}</td>
                   <td>{r.outreachMediaSubmitted}</td>
-                  <td>{r.zonalPastorAttendance}</td>
-                  <td>{r.zonalManagerDirectorMeetingAttendance}</td>
+                  <td>{r.zonalPastorExecutiveMinistersMeeting}</td>
+                  <td>{r.zonalManagerExecutiveMinistersMeeting}</td>
                   <td>{r.zonalManagerStrategyMeetingAttendance}</td>
                   <td>{r.participationPrayWithMe}</td>
                   <td>{r.totalRegistrationHslhs}</td>

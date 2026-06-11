@@ -22,8 +22,8 @@ public record CreateReportRequest(
         Integer httnmOutreachesHeld,
         Integer httnmMediaSubmitted,
 
-        String zonalPastorDirectorsMeeting,
-        String zonalManagerDirectorsMeeting,
+        String zonalPastorExecutiveMinistersMeeting,
+        String zonalManagerExecutiveMinistersMeeting,
         String zonalManagerStrategyMeeting,
 
         String testimonyClarificationConcern,

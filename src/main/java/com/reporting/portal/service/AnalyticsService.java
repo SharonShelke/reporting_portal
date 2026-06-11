@@ -162,15 +162,15 @@ public class AnalyticsService {
         int pYes = 0, pNo = 0, pExcused = 0;
         int mYes = 0, mNo = 0, mExcused = 0;
         for (Report r : reports) {
-            if (r.getZonalPastorDirectorsMeeting() != null) {
-                switch(r.getZonalPastorDirectorsMeeting().name()) {
+            if (r.getZonalPastorExecutiveMinistersMeeting() != null) {
+                switch(r.getZonalPastorExecutiveMinistersMeeting().name()) {
                     case "PRESENT" -> pYes++;
                     case "ABSENT" -> pNo++;
                     case "EXCUSED" -> pExcused++;
                 }
             }
-            if (r.getZonalManagerDirectorsMeeting() != null) {
-                switch(r.getZonalManagerDirectorsMeeting().name()) {
+            if (r.getZonalManagerExecutiveMinistersMeeting() != null) {
+                switch(r.getZonalManagerExecutiveMinistersMeeting().name()) {
                     case "PRESENT" -> mYes++;
                     case "ABSENT" -> mNo++;
                     case "EXCUSED" -> mExcused++;

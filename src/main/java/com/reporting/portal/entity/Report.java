@@ -66,12 +66,12 @@ public class Report {
     private Integer httnmMediaSubmitted;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "zonal_pastor_directors_meeting", nullable = false)
-    private AttendanceStatus zonalPastorDirectorsMeeting;
+    @Column(name = "zonal_pastor_executive_ministers_meeting", nullable = false)
+    private AttendanceStatus zonalPastorExecutiveMinistersMeeting;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "zonal_manager_directors_meeting", nullable = false)
-    private AttendanceStatus zonalManagerDirectorsMeeting;
+    @Column(name = "zonal_manager_executive_ministers_meeting", nullable = false)
+    private AttendanceStatus zonalManagerExecutiveMinistersMeeting;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "zonal_manager_strategy_meeting", nullable = false)

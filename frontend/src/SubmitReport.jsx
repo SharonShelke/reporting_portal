@@ -12,8 +12,8 @@ const initialForm = {
   httnmTranslations: "",
   httnmOutreaches: "",
   outreachMediaSubmitted: "",
-  zonalPastorAttendance: "",
-  zonalManagerDirectorMeetingAttendance: "",
+  zonalPastorExecutiveMinistersMeeting: "",
+  zonalManagerExecutiveMinistersMeeting: "",
   zonalManagerStrategyMeetingAttendance: "",
   testimonyClarificationConcern: "",
   submittedByEmail: "",
@@ -38,8 +38,8 @@ export default function SubmitReport({ onlyTable = false }) {
       "httnmTranslations",
       "httnmOutreaches",
       "outreachMediaSubmitted",
-      "zonalPastorAttendance",
-      "zonalManagerDirectorMeetingAttendance",
+      "zonalPastorExecutiveMinistersMeeting",
+      "zonalManagerExecutiveMinistersMeeting",
       "zonalManagerStrategyMeetingAttendance",
       "submittedByEmail",
       "participationPrayWithMe",
@@ -127,14 +127,14 @@ export default function SubmitReport({ onlyTable = false }) {
               <label>HTTNM Translations *<input type="number" name="httnmTranslations" value={form.httnmTranslations} onChange={onInputChange} /></label>
               <label>HTTNM Outreaches *<input type="number" name="httnmOutreaches" value={form.httnmOutreaches} onChange={onInputChange} /></label>
               <label>Pictures/Videos Submitted *<input type="number" name="outreachMediaSubmitted" value={form.outreachMediaSubmitted} onChange={onInputChange} /></label>
-              <label>Zonal Pastor Attendance *
-                <select name="zonalPastorAttendance" value={form.zonalPastorAttendance} onChange={onInputChange}>
+              <label>Zonal Pastor Attendance in Executive Minister's meeting *
+                <select name="zonalPastorExecutiveMinistersMeeting" value={form.zonalPastorExecutiveMinistersMeeting} onChange={onInputChange}>
                   <option value="">Please select</option>
                   {attendanceOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
               </label>
-              <label>Zonal Manager in Director Meeting *
-                <select name="zonalManagerDirectorMeetingAttendance" value={form.zonalManagerDirectorMeetingAttendance} onChange={onInputChange}>
+              <label>Zonal Manager in Executive Minister's meeting *
+                <select name="zonalManagerExecutiveMinistersMeeting" value={form.zonalManagerExecutiveMinistersMeeting} onChange={onInputChange}>
                   <option value="">Please select</option>
                   {attendanceOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
@@ -169,16 +169,16 @@ export default function SubmitReport({ onlyTable = false }) {
             <thead>
               <tr>
                 <th>ID</th><th>Created</th><th>Zone</th><th>Manager</th><th>Remittance</th><th>Partners</th>
-                <th>Testimonies</th><th>Translations</th><th>Outreaches</th><th>Media</th><th>Pastor</th>
-                <th>Director</th><th>Strategy</th><th>Pray With Me</th><th>HSLHS Reg</th><th>Herald Conf</th><th>Notes</th><th>Email</th>
+                <th>Testimonies</th><th>Translations</th><th>Outreaches</th><th>Media</th>
+                <th>Pastor</th><th>Executive Minister</th><th>Strategy</th><th>Pray With Me</th><th>HSLHS Reg</th><th>Herald Conf</th><th>Notes</th><th>Email</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((r) => (
                 <tr key={r.id}>
                   <td>{r.id}</td><td>{r.createdAt}</td><td>{r.zoneName}</td><td>{r.zonalManager}</td><td>{r.totalPartnershipRemittance}</td><td>{r.newPartnersRecruited}</td>
-                  <td>{r.testimoniesSubmitted}</td><td>{r.httnmTranslations}</td><td>{r.httnmOutreaches}</td><td>{r.outreachMediaSubmitted}</td><td>{r.zonalPastorAttendance}</td>
-                  <td>{r.zonalManagerDirectorMeetingAttendance}</td><td>{r.zonalManagerStrategyMeetingAttendance}</td><td>{r.participationPrayWithMe}</td><td>{r.totalRegistrationHslhs}</td><td>{r.heraldConference}</td><td>{r.testimonyClarificationConcern}</td><td>{r.submittedByEmail}</td>
+                  <td>{r.testimoniesSubmitted}</td><td>{r.httnmTranslations}</td><td>{r.httnmOutreaches}</td><td>{r.outreachMediaSubmitted}</td>
+                  <td>{r.zonalPastorExecutiveMinistersMeeting}</td><td>{r.zonalManagerExecutiveMinistersMeeting}</td><td>{r.zonalManagerStrategyMeetingAttendance}</td><td>{r.participationPrayWithMe}</td><td>{r.totalRegistrationHslhs}</td><td>{r.heraldConference}</td><td>{r.testimonyClarificationConcern}</td><td>{r.submittedByEmail}</td>
                 </tr>
               ))}
             </tbody>
