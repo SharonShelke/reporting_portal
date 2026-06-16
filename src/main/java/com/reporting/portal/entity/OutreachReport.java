@@ -46,6 +46,24 @@ public class OutreachReport {
     @Column(name = "httn_magazine_testimonies_outreaches", columnDefinition = "TEXT")
     private String httnMagazineTestimoniesOutreaches;
 
+    @Column(name = "magazines_used")
+    private Integer magazinesUsed = 0;
+
+    @Column(name = "people_involved")
+    private Integer peopleInvolved = 0;
+
+    @Column(name = "total_attendance")
+    private Integer totalAttendance = 0;
+
+    @Column(name = "souls_saved")
+    private Integer soulsSaved = 0;
+
+    @Column(name = "outreach_testimonies", columnDefinition = "TEXT")
+    private String outreachTestimonies;
+
+    @Column(name = "follow_up_plan", columnDefinition = "TEXT")
+    private String followUpPlan;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -55,4 +73,17 @@ public class OutreachReport {
 
     public String getHttnMagazineTestimoniesOutreaches() { return httnMagazineTestimoniesOutreaches; }
     public void setHttnMagazineTestimoniesOutreaches(String httnMagazineTestimoniesOutreaches) { this.httnMagazineTestimoniesOutreaches = httnMagazineTestimoniesOutreaches; }
+
+    public Integer getMagazinesUsed() { return magazinesUsed; }
+    public void setMagazinesUsed(Integer magazinesUsed) { this.magazinesUsed = magazinesUsed; }
+    public Integer getPeopleInvolved() { return peopleInvolved; }
+    public void setPeopleInvolved(Integer peopleInvolved) { this.peopleInvolved = peopleInvolved; }
+    public Integer getTotalAttendance() { return totalAttendance; }
+    public void setTotalAttendance(Integer totalAttendance) { this.totalAttendance = totalAttendance; }
+    public Integer getSoulsSaved() { return soulsSaved; }
+    public void setSoulsSaved(Integer soulsSaved) { this.soulsSaved = soulsSaved; }
+    public String getOutreachTestimonies() { return outreachTestimonies; }
+    public void setOutreachTestimonies(String outreachTestimonies) { this.outreachTestimonies = outreachTestimonies; }
+    public String getFollowUpPlan() { return followUpPlan; }
+    public void setFollowUpPlan(String followUpPlan) { this.followUpPlan = followUpPlan; }
 }
