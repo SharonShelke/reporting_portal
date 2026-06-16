@@ -49,3 +49,20 @@ ADD COLUMN praise_reports TEXT DEFAULT NULL;
 -- Rename meeting columns in zone_weekly_reports to reflect Executive Minister
 ALTER TABLE zone_weekly_reports RENAME COLUMN zonal_pastor_directors_meeting TO zonal_pastor_executive_ministers_meeting;
 ALTER TABLE zone_weekly_reports RENAME COLUMN zonal_manager_directors_meeting TO zonal_manager_executive_ministers_meeting;
+
+-- Alter partnership_reports columns to allow both text and numbers
+ALTER TABLE partnership_reports MODIFY COLUMN zonal_partnership TEXT DEFAULT NULL;
+ALTER TABLE partnership_reports MODIFY COLUMN groups_partnership TEXT DEFAULT NULL;
+ALTER TABLE partnership_reports MODIFY COLUMN churches_partnership TEXT DEFAULT NULL;
+ALTER TABLE partnership_reports MODIFY COLUMN cell_partnership TEXT DEFAULT NULL;
+
+-- Add sponsored Teenspiration and Kidspiration fields
+ALTER TABLE partnership_reports ADD COLUMN sponsored_teenspiration TEXT DEFAULT NULL;
+ALTER TABLE partnership_reports ADD COLUMN sponsored_kidspiration TEXT DEFAULT NULL;
+
+-- Add salvation, healing, and others testimonies columns to testimonial_reports
+ALTER TABLE testimonial_reports 
+ADD COLUMN salvation_testimonies TEXT DEFAULT NULL,
+ADD COLUMN healing_testimonies TEXT DEFAULT NULL,
+ADD COLUMN others_testimonies TEXT DEFAULT NULL;
+

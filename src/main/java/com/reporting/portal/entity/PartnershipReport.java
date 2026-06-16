@@ -33,20 +33,20 @@ public class PartnershipReport {
     @Column(name = "total_remittance", precision = 12, scale = 2)
     private BigDecimal totalRemittance;
 
-    @Column(name = "zonal_partnership", precision = 12, scale = 2)
-    private BigDecimal zonalPartnership;
+    @Column(name = "zonal_partnership", columnDefinition = "TEXT")
+    private String zonalPartnership;
 
     @Column(name = "zonal_partnership_details", columnDefinition = "TEXT")
     private String zonalPartnershipDetails;
 
-    @Column(name = "groups_partnership", precision = 12, scale = 2)
-    private BigDecimal groupsPartnership;
+    @Column(name = "groups_partnership", columnDefinition = "TEXT")
+    private String groupsPartnership;
 
-    @Column(name = "churches_partnership", precision = 12, scale = 2)
-    private BigDecimal churchesPartnership;
+    @Column(name = "churches_partnership", columnDefinition = "TEXT")
+    private String churchesPartnership;
 
-    @Column(name = "cell_partnership", precision = 12, scale = 2)
-    private BigDecimal cellPartnership;
+    @Column(name = "cell_partnership", columnDefinition = "TEXT")
+    private String cellPartnership;
 
     @Column(name = "healing_crusade_sponsorship", precision = 12, scale = 2)
     private BigDecimal healingCrusadeSponsorship;
@@ -65,6 +65,12 @@ public class PartnershipReport {
 
     @Column(name = "sponsored_teenspiration_kidspiration", columnDefinition = "TEXT")
     private String sponsoredTeenspirationKidspiration;
+
+    @Column(name = "sponsored_teenspiration", columnDefinition = "TEXT")
+    private String sponsoredTeenspiration;
+
+    @Column(name = "sponsored_kidspiration", columnDefinition = "TEXT")
+    private String sponsoredKidspiration;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -86,16 +92,16 @@ public class PartnershipReport {
     public BigDecimal getTotalRemittance() { return totalRemittance; }
     public void setTotalRemittance(BigDecimal totalRemittance) { this.totalRemittance = totalRemittance; }
 
-    public BigDecimal getZonalPartnership() { return zonalPartnership; }
-    public void setZonalPartnership(BigDecimal zonalPartnership) { this.zonalPartnership = zonalPartnership; }
+    public String getZonalPartnership() { return zonalPartnership; }
+    public void setZonalPartnership(String zonalPartnership) { this.zonalPartnership = zonalPartnership; }
     public String getZonalPartnershipDetails() { return zonalPartnershipDetails; }
     public void setZonalPartnershipDetails(String zonalPartnershipDetails) { this.zonalPartnershipDetails = zonalPartnershipDetails; }
-    public BigDecimal getGroupsPartnership() { return groupsPartnership; }
-    public void setGroupsPartnership(BigDecimal groupsPartnership) { this.groupsPartnership = groupsPartnership; }
-    public BigDecimal getChurchesPartnership() { return churchesPartnership; }
-    public void setChurchesPartnership(BigDecimal churchesPartnership) { this.churchesPartnership = churchesPartnership; }
-    public BigDecimal getCellPartnership() { return cellPartnership; }
-    public void setCellPartnership(BigDecimal cellPartnership) { this.cellPartnership = cellPartnership; }
+    public String getGroupsPartnership() { return groupsPartnership; }
+    public void setGroupsPartnership(String groupsPartnership) { this.groupsPartnership = groupsPartnership; }
+    public String getChurchesPartnership() { return churchesPartnership; }
+    public void setChurchesPartnership(String churchesPartnership) { this.churchesPartnership = churchesPartnership; }
+    public String getCellPartnership() { return cellPartnership; }
+    public void setCellPartnership(String cellPartnership) { this.cellPartnership = cellPartnership; }
 
     public BigDecimal getHealingCrusadeSponsorship() { return healingCrusadeSponsorship; }
     public void setHealingCrusadeSponsorship(BigDecimal healingCrusadeSponsorship) { this.healingCrusadeSponsorship = healingCrusadeSponsorship; }
@@ -104,4 +110,9 @@ public class PartnershipReport {
     public void setGroupPastorsMilestones(String groupPastorsMilestones) { this.groupPastorsMilestones = groupPastorsMilestones; }
     public String getSponsoredTeenspirationKidspiration() { return sponsoredTeenspirationKidspiration; }
     public void setSponsoredTeenspirationKidspiration(String sponsoredTeenspirationKidspiration) { this.sponsoredTeenspirationKidspiration = sponsoredTeenspirationKidspiration; }
+
+    public String getSponsoredTeenspiration() { return sponsoredTeenspiration; }
+    public void setSponsoredTeenspiration(String sponsoredTeenspiration) { this.sponsoredTeenspiration = sponsoredTeenspiration; }
+    public String getSponsoredKidspiration() { return sponsoredKidspiration; }
+    public void setSponsoredKidspiration(String sponsoredKidspiration) { this.sponsoredKidspiration = sponsoredKidspiration; }
 }
