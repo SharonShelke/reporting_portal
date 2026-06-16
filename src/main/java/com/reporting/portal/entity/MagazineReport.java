@@ -91,6 +91,17 @@ public class MagazineReport {
     @Column(name = "praise_reports", columnDefinition = "TEXT")
     private String praiseReports;
 
+    @Column(name = "dates_received")
+    private String datesReceived;
+
+    @Column(name = "outreach_locations", columnDefinition = "TEXT")
+    private String outreachLocations;
+
+    public String getDatesReceived() { return datesReceived; }
+    public void setDatesReceived(String datesReceived) { this.datesReceived = datesReceived; }
+    public String getOutreachLocations() { return outreachLocations; }
+    public void setOutreachLocations(String outreachLocations) { this.outreachLocations = outreachLocations; }
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }

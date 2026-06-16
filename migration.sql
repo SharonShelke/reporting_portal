@@ -66,3 +66,9 @@ ADD COLUMN salvation_testimonies TEXT DEFAULT NULL,
 ADD COLUMN healing_testimonies TEXT DEFAULT NULL,
 ADD COLUMN others_testimonies TEXT DEFAULT NULL;
 
+-- Add dates_received and outreach_locations to magazine_reports
+ALTER TABLE magazine_reports 
+ADD COLUMN dates_received VARCHAR(255) DEFAULT NULL,
+ADD COLUMN outreach_locations TEXT DEFAULT NULL;
+
+
