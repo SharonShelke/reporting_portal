@@ -14,7 +14,6 @@ public record ReportDto(
     String submittedByEmail,
     String regionName,
     String status,
-    String popMediaUrl,
     String participationPrayWithMe,
     Integer totalRegistrationHslhs,
     String heraldConference

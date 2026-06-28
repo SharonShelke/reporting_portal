@@ -22,7 +22,6 @@ public record CreateReportRequest(
         String testimonyClarificationConcern,
         String regionName,
         
-        String popMediaUrl,
         String participationPrayWithMe,
         Integer totalRegistrationHslhs,
         String heraldConference

@@ -70,7 +70,6 @@ public class ReportService {
 
         report.setTestimonyClarificationConcern(request.testimonyClarificationConcern());
         report.setRegionName(request.regionName());
-        report.setPopMediaUrl(request.popMediaUrl());
         report.setParticipationPrayWithMe(request.participationPrayWithMe());
         report.setTotalRegistrationHslhs(request.totalRegistrationHslhs() != null ? request.totalRegistrationHslhs() : 0);
         report.setHeraldConference(request.heraldConference());
@@ -128,7 +127,6 @@ public class ReportService {
                     "Strategy Meeting",
                     "Notes",
                     "Submitted Email",
-                    "POP Media URL",
                     "Pray With Me Participation",
                     "HSLHS Registration",
                     "Herald Conference"
@@ -152,10 +150,9 @@ public class ReportService {
                 row.createCell(6).setCellValue(orEmpty(r.zonalManagerStrategyMeetingAttendance()));
                 row.createCell(7).setCellValue(orEmpty(r.testimonyClarificationConcern()));
                 row.createCell(8).setCellValue(orEmpty(r.submittedByEmail()));
-                row.createCell(9).setCellValue(orEmpty(r.popMediaUrl()));
-                row.createCell(10).setCellValue(orEmpty(r.participationPrayWithMe()));
-                row.createCell(11).setCellValue(toIntSafe(r.totalRegistrationHslhs()));
-                row.createCell(12).setCellValue(orEmpty(r.heraldConference()));
+                row.createCell(9).setCellValue(orEmpty(r.participationPrayWithMe()));
+                row.createCell(10).setCellValue(toIntSafe(r.totalRegistrationHslhs()));
+                row.createCell(11).setCellValue(orEmpty(r.heraldConference()));
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -252,9 +249,8 @@ public class ReportService {
                         c[10],
                         c[11],
                         c.length > 12 ? c[12] : null,
-                        c.length > 13 ? c[13] : null,
-                        c.length > 14 ? toInt(c[14]) : null,
-                        c.length > 15 ? c[15] : null
+                        c.length > 13 ? toInt(c[13]) : null,
+                        c.length > 14 ? c[14] : null
                 );
 
                 saved.add(submitReport(req));
@@ -287,9 +283,8 @@ public class ReportService {
                         cell(row, 10),
                         cell(row, 11),
                         cell(row, 12),
-                        cell(row, 13),
-                        toInt(cell(row, 14)),
-                        cell(row, 15)
+                        toInt(cell(row, 13)),
+                        cell(row, 14)
                 );
 
                 saved.add(submitReport(req));
@@ -318,7 +313,6 @@ public class ReportService {
                 r.getSubmitterEmail(),
                 r.getRegionName(),
                 r.getStatus(),
-                r.getPopMediaUrl(),
                 r.getParticipationPrayWithMe(),
                 r.getTotalRegistrationHslhs(),
                 r.getHeraldConference()

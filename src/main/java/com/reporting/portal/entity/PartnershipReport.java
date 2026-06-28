@@ -60,6 +60,15 @@ public class PartnershipReport {
     @Column(name = "admin_note", columnDefinition = "TEXT")
     private String adminNote;
 
+    @Column(name = "pop_media_url", columnDefinition = "TEXT")
+    private String popMediaUrl;
+
+    @Column(name = "trumpets_blown")
+    private Integer trumpetsBlown;
+
+    @Column(name = "testimonies_submitted")
+    private Integer testimoniesSubmitted;
+
     @Column(name = "group_pastors_milestones", columnDefinition = "TEXT")
     private String groupPastorsMilestones;
 

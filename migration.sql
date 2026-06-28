@@ -93,11 +93,15 @@ ALTER TABLE zone_weekly_reports
   DROP COLUMN testimonies_submitted,
   DROP COLUMN httnm_translations,
   DROP COLUMN httnm_outreaches_held,
-  DROP COLUMN httnm_media_submitted;
+  DROP COLUMN httnm_media_submitted,
+  DROP COLUMN pop_media_url;
 
 ALTER TABLE partnership_reports 
   ADD COLUMN new_partners_recruited INT DEFAULT 0,
-  ADD COLUMN remittance_purpose TEXT DEFAULT NULL;
+  ADD COLUMN remittance_purpose TEXT DEFAULT NULL,
+  ADD COLUMN pop_media_url TEXT DEFAULT NULL,
+  ADD COLUMN trumpets_blown INT DEFAULT 0,
+  ADD COLUMN testimonies_submitted INT DEFAULT 0;
 
 ALTER TABLE outreach_reports 
   ADD COLUMN outreaches_done INT DEFAULT 0,
