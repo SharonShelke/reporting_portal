@@ -58,13 +58,6 @@ public class ReportService {
         report.setZoneName(request.zoneName());
         report.setZonalManager(request.zonalManager());
 
-        report.setTotalPartnershipRemittance(request.totalPartnershipRemittance());
-        report.setNewPartnersRecruited(request.newPartnersRecruited());
-        report.setTestimoniesSubmitted(request.testimoniesSubmitted());
-        report.setHttnmTranslations(request.httnmTranslations());
-        report.setHttnmOutreachesHeld(request.httnmOutreachesHeld());
-        report.setHttnmMediaSubmitted(request.httnmMediaSubmitted());
-
         report.setZonalPastorExecutiveMinistersMeeting(
                 parseAttendance(request.zonalPastorExecutiveMinistersMeeting())
         );
@@ -77,8 +70,6 @@ public class ReportService {
 
         report.setTestimonyClarificationConcern(request.testimonyClarificationConcern());
         report.setRegionName(request.regionName());
-        report.setRemittancePurpose(request.remittancePurpose());
-        report.setTrumpetsBlown(request.trumpetsBlown() != null ? request.trumpetsBlown() : 0);
         report.setPopMediaUrl(request.popMediaUrl());
         report.setParticipationPrayWithMe(request.participationPrayWithMe());
         report.setTotalRegistrationHslhs(request.totalRegistrationHslhs() != null ? request.totalRegistrationHslhs() : 0);
@@ -132,19 +123,11 @@ public class ReportService {
                     "Submitted At",
                     "Zone Name",
                     "Zonal Manager",
-                    "Total Partnership Remittance",
-                    "New Partners",
-                    "Testimonies",
-                    "HTTNM Translations",
-                    "HTTNM Outreaches",
-                    "Media Submitted",
                     "Pastor Meeting",
                     "Executive Minister Meeting",
                     "Strategy Meeting",
                     "Notes",
                     "Submitted Email",
-                    "Remittance Purpose",
-                    "Trumpets Blown",
                     "POP Media URL",
                     "Pray With Me Participation",
                     "HSLHS Registration",
@@ -164,23 +147,15 @@ public class ReportService {
                 row.createCell(1).setCellValue(orEmpty(r.createdAt()));
                 row.createCell(2).setCellValue(orEmpty(r.zoneName()));
                 row.createCell(3).setCellValue(orEmpty(r.zonalManager()));
-                row.createCell(4).setCellValue(toDoubleSafe(r.totalPartnershipRemittance()));
-                row.createCell(5).setCellValue(toIntSafe(r.newPartnersRecruited()));
-                row.createCell(6).setCellValue(toIntSafe(r.testimoniesSubmitted()));
-                row.createCell(7).setCellValue(toIntSafe(r.httnmTranslations()));
-                row.createCell(8).setCellValue(toIntSafe(r.httnmOutreaches()));
-                row.createCell(9).setCellValue(toIntSafe(r.outreachMediaSubmitted()));
-                row.createCell(10).setCellValue(orEmpty(r.zonalPastorExecutiveMinistersMeeting()));
-                row.createCell(11).setCellValue(orEmpty(r.zonalManagerExecutiveMinistersMeeting()));
-                row.createCell(12).setCellValue(orEmpty(r.zonalManagerStrategyMeetingAttendance()));
-                row.createCell(13).setCellValue(orEmpty(r.testimonyClarificationConcern()));
-                row.createCell(14).setCellValue(orEmpty(r.submittedByEmail()));
-                row.createCell(15).setCellValue(orEmpty(r.remittancePurpose()));
-                row.createCell(16).setCellValue(toIntSafe(r.trumpetsBlown()));
-                row.createCell(17).setCellValue(orEmpty(r.popMediaUrl()));
-                row.createCell(18).setCellValue(orEmpty(r.participationPrayWithMe()));
-                row.createCell(19).setCellValue(toIntSafe(r.totalRegistrationHslhs()));
-                row.createCell(20).setCellValue(orEmpty(r.heraldConference()));
+                row.createCell(4).setCellValue(orEmpty(r.zonalPastorExecutiveMinistersMeeting()));
+                row.createCell(5).setCellValue(orEmpty(r.zonalManagerExecutiveMinistersMeeting()));
+                row.createCell(6).setCellValue(orEmpty(r.zonalManagerStrategyMeetingAttendance()));
+                row.createCell(7).setCellValue(orEmpty(r.testimonyClarificationConcern()));
+                row.createCell(8).setCellValue(orEmpty(r.submittedByEmail()));
+                row.createCell(9).setCellValue(orEmpty(r.popMediaUrl()));
+                row.createCell(10).setCellValue(orEmpty(r.participationPrayWithMe()));
+                row.createCell(11).setCellValue(toIntSafe(r.totalRegistrationHslhs()));
+                row.createCell(12).setCellValue(orEmpty(r.heraldConference()));
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -271,23 +246,15 @@ public class ReportService {
                         LocalDate.parse(c[4]),
                         c[5],
                         c[6],
-                        new BigDecimal(c[7]),
-                        toInt(c[8]),
-                        toInt(c[9]),
-                        toInt(c[10]),
-                        toInt(c[11]),
-                        toInt(c[12]),
-                        c[13],
-                        c[14],
-                        c[15],
-                        c[16],
-                        c[17],
-                        c.length > 18 ? c[18] : null,
-                        c.length > 19 ? toInt(c[19]) : null,
-                        c.length > 20 ? c[20] : null,
-                        c.length > 21 ? c[21] : null,
-                        c.length > 22 ? toInt(c[22]) : null,
-                        c.length > 23 ? c[23] : null
+                        c[7],
+                        c[8],
+                        c[9],
+                        c[10],
+                        c[11],
+                        c.length > 12 ? c[12] : null,
+                        c.length > 13 ? c[13] : null,
+                        c.length > 14 ? toInt(c[14]) : null,
+                        c.length > 15 ? c[15] : null
                 );
 
                 saved.add(submitReport(req));
@@ -314,23 +281,15 @@ public class ReportService {
                         LocalDate.parse(cell(row, 4)),
                         cell(row, 5),
                         cell(row, 6),
-                        new BigDecimal(cell(row, 7)),
-                        toInt(cell(row, 8)),
-                        toInt(cell(row, 9)),
-                        toInt(cell(row, 10)),
-                        toInt(cell(row, 11)),
-                        toInt(cell(row, 12)),
+                        cell(row, 7),
+                        cell(row, 8),
+                        cell(row, 9),
+                        cell(row, 10),
+                        cell(row, 11),
+                        cell(row, 12),
                         cell(row, 13),
-                        cell(row, 14),
-                        cell(row, 15),
-                        cell(row, 16),
-                        cell(row, 17),
-                        cell(row, 18),
-                        toInt(cell(row, 19)),
-                        cell(row, 20),
-                        cell(row, 21),
-                        toInt(cell(row, 22)),
-                        cell(row, 23)
+                        toInt(cell(row, 14)),
+                        cell(row, 15)
                 );
 
                 saved.add(submitReport(req));
@@ -352,12 +311,6 @@ public class ReportService {
                 r.getSubmittedAt() != null ? r.getSubmittedAt().format(f) : "",
                 r.getZoneName(),
                 r.getZonalManager(),
-                r.getTotalPartnershipRemittance(),
-                r.getNewPartnersRecruited(),
-                r.getTestimoniesSubmitted(),
-                r.getHttnmTranslations(),
-                r.getHttnmOutreachesHeld(),
-                r.getHttnmMediaSubmitted(),
                 r.getZonalPastorExecutiveMinistersMeeting().name(),
                 r.getZonalManagerExecutiveMinistersMeeting().name(),
                 r.getZonalManagerStrategyMeeting().name(),
@@ -365,8 +318,6 @@ public class ReportService {
                 r.getSubmitterEmail(),
                 r.getRegionName(),
                 r.getStatus(),
-                r.getRemittancePurpose(),
-                r.getTrumpetsBlown(),
                 r.getPopMediaUrl(),
                 r.getParticipationPrayWithMe(),
                 r.getTotalRegistrationHslhs(),

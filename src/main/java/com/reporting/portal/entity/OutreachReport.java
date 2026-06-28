@@ -64,6 +64,15 @@ public class OutreachReport {
     @Column(name = "follow_up_plan", columnDefinition = "TEXT")
     private String followUpPlan;
 
+    @Column(name = "outreaches_done")
+    private Integer outreachesDone = 0;
+
+    @Column(name = "healing_outreaches_held")
+    private Integer healingOutreachesHeld = 0;
+
+    @Column(name = "healing_media_submitted")
+    private Integer healingMediaSubmitted = 0;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -86,4 +95,11 @@ public class OutreachReport {
     public void setOutreachTestimonies(String outreachTestimonies) { this.outreachTestimonies = outreachTestimonies; }
     public String getFollowUpPlan() { return followUpPlan; }
     public void setFollowUpPlan(String followUpPlan) { this.followUpPlan = followUpPlan; }
+
+    public Integer getOutreachesDone() { return outreachesDone; }
+    public void setOutreachesDone(Integer outreachesDone) { this.outreachesDone = outreachesDone; }
+    public Integer getHealingOutreachesHeld() { return healingOutreachesHeld; }
+    public void setHealingOutreachesHeld(Integer healingOutreachesHeld) { this.healingOutreachesHeld = healingOutreachesHeld; }
+    public Integer getHealingMediaSubmitted() { return healingMediaSubmitted; }
+    public void setHealingMediaSubmitted(Integer healingMediaSubmitted) { this.healingMediaSubmitted = healingMediaSubmitted; }
 }

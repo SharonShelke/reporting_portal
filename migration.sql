@@ -80,5 +80,26 @@ ADD COLUMN souls_saved INT DEFAULT 0,
 ADD COLUMN outreach_testimonies TEXT DEFAULT NULL,
 ADD COLUMN follow_up_plan TEXT DEFAULT NULL;
 
+-- Add great_shouts to zone_weekly_reports (Reverted below)
+ALTER TABLE zone_weekly_reports ADD COLUMN great_shouts INT DEFAULT 0;
 
+-- MIGRATE FIELDS FROM ZONAL REPORT TO OTHER REPORTS
+ALTER TABLE zone_weekly_reports
+  DROP COLUMN total_partnership_remittance,
+  DROP COLUMN new_partners_recruited,
+  DROP COLUMN remittance_purpose,
+  DROP COLUMN trumpets_blown,
+  DROP COLUMN great_shouts,
+  DROP COLUMN testimonies_submitted,
+  DROP COLUMN httnm_translations,
+  DROP COLUMN httnm_outreaches_held,
+  DROP COLUMN httnm_media_submitted;
 
+ALTER TABLE partnership_reports 
+  ADD COLUMN new_partners_recruited INT DEFAULT 0,
+  ADD COLUMN remittance_purpose TEXT DEFAULT NULL;
+
+ALTER TABLE outreach_reports 
+  ADD COLUMN outreaches_done INT DEFAULT 0,
+  ADD COLUMN healing_outreaches_held INT DEFAULT 0,
+  ADD COLUMN healing_media_submitted INT DEFAULT 0;

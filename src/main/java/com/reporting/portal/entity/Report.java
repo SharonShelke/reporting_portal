@@ -47,24 +47,6 @@ public class Report {
     @Column(name = "zonal_manager", nullable = false, length = 150)
     private String zonalManager;
 
-    @Column(name = "total_partnership_remittance", nullable = false, precision = 12, scale = 2)
-    private BigDecimal totalPartnershipRemittance;
-
-    @Column(name = "new_partners_recruited", nullable = false)
-    private Integer newPartnersRecruited;
-
-    @Column(name = "testimonies_submitted", nullable = false)
-    private Integer testimoniesSubmitted;
-
-    @Column(name = "httnm_translations", nullable = false)
-    private Integer httnmTranslations;
-
-    @Column(name = "httnm_outreaches_held", nullable = false)
-    private Integer httnmOutreachesHeld;
-
-    @Column(name = "httnm_media_submitted", nullable = false)
-    private Integer httnmMediaSubmitted;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "zonal_pastor_executive_ministers_meeting", nullable = false)
     private AttendanceStatus zonalPastorExecutiveMinistersMeeting;
@@ -82,12 +64,6 @@ public class Report {
 
     @Column(name = "region_name", length = 150)
     private String regionName;
-
-    @Column(name = "remittance_purpose", columnDefinition = "TEXT")
-    private String remittancePurpose;
-
-    @Column(name = "trumpets_blown")
-    private Integer trumpetsBlown;
 
     @Column(name = "pop_media_url", columnDefinition = "TEXT")
     private String popMediaUrl;
@@ -111,12 +87,6 @@ public class Report {
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
     public void setZoneName(String zoneName) { this.zoneName = zoneName; }
-    public Integer getNewPartnersRecruited() { return newPartnersRecruited; }
-    public void setNewPartnersRecruited(Integer newPartnersRecruited) { this.newPartnersRecruited = newPartnersRecruited; }
-    public BigDecimal getTotalPartnershipRemittance() { return totalPartnershipRemittance; }
-    public void setTotalPartnershipRemittance(BigDecimal totalPartnershipRemittance) { this.totalPartnershipRemittance = totalPartnershipRemittance; }
-    public Integer getTestimoniesSubmitted() { return testimoniesSubmitted; }
-    public void setTestimoniesSubmitted(Integer testimoniesSubmitted) { this.testimoniesSubmitted = testimoniesSubmitted; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 

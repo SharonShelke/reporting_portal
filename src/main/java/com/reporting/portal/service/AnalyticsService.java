@@ -142,15 +142,16 @@ public class AnalyticsService {
 
         long reportsSubmitted = reports.size();
         long activeZones = reports.stream().map(Report::getZoneName).filter(Objects::nonNull).distinct().count();
-        long newPartners = reports.stream().mapToLong(r -> r.getNewPartnersRecruited() != null ? r.getNewPartnersRecruited() : 0).sum();
+        long newPartners = sumNewPartners(from, to, zone);
         double avgPartners = reportsSubmitted > 0 ? (double) newPartners / reportsSubmitted : 0;
-        BigDecimal remit = reports.stream().map(r -> r.getTotalPartnershipRemittance() != null ? r.getTotalPartnershipRemittance() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal remit = sumRemittance(from, to, zone);
 
         // Remittance per zone
         Map<String, BigDecimal> remitMap = new LinkedHashMap<>();
-        for (Report r : reports) {
+        for (PartnershipReport r : prRepo.findAll()) {
+            if (r.getSubmittedDate() == null || r.getSubmittedDate().isBefore(from) || r.getSubmittedDate().isAfter(to) || (zone != null && !zone.equalsIgnoreCase(r.getZoneName()))) continue;
             String z = r.getZoneName() != null ? r.getZoneName() : "Unknown";
-            BigDecimal amt = r.getTotalPartnershipRemittance() != null ? r.getTotalPartnershipRemittance() : BigDecimal.ZERO;
+            BigDecimal amt = r.getTotalRemittance() != null ? r.getTotalRemittance() : BigDecimal.ZERO;
             remitMap.put(z, remitMap.getOrDefault(z, BigDecimal.ZERO).add(amt));
         }
         List<Map<String, Object>> remittanceData = new ArrayList<>();
@@ -183,9 +184,9 @@ public class AnalyticsService {
         );
 
         // HTTNM
-        int translations = reports.stream().mapToInt(r -> r.getHttnmTranslations() != null ? r.getHttnmTranslations() : 0).sum();
-        int outreaches = reports.stream().mapToInt(r -> r.getHttnmOutreachesHeld() != null ? r.getHttnmOutreachesHeld() : 0).sum();
-        int pictures = reports.stream().mapToInt(r -> r.getHttnmMediaSubmitted() != null ? r.getHttnmMediaSubmitted() : 0).sum();
+        int translations = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getOutreachesDone() != null ? r.getOutreachesDone() : 0).sum();
+        int outreaches = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getHealingOutreachesHeld() != null ? r.getHealingOutreachesHeld() : 0).sum();
+        int pictures = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getHealingMediaSubmitted() != null ? r.getHealingMediaSubmitted() : 0).sum();
         double avgOut = activeZones > 0 ? (double) outreaches / activeZones : 0;
         List<Map<String, Object>> httnmData = List.of(
                 Map.of("label", "Translations completed", "value", String.valueOf(translations)),
@@ -198,14 +199,19 @@ public class AnalyticsService {
         // Zones
         List<Map<String, Object>> zonesData = new ArrayList<>();
         for (Report r : reports) {
-            BigDecimal zRemit = r.getTotalPartnershipRemittance() != null ? r.getTotalPartnershipRemittance() : BigDecimal.ZERO;
+            String z = r.getZoneName() != null ? r.getZoneName() : "Unknown";
+            
+            BigDecimal zRemit = prRepo.findAll().stream().filter(p -> z.equalsIgnoreCase(p.getZoneName()) && p.getSubmittedDate() != null && !p.getSubmittedDate().isBefore(from) && !p.getSubmittedDate().isAfter(to)).map(p -> p.getTotalRemittance() != null ? p.getTotalRemittance() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+            int zPartners = prRepo.findAll().stream().filter(p -> z.equalsIgnoreCase(p.getZoneName()) && p.getSubmittedDate() != null && !p.getSubmittedDate().isBefore(from) && !p.getSubmittedDate().isAfter(to)).mapToInt(p -> p.getNewPartnersRecruited() != null ? p.getNewPartnersRecruited() : 0).sum();
+            int zOutreaches = orRepo.findAll().stream().filter(p -> z.equalsIgnoreCase(p.getZoneName()) && p.getSubmittedDate() != null && !p.getSubmittedDate().isBefore(from) && !p.getSubmittedDate().isAfter(to)).mapToInt(p -> p.getHealingOutreachesHeld() != null ? p.getHealingOutreachesHeld() : 0).sum();
+            
             zonesData.add(Map.of(
                 "id", r.getId(),
-                "name", r.getZoneName() != null ? r.getZoneName() : "N/A",
+                "name", z,
                 "manager", r.getZonalManager() != null ? r.getZonalManager() : "N/A",
                 "remit", "₦" + zRemit.divide(new BigDecimal("1000"), 0, RoundingMode.HALF_UP) + "K",
-                "partners", r.getNewPartnersRecruited() != null ? r.getNewPartnersRecruited() : 0,
-                "outreaches", r.getHttnmOutreachesHeld() != null ? r.getHttnmOutreachesHeld() : 0,
+                "partners", zPartners,
+                "outreaches", zOutreaches,
                 "status", r.getStatus() != null ? r.getStatus() : "PENDING"
             ));
         }
@@ -489,13 +495,13 @@ public class AnalyticsService {
         return orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).count();
     }
     private long sumNewPartners(LocalDate from, LocalDate to, String zone) {
-        return reportRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToLong(r -> r.getNewPartnersRecruited() != null ? r.getNewPartnersRecruited() : 0).sum();
+        return prRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToLong(r -> r.getNewPartnersRecruited() != null ? r.getNewPartnersRecruited() : 0).sum();
     }
     private BigDecimal sumRemittance(LocalDate from, LocalDate to, String zone) {
-        return reportRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).map(r -> r.getTotalPartnershipRemittance() != null ? r.getTotalPartnershipRemittance() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return prRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).map(r -> r.getTotalRemittance() != null ? r.getTotalRemittance() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     private long sumTestimonies(LocalDate from, LocalDate to, String zone) {
-        return reportRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToLong(r -> r.getTestimoniesSubmitted() != null ? r.getTestimoniesSubmitted() : 0).sum();
+        return trRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToLong(r -> r.getTestimoniesCount() != null ? r.getTestimoniesCount() : 0).sum();
     }
     private long countApprovedZonal(LocalDate from, LocalDate to, String zone) {
         return reportRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && "APPROVED".equalsIgnoreCase(r.getStatus()) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).count();

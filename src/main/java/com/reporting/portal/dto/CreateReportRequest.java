@@ -15,13 +15,6 @@ public record CreateReportRequest(
         String zoneName,
         String zonalManager,
 
-        BigDecimal totalPartnershipRemittance,
-        Integer newPartnersRecruited,
-        Integer testimoniesSubmitted,
-        Integer httnmTranslations,
-        Integer httnmOutreachesHeld,
-        Integer httnmMediaSubmitted,
-
         String zonalPastorExecutiveMinistersMeeting,
         String zonalManagerExecutiveMinistersMeeting,
         String zonalManagerStrategyMeeting,
@@ -29,8 +22,6 @@ public record CreateReportRequest(
         String testimonyClarificationConcern,
         String regionName,
         
-        String remittancePurpose,
-        Integer trumpetsBlown,
         String popMediaUrl,
         String participationPrayWithMe,
         Integer totalRegistrationHslhs,

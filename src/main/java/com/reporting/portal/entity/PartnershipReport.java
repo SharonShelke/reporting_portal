@@ -72,6 +72,12 @@ public class PartnershipReport {
     @Column(name = "sponsored_kidspiration", columnDefinition = "TEXT")
     private String sponsoredKidspiration;
 
+    @Column(name = "new_partners_recruited")
+    private Integer newPartnersRecruited;
+
+    @Column(name = "remittance_purpose", columnDefinition = "TEXT")
+    private String remittancePurpose;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getSubmitterEmail() { return submitterEmail; }
@@ -115,4 +121,9 @@ public class PartnershipReport {
     public void setSponsoredTeenspiration(String sponsoredTeenspiration) { this.sponsoredTeenspiration = sponsoredTeenspiration; }
     public String getSponsoredKidspiration() { return sponsoredKidspiration; }
     public void setSponsoredKidspiration(String sponsoredKidspiration) { this.sponsoredKidspiration = sponsoredKidspiration; }
+
+    public Integer getNewPartnersRecruited() { return newPartnersRecruited; }
+    public void setNewPartnersRecruited(Integer newPartnersRecruited) { this.newPartnersRecruited = newPartnersRecruited; }
+    public String getRemittancePurpose() { return remittancePurpose; }
+    public void setRemittancePurpose(String remittancePurpose) { this.remittancePurpose = remittancePurpose; }
 }
