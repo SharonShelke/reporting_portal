@@ -13,7 +13,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      List<Report> findBySubmitterEmail(String submitterEmail);
      List<Report> findByRegionName(String regionName);
 
-     @Query("SELECT SUM(r.newPartnersRecruited) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
+     @Query("SELECT SUM(r.totalRegistrationHslhs) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
      Long sumTotalAttendance(@Param("email") String email);
 
      List<Report> findTop5ByOrderBySubmittedAtDesc();
