@@ -184,7 +184,7 @@ public class AnalyticsService {
         );
 
         // HTTNM
-        int translations = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getOutreachesDone() != null ? r.getOutreachesDone() : 0).sum();
+        int translations = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getHealingTranslationsAchieved() != null ? r.getHealingTranslationsAchieved() : 0).sum();
         int outreaches = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getHealingOutreachesHeld() != null ? r.getHealingOutreachesHeld() : 0).sum();
         int pictures = orRepo.findAll().stream().filter(r -> r.getSubmittedDate() != null && !r.getSubmittedDate().isBefore(from) && !r.getSubmittedDate().isAfter(to) && (zone == null || zone.equalsIgnoreCase(r.getZoneName()))).mapToInt(r -> r.getHealingMediaSubmitted() != null ? r.getHealingMediaSubmitted() : 0).sum();
         double avgOut = activeZones > 0 ? (double) outreaches / activeZones : 0;
