@@ -638,7 +638,9 @@ public class UserService {
         var formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         var firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
         var lastName = user.getLastName() != null ? user.getLastName().trim() : "";
-        var displayName = !firstName.isBlank() ? firstName : user.getEmail();
+        var displayName = (!firstName.isBlank() || !lastName.isBlank()) 
+            ? (firstName + " " + lastName).trim() 
+            : user.getEmail();
         return new UserDto(
             user.getId(),
             firstName,
