@@ -66,6 +66,9 @@ public class PartnershipReport {
     @Column(name = "trumpets_blown")
     private Integer trumpetsBlown;
 
+    @Column(name = "great_shouts")
+    private Integer greatShouts;
+
     @Column(name = "testimonies_submitted")
     private Integer testimoniesSubmitted;
 
@@ -135,4 +138,13 @@ public class PartnershipReport {
     public void setNewPartnersRecruited(Integer newPartnersRecruited) { this.newPartnersRecruited = newPartnersRecruited; }
     public String getRemittancePurpose() { return remittancePurpose; }
     public void setRemittancePurpose(String remittancePurpose) { this.remittancePurpose = remittancePurpose; }
+    
+    public Integer getTrumpetsBlown() { return trumpetsBlown; }
+    public void setTrumpetsBlown(Integer trumpetsBlown) { this.trumpetsBlown = trumpetsBlown; }
+    
+    public Integer getGreatShouts() { return greatShouts; }
+    public void setGreatShouts(Integer greatShouts) { this.greatShouts = greatShouts; }
+    
+    public Integer getTestimoniesSubmitted() { return testimoniesSubmitted; }
+    public void setTestimoniesSubmitted(Integer testimoniesSubmitted) { this.testimoniesSubmitted = testimoniesSubmitted; }
 }

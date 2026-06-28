@@ -83,6 +83,10 @@ ADD COLUMN follow_up_plan TEXT DEFAULT NULL;
 -- Add great_shouts to zone_weekly_reports (Reverted below)
 ALTER TABLE zone_weekly_reports ADD COLUMN great_shouts INT DEFAULT 0;
 
+-- ADD NEW COLUMNS TO PARTNERSHIP REPORTS
+ALTER TABLE partnership_reports 
+    ADD COLUMN great_shouts INT DEFAULT 0;
+
 -- MIGRATE FIELDS FROM ZONAL REPORT TO OTHER REPORTS
 ALTER TABLE zone_weekly_reports
   DROP COLUMN total_partnership_remittance,
