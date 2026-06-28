@@ -64,8 +64,8 @@ public class OutreachReport {
     @Column(name = "follow_up_plan", columnDefinition = "TEXT")
     private String followUpPlan;
 
-    @Column(name = "outreaches_done")
-    private Integer outreachesDone = 0;
+    @Column(name = "healing_translations_achieved")
+    private Integer healingTranslationsAchieved = 0;
 
     @Column(name = "healing_outreaches_held")
     private Integer healingOutreachesHeld = 0;
@@ -96,8 +96,8 @@ public class OutreachReport {
     public String getFollowUpPlan() { return followUpPlan; }
     public void setFollowUpPlan(String followUpPlan) { this.followUpPlan = followUpPlan; }
 
-    public Integer getOutreachesDone() { return outreachesDone; }
-    public void setOutreachesDone(Integer outreachesDone) { this.outreachesDone = outreachesDone; }
+    public Integer getHealingTranslationsAchieved() { return healingTranslationsAchieved; }
+    public void setHealingTranslationsAchieved(Integer healingTranslationsAchieved) { this.healingTranslationsAchieved = healingTranslationsAchieved; }
     public Integer getHealingOutreachesHeld() { return healingOutreachesHeld; }
     public void setHealingOutreachesHeld(Integer healingOutreachesHeld) { this.healingOutreachesHeld = healingOutreachesHeld; }
     public Integer getHealingMediaSubmitted() { return healingMediaSubmitted; }

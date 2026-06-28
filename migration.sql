@@ -104,6 +104,6 @@ ALTER TABLE partnership_reports
   ADD COLUMN testimonies_submitted INT DEFAULT 0;
 
 ALTER TABLE outreach_reports 
-  ADD COLUMN outreaches_done INT DEFAULT 0,
+  ADD COLUMN healing_translations_achieved INT DEFAULT 0,
   ADD COLUMN healing_outreaches_held INT DEFAULT 0,
   ADD COLUMN healing_media_submitted INT DEFAULT 0;
