@@ -65,6 +65,12 @@ public class TestimonialReport {
     @Column(name = "others_testimonies", columnDefinition = "TEXT")
     private String othersTestimonies;
 
+    @Column(name = "member_name", columnDefinition = "VARCHAR(255)")
+    private String memberName;
+
+    @Column(name = "category_details", columnDefinition = "VARCHAR(255)")
+    private String categoryDetails;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }
@@ -91,5 +97,11 @@ public class TestimonialReport {
     public void setHealingTestimonies(String healingTestimonies) { this.healingTestimonies = healingTestimonies; }
     public String getOthersTestimonies() { return othersTestimonies; }
     public void setOthersTestimonies(String othersTestimonies) { this.othersTestimonies = othersTestimonies; }
+
+    public String getMemberName() { return memberName; }
+    public void setMemberName(String memberName) { this.memberName = memberName; }
+
+    public String getCategoryDetails() { return categoryDetails; }
+    public void setCategoryDetails(String categoryDetails) { this.categoryDetails = categoryDetails; }
 }
 

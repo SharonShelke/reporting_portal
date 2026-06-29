@@ -87,6 +87,11 @@ ALTER TABLE zone_weekly_reports ADD COLUMN great_shouts INT DEFAULT 0;
 ALTER TABLE partnership_reports 
     ADD COLUMN great_shouts INT DEFAULT 0;
 
+-- ADD NEW COLUMNS TO TESTIMONIAL REPORTS
+ALTER TABLE testimonial_reports 
+    ADD COLUMN member_name VARCHAR(255),
+    ADD COLUMN category_details VARCHAR(255);
+
 -- MIGRATE FIELDS FROM ZONAL REPORT TO OTHER REPORTS
 ALTER TABLE zone_weekly_reports
   DROP COLUMN total_partnership_remittance,
