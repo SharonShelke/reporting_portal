@@ -70,6 +70,9 @@ public class OutreachReport {
     @Column(name = "healing_outreaches_held")
     private Integer healingOutreachesHeld = 0;
 
+    @Column(name = "healing_outreach_locations", columnDefinition = "TEXT")
+    private String healingOutreachLocations;
+
     @Column(name = "healing_media_submitted")
     private Integer healingMediaSubmitted = 0;
 
@@ -100,6 +103,10 @@ public class OutreachReport {
     public void setHealingTranslationsAchieved(Integer healingTranslationsAchieved) { this.healingTranslationsAchieved = healingTranslationsAchieved; }
     public Integer getHealingOutreachesHeld() { return healingOutreachesHeld; }
     public void setHealingOutreachesHeld(Integer healingOutreachesHeld) { this.healingOutreachesHeld = healingOutreachesHeld; }
+
+    public String getHealingOutreachLocations() { return healingOutreachLocations; }
+    public void setHealingOutreachLocations(String healingOutreachLocations) { this.healingOutreachLocations = healingOutreachLocations; }
+
     public Integer getHealingMediaSubmitted() { return healingMediaSubmitted; }
     public void setHealingMediaSubmitted(Integer healingMediaSubmitted) { this.healingMediaSubmitted = healingMediaSubmitted; }
 }

@@ -115,4 +115,13 @@ ALTER TABLE partnership_reports
 ALTER TABLE outreach_reports 
   ADD COLUMN healing_translations_achieved INT DEFAULT 0,
   ADD COLUMN healing_outreaches_held INT DEFAULT 0,
-  ADD COLUMN healing_media_submitted INT DEFAULT 0;
+  ADD COLUMN healing_media_submitted INT DEFAULT 0,
+  ADD COLUMN healing_outreach_locations TEXT DEFAULT NULL;
+
+ALTER TABLE magazine_reports
+  DROP COLUMN outreach_locations,
+  DROP COLUMN sponsored_copies,
+  ADD COLUMN challenges_faced TEXT DEFAULT NULL,
+  ADD COLUMN monthly_minimum_order_amount_paid DECIMAL(12,2) DEFAULT 0.00,
+  ADD COLUMN cumulative_sponsored_amount_paid DECIMAL(12,2) DEFAULT 0.00,
+  ADD COLUMN proof_of_payment INT DEFAULT 0;

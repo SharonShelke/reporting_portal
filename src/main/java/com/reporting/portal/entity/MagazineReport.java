@@ -40,8 +40,8 @@ public class MagazineReport {
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
 
-    @Column(name = "sponsored_copies")
-    private Integer sponsoredCopies;
+    @Column(name = "challenges_faced", columnDefinition = "TEXT")
+    private String challengesFaced;
 
     @Column(name = "healing_outreaches")
     private Integer healingOutreaches;
@@ -64,8 +64,14 @@ public class MagazineReport {
     @Column(name = "monthly_minimum_order")
     private Integer monthlyMinimumOrder;
 
-    @Column(name = "amount_paid_magazine", precision = 12, scale = 2)
-    private java.math.BigDecimal amountPaidMagazine;
+    @Column(name = "monthly_minimum_order_amount_paid", precision = 12, scale = 2)
+    private java.math.BigDecimal monthlyMinimumOrderAmountPaid;
+
+    @Column(name = "cumulative_sponsored_amount_paid", precision = 12, scale = 2)
+    private java.math.BigDecimal cumulativeSponsoredAmountPaid;
+
+    @Column(name = "proof_of_payment")
+    private Integer proofOfPayment = 0;
 
     @Column(name = "adult_copies")
     private Integer adultCopies = 0;
@@ -94,13 +100,16 @@ public class MagazineReport {
     @Column(name = "dates_received")
     private String datesReceived;
 
-    @Column(name = "outreach_locations", columnDefinition = "TEXT")
-    private String outreachLocations;
-
     public String getDatesReceived() { return datesReceived; }
     public void setDatesReceived(String datesReceived) { this.datesReceived = datesReceived; }
-    public String getOutreachLocations() { return outreachLocations; }
-    public void setOutreachLocations(String outreachLocations) { this.outreachLocations = outreachLocations; }
+    public java.math.BigDecimal getMonthlyMinimumOrderAmountPaid() { return monthlyMinimumOrderAmountPaid; }
+    public void setMonthlyMinimumOrderAmountPaid(java.math.BigDecimal monthlyMinimumOrderAmountPaid) { this.monthlyMinimumOrderAmountPaid = monthlyMinimumOrderAmountPaid; }
+
+    public java.math.BigDecimal getCumulativeSponsoredAmountPaid() { return cumulativeSponsoredAmountPaid; }
+    public void setCumulativeSponsoredAmountPaid(java.math.BigDecimal cumulativeSponsoredAmountPaid) { this.cumulativeSponsoredAmountPaid = cumulativeSponsoredAmountPaid; }
+
+    public Integer getProofOfPayment() { return proofOfPayment; }
+    public void setProofOfPayment(Integer proofOfPayment) { this.proofOfPayment = proofOfPayment; }
 
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
@@ -120,14 +129,14 @@ public class MagazineReport {
 
     public Integer getMonthlyMinimumOrder() { return monthlyMinimumOrder; }
     public void setMonthlyMinimumOrder(Integer monthlyMinimumOrder) { this.monthlyMinimumOrder = monthlyMinimumOrder; }
-    public java.math.BigDecimal getAmountPaidMagazine() { return amountPaidMagazine; }
-    public void setAmountPaidMagazine(java.math.BigDecimal amountPaidMagazine) { this.amountPaidMagazine = amountPaidMagazine; }
 
     public Integer getAdultCopies() { return adultCopies; }
     public void setAdultCopies(Integer adultCopies) { this.adultCopies = adultCopies; }
     public String getAdultLanguages() { return adultLanguages; }
     public void setAdultLanguages(String adultLanguages) { this.adultLanguages = adultLanguages; }
 
+    public String getChallengesFaced() { return challengesFaced; }
+    public void setChallengesFaced(String challengesFaced) { this.challengesFaced = challengesFaced; }
     public Integer getTeensCopies() { return teensCopies; }
     public void setTeensCopies(Integer teensCopies) { this.teensCopies = teensCopies; }
     public String getTeensLanguages() { return teensLanguages; }
