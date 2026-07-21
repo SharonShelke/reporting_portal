@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping({"/api/reports", "/reports"})
-@CrossOrigin(origins = "https://65.2.153.58")
+@CrossOrigin(origins = {"http://65.2.153.58", "https://65.2.153.58", "http://localhost:3000"})
 public class ReportController {
 
     private final ReportService reportService;
