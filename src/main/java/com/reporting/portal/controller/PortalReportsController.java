@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping({"/api/portal-reports", "/portal-reports"})
-@CrossOrigin(origins = "http://65.1.248.88")
+@CrossOrigin(origins = "https://65.2.153.58")
 public class PortalReportsController {
 
     private final PartnershipReportRepository prRepo;

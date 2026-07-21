@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping({"/api/notifications", "/notifications"})
-@CrossOrigin(origins = "http://65.1.248.88")
+@CrossOrigin(origins = "https://65.2.153.58")
 public class NotificationController {
 
     private final NotificationService notificationService;
