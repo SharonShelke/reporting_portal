@@ -160,7 +160,7 @@ public class UserService {
         var user = new User();
         user.setEmail(request.getEmail().trim().toLowerCase());
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash this in production
-        user.setRole("zonal"); // Default role based on signup.jsx
+        user.setRole("user"); // Default role based on signup.jsx
         user.setStatus("inactive");
         System.err.println("Registering new user: email=" + user.getEmail() + ", initial_status=" + user.getStatus());
 
@@ -314,7 +314,7 @@ public class UserService {
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                user.setRole("zonal");
+                user.setRole("user");
                 user.setStatus("active"); // Auto-activate
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                 needsSave = true;
