@@ -23,6 +23,8 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/auth/**", "/auth/**").permitAll()
                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/error").permitAll()
@@ -36,7 +38,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
