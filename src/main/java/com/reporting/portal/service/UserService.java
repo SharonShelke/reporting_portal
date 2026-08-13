@@ -291,6 +291,10 @@ public class UserService {
                 user.setLastName(lastName);
                 needsSave = true;
             }
+            if ("user".equals(user.getRole()) || user.getRole() == null) {
+                user.setRole("zonal");
+                needsSave = true;
+            }
         } else {
             // 2. Try finding by email (auto-link existing account)
             var userByEmail = userRepository.findByEmail(email);
@@ -314,7 +318,7 @@ public class UserService {
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                user.setRole("user");
+                user.setRole("zonal");
                 user.setStatus("active"); // Auto-activate
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                 needsSave = true;
