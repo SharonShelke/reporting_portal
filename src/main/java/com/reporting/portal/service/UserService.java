@@ -300,7 +300,7 @@ public class UserService {
 
         if (userByKcId.isPresent()) {
             user = userByKcId.get();
-            // Optional: update names if they changed on KingsChat
+            // Update names if they changed on KingsChat
             if (firstName != null && !firstName.equalsIgnoreCase("KingsChat") && !firstName.equals(user.getFirstName())) {
                 user.setFirstName(firstName);
                 needsSave = true;
@@ -309,15 +309,11 @@ public class UserService {
                 user.setLastName(lastName);
                 needsSave = true;
             }
-            if ("user".equals(user.getRole()) || user.getRole() == null) {
-                user.setRole("zonal");
-                needsSave = true;
-            }
         } else {
             // 2. Try finding by email (auto-link existing account)
             var userByEmail = userRepository.findByEmail(email);
             
-            // 3. NEW: Try finding by phone (auto-link existing account)
+            // 3. Try finding by phone (auto-link existing account)
             var userByPhone = (phone != null) ? userRepository.findByPhone(phone) : java.util.Optional.<User>empty();
 
             if (userByEmail.isPresent()) {
@@ -330,41 +326,37 @@ public class UserService {
                 needsSave = true;
                 System.err.println("Auto-linked KingsChat ID " + kcId + " to existing user by phone: " + phone);
             } else {
-                // 3. Create new account (Auto-activated for KingsChat)
+                // 3. Create new account (Requires Admin Approval)
                 user = new User();
                 user.setEmail(email);
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                user.setRole("zonal");
-                user.setStatus("active"); // Auto-activate
+                user.setRole("user");
+                user.setStatus("inactive"); // Pending Admin approval
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                 needsSave = true;
                 
                 try {
-                    notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account auto-activated: " + user.getEmail(), "admin", null));
+                    notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
                 } catch (Exception ignored) {}
             }
         }
-        
-        // Ensure KingsChat users are always active when they log in
-        if (!"active".equalsIgnoreCase(user.getStatus())) {
-            String oldStatus = user.getStatus();
-            user.setStatus("active");
-            needsSave = true;
-            System.err.println("Auto-activated existing user " + user.getEmail() + " (was " + oldStatus + ") via KingsChat login.");
-            try {
-                notificationService.push(new com.reporting.portal.dto.NotificationRequest("Existing account auto-activated via KingsChat: " + user.getEmail(), "admin", null));
-            } catch (Exception ignored) {}
-        }
-        
-        // Always increment login count
-        user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
-        needsSave = true;
 
         if (needsSave) {
             user = userRepository.save(user);
         }
+        
+        // Enforce Admin approval check (Admins bypass approval)
+        boolean isSystemAdmin = "admin".equalsIgnoreCase(user.getRole()) || "admin@loveworld.com".equalsIgnoreCase(user.getEmail());
+        if (!isSystemAdmin && !"active".equalsIgnoreCase(user.getStatus())) {
+            System.err.println("KingsChat Login BLOCKED: Account pending admin approval for " + user.getEmail() + " (Status: " + user.getStatus() + ")");
+            throw new RuntimeException("Your account is pending admin approval. Please contact an administrator.");
+        }
+        
+        // Increment login count for active users
+        user.setKingchatLoginCount((user.getKingchatLoginCount() != null ? user.getKingchatLoginCount() : 0) + 1);
+        user = userRepository.save(user);
         
         try { auditLogService.logActivity(user.getFirstName() + " " + user.getLastName(), user.getId(), "Login", "Auth", "—", "Success", "Logged in via KingsChat."); } catch (Exception ignored) {}
         
