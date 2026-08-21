@@ -415,7 +415,6 @@ public class UserService {
         var user = userRepository.findById(id).orElseThrow();
         user.setFirstName(details.getFirstName());
         user.setLastName(details.getLastName());
-        user.setRole(details.getRole());
         user.setRegion(details.getRegion());
         
         // Prevent accidental status reset if already active
@@ -423,6 +422,20 @@ public class UserService {
             System.err.println("Blocked attempt to reset ACTIVE user " + user.getEmail() + " to INACTIVE via update");
         } else if (details.getStatus() != null) {
             user.setStatus(details.getStatus());
+        }
+        
+        if ("active".equalsIgnoreCase(user.getStatus())) {
+            if (!"admin".equalsIgnoreCase(details.getRole()) && !"admin".equalsIgnoreCase(user.getRole())) {
+                user.setRole("zonal");
+            } else {
+                user.setRole("admin");
+            }
+        } else {
+            if (!"admin".equalsIgnoreCase(details.getRole()) && !"admin".equalsIgnoreCase(user.getRole())) {
+                user.setRole("user");
+            } else {
+                user.setRole(details.getRole());
+            }
         }
         
         return mapToDto(userRepository.save(user));
@@ -435,6 +448,9 @@ public class UserService {
     public UserDto approveUser(Long id) {
         var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus("active");
+        if (!"admin".equalsIgnoreCase(user.getRole())) {
+            user.setRole("zonal");
+        }
         user = userRepository.save(user);
         
         try {

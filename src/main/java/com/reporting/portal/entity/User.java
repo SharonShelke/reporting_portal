@@ -29,7 +29,7 @@ public class User {
     
     private String password;
     
-    private String role; // 'global', 'zonal', 'admin', 'finance'
+    private String role; // 'global', 'zonal', 'admin'
     
     private String region;
     
