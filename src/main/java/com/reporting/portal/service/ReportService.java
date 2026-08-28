@@ -337,7 +337,6 @@ public class ReportService {
         return mapToDto(reportRepository.save(report));
     }
 
-    @Transactional
     public void deleteReport(Long id) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
