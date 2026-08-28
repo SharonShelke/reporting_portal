@@ -97,7 +97,7 @@ public class ReportController {
         return ResponseEntity.ok(reportService.uploadReports(file));
     }
 
-    @PutMapping("/{id}/approve")
+    @PostMapping("/{id}/approve")
     public ResponseEntity<ReportDto> approveReport(@PathVariable Long id) {
         return ResponseEntity.ok(reportService.approveReport(id));
     }

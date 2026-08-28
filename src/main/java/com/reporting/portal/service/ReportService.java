@@ -315,7 +315,8 @@ public class ReportService {
                 r.getStatus(),
                 r.getParticipationPrayWithMe(),
                 r.getTotalRegistrationHslhs(),
-                r.getHeraldConference()
+                r.getHeraldConference(),
+                r.getAdminNote()
         );
     }
 
