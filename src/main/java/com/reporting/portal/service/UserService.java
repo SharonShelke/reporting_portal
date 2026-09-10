@@ -210,6 +210,7 @@ public class UserService {
         
         try {
             notificationService.push(new com.reporting.portal.dto.NotificationRequest("New account registration pending approval: " + user.getEmail(), "admin", null));
+            emailService.sendAdminApprovalRequest(user.getEmail());
         } catch (Exception e) {}
 
         return mapToDto(user);
@@ -342,6 +343,7 @@ public class UserService {
                 
                 try {
                     notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
+                    emailService.sendAdminApprovalRequest(user.getEmail());
                 } catch (Exception ignored) {}
             }
         }

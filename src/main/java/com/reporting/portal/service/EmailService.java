@@ -46,4 +46,11 @@ public class EmailService {
         String body = "Your one-time password for resetting your password is: " + otp + "\n\nThis OTP will expire in 10 minutes.";
         sendEmail(to, subject, body);
     }
+
+    public void sendAdminApprovalRequest(String username) {
+        String to = "healingschool.intl.offices@gmail.com";
+        String subject = "Pending User Approval - Healing School Reporting Portal";
+        String body = "Please approve " + username + " on the Healing School Reporting Portal.";
+        sendEmail(to, subject, body);
+    }
 }

@@ -54,6 +54,9 @@ public class User {
     private String securityAnswer2;
     private String securityAnswer3;
 
+    @Column(name = "admin_approval_notification_sent", columnDefinition = "boolean default false")
+    private Boolean adminApprovalNotificationSent = false;
+
     public Long getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
@@ -74,6 +77,7 @@ public class User {
     public String getSecurityAnswer1() { return securityAnswer1; }
     public String getSecurityAnswer2() { return securityAnswer2; }
     public String getSecurityAnswer3() { return securityAnswer3; }
+    public Boolean getAdminApprovalNotificationSent() { return adminApprovalNotificationSent; }
     
     @PrePersist
     protected void onCreate() {
@@ -112,6 +116,7 @@ public class User {
     public void setSecurityAnswer1(String securityAnswer1) { this.securityAnswer1 = securityAnswer1; }
     public void setSecurityAnswer2(String securityAnswer2) { this.securityAnswer2 = securityAnswer2; }
     public void setSecurityAnswer3(String securityAnswer3) { this.securityAnswer3 = securityAnswer3; }
+    public void setAdminApprovalNotificationSent(Boolean adminApprovalNotificationSent) { this.adminApprovalNotificationSent = adminApprovalNotificationSent; }
 
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
     public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }
