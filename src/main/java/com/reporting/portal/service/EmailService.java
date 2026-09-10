@@ -47,10 +47,41 @@ public class EmailService {
         sendEmail(to, subject, body);
     }
 
-    public void sendAdminApprovalRequest(String username) {
+    public void sendHtmlEmail(String to, String subject, String htmlBody) {
+        try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("Failed to send HTML email: " + e.getMessage());
+            throw new RuntimeException("Failed to send email. Please check SMTP configuration: " + e.getMessage());
+        }
+    }
+
+    public void sendAdminApprovalRequest(String userEmail) {
         String to = "healingschool.intl.offices@gmail.com";
-        String subject = "Pending User Approval - Healing School Reporting Portal";
-        String body = "Please approve " + username + " on the Healing School Reporting Portal.";
-        sendEmail(to, subject, body);
+        String subject = "Action Required: User Approval - Healing School Reporting Portal";
+        String htmlBody = "<html><body style='font-family: Arial, sans-serif; line-height: 1.6;'>"
+                + "<h2>User Approval Required</h2>"
+                + "<p>Please approve <a href='mailto:" + userEmail + "'>" + userEmail + "</a> on the Healing School Reporting Portal.</p>"
+                + "<br/>"
+                + "<a href='https://65.2.153.58/admin/users' style='background-color: #1d4ed8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Review & Approve User</a>"
+                + "</body></html>";
+        sendHtmlEmail(to, subject, htmlBody);
+    }
+
+    public void sendUserApprovalNotification(String toEmail) {
+        String subject = "Account Approved - Healing School Reporting Portal";
+        String htmlBody = "<html><body style='font-family: Arial, sans-serif; line-height: 1.6;'>"
+                + "<h2>Account Approved</h2>"
+                + "<p>Your account has been approved. Please log in to the Healing School Reporting Portal to access your account.</p>"
+                + "<br/>"
+                + "<a href='https://65.2.153.58/login' style='background-color: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Login to Portal</a>"
+                + "</body></html>";
+        sendHtmlEmail(toEmail, subject, htmlBody);
     }
 }

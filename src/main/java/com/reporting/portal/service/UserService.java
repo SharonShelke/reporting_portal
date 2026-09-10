@@ -431,9 +431,11 @@ public class UserService {
 
     public UserDto updateUser(Long id, User details) {
         var user = userRepository.findById(id).orElseThrow();
-        user.setFirstName(details.getFirstName());
-        user.setLastName(details.getLastName());
-        user.setRegion(details.getRegion());
+        String oldStatus = user.getStatus();
+        
+        if (details.getFirstName() != null) user.setFirstName(details.getFirstName());
+        if (details.getLastName() != null) user.setLastName(details.getLastName());
+        if (details.getRegion() != null) user.setRegion(details.getRegion());
         
         if (details.getStatus() != null) {
             user.setStatus(details.getStatus());
@@ -443,7 +445,15 @@ public class UserService {
             user.setRole(details.getRole());
         }
         
-        return mapToDto(userRepository.save(user));
+        user = userRepository.save(user);
+        
+        if (!"active".equalsIgnoreCase(oldStatus) && "active".equalsIgnoreCase(user.getStatus())) {
+            try {
+                emailService.sendUserApprovalNotification(user.getEmail());
+            } catch (Exception e) {}
+        }
+        
+        return mapToDto(user);
     }
 
     public void deleteUser(Long id) {
@@ -460,7 +470,7 @@ public class UserService {
         
         try {
             auditLogService.logActivity("System Administrator", 1L, "Approved user", "User Management", "inactive", "active", "Admin approved account for " + user.getEmail());
-            emailService.sendSimpleEmail(user.getEmail(), "Account Approved", "Your account on Loveworld Reports has been approved by the administrator. You can now log in.");
+            emailService.sendUserApprovalNotification(user.getEmail());
         } catch (Exception e) {}
         
         return mapToDto(user);
