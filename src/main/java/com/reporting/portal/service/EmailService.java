@@ -35,7 +35,7 @@ public class EmailService {
     }
 
     public void sendInvitation(String to, String token) {
-        String link = "https://65.2.153.58/invite?token=" + token;
+        String link = "http://148.66.154.48/invite?token=" + token;
         String subject = "Account Invitation - Kingsforms";
         String body = "You have been invited to join Kingsforms. Please click the link below to complete your registration and set your password:\n\n" + link;
         sendEmail(to, subject, body);
@@ -69,7 +69,7 @@ public class EmailService {
                 + "<h2>User Approval Required</h2>"
                 + "<p>Please approve <a href='mailto:" + userEmail + "'>" + userEmail + "</a> on the Healing School Reporting Portal.</p>"
                 + "<br/>"
-                + "<a href='https://65.2.153.58/admin/users' style='background-color: #1d4ed8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Review & Approve User</a>"
+                + "<a href='http://148.66.154.48/admin/users' style='background-color: #1d4ed8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Review & Approve User</a>"
                 + "</body></html>";
         sendHtmlEmail(to, subject, htmlBody);
     }
@@ -80,7 +80,7 @@ public class EmailService {
                 + "<h2>Account Approved</h2>"
                 + "<p>Your account has been approved. Please log in to the Healing School Reporting Portal to access your account.</p>"
                 + "<br/>"
-                + "<a href='https://65.2.153.58/login' style='background-color: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Login to Portal</a>"
+                + "<a href='http://148.66.154.48/login' style='background-color: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>Login to Portal</a>"
                 + "</body></html>";
         sendHtmlEmail(toEmail, subject, htmlBody);
     }
