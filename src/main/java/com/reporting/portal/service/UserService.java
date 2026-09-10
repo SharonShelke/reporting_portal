@@ -435,25 +435,12 @@ public class UserService {
         user.setLastName(details.getLastName());
         user.setRegion(details.getRegion());
         
-        // Prevent accidental status reset if already active
-        if ("active".equalsIgnoreCase(user.getStatus()) && "inactive".equalsIgnoreCase(details.getStatus())) {
-            System.err.println("Blocked attempt to reset ACTIVE user " + user.getEmail() + " to INACTIVE via update");
-        } else if (details.getStatus() != null) {
+        if (details.getStatus() != null) {
             user.setStatus(details.getStatus());
         }
         
-        if ("active".equalsIgnoreCase(user.getStatus())) {
-            if (!"admin".equalsIgnoreCase(details.getRole()) && !"admin".equalsIgnoreCase(user.getRole())) {
-                user.setRole("zonal");
-            } else {
-                user.setRole("admin");
-            }
-        } else {
-            if (!"admin".equalsIgnoreCase(details.getRole()) && !"admin".equalsIgnoreCase(user.getRole())) {
-                user.setRole("user");
-            } else {
-                user.setRole(details.getRole());
-            }
+        if (details.getRole() != null) {
+            user.setRole(details.getRole());
         }
         
         return mapToDto(userRepository.save(user));
