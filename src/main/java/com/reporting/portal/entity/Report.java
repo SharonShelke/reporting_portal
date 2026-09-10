@@ -80,6 +80,9 @@ public class Report {
     @Column(name = "herald_conference", length = 100)
     private String heraldConference;
 
+    @Column(name = "dates_received", length = 50)
+    private String datesReceived;
+
     public LocalDate getSubmittedDate() { return submittedDate; }
     public void setSubmittedDate(LocalDate submittedDate) { this.submittedDate = submittedDate; }
     public String getZoneName() { return zoneName; }

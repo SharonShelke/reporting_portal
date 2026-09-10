@@ -17,5 +17,6 @@ public record ReportDto(
     String participationPrayWithMe,
     Integer totalRegistrationHslhs,
     String heraldConference,
-    String adminNote
+    String adminNote,
+    String datesReceived
 ) {}

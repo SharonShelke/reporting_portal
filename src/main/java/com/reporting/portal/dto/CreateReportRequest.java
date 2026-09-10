@@ -24,5 +24,6 @@ public record CreateReportRequest(
         
         String participationPrayWithMe,
         Integer totalRegistrationHslhs,
-        String heraldConference
+        String heraldConference,
+        String datesReceived
 ) {}

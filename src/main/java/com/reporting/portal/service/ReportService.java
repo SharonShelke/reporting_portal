@@ -73,6 +73,7 @@ public class ReportService {
         report.setParticipationPrayWithMe(request.participationPrayWithMe());
         report.setTotalRegistrationHslhs(request.totalRegistrationHslhs() != null ? request.totalRegistrationHslhs() : 0);
         report.setHeraldConference(request.heraldConference());
+        report.setDatesReceived(request.datesReceived());
         
         report.setStatus("PENDING");
 
@@ -316,7 +317,8 @@ public class ReportService {
                 r.getParticipationPrayWithMe(),
                 r.getTotalRegistrationHslhs(),
                 r.getHeraldConference(),
-                r.getAdminNote()
+                r.getAdminNote(),
+                r.getDatesReceived()
         );
     }
 
