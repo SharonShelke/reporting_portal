@@ -74,20 +74,7 @@ public class PortalApplication {
 				userRepository.save(zonal);
 			}
 
-			// GLOBAL FAIL-SAFE: Ensure ALL accounts except core system accounts are inactive on startup
-			// This is a "fix once and for all" to clear any legacy 'active' users.
-			userRepository.findAll().forEach(u -> {
-				String email = u.getEmail().toLowerCase();
-				if (!email.equals("admin@loveworld.com") && 
-				    !email.equals("global@loveworld.com") && 
-				    !email.equals("zonal@loveworld.com")) {
-					if (!"inactive".equalsIgnoreCase(u.getStatus())) {
-						System.out.println("SAFETY RESET: Setting " + email + " to inactive.");
-						u.setStatus("inactive");
-						userRepository.save(u);
-					}
-				}
-			});
+
 		};
 	}
 

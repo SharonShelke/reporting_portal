@@ -461,11 +461,19 @@ public class UserService {
         if (details.getRegion() != null) user.setRegion(details.getRegion());
         
         if (details.getStatus() != null) {
-            user.setStatus(details.getStatus());
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) && "inactive".equalsIgnoreCase(details.getStatus())) {
+                user.setStatus("active");
+            } else {
+                user.setStatus(details.getStatus());
+            }
         }
         
         if (details.getRole() != null) {
-            user.setRole(details.getRole());
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) && !"admin".equalsIgnoreCase(details.getRole())) {
+                user.setRole("admin");
+            } else {
+                user.setRole(details.getRole());
+            }
         }
         
         user = userRepository.save(user);
@@ -480,6 +488,10 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+        var user = userRepository.findById(id).orElseThrow();
+        if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail())) {
+            throw new RuntimeException("Cannot delete the primary system administrator.");
+        }
         userRepository.deleteById(id);
     }
 
