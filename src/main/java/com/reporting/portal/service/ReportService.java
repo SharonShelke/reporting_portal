@@ -251,7 +251,8 @@ public class ReportService {
                         c[11],
                         c.length > 12 ? c[12] : null,
                         c.length > 13 ? toInt(c[13]) : null,
-                        c.length > 14 ? c[14] : null
+                        c.length > 14 ? c[14] : null,
+                        c.length > 15 ? c[15] : null
                 );
 
                 saved.add(submitReport(req));
@@ -285,7 +286,8 @@ public class ReportService {
                         cell(row, 11),
                         cell(row, 12),
                         toInt(cell(row, 13)),
-                        cell(row, 14)
+                        cell(row, 14),
+                        cell(row, 15)
                 );
 
                 saved.add(submitReport(req));
