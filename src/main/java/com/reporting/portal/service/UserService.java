@@ -274,6 +274,15 @@ public class UserService {
                     if (profileData.containsKey("username")) username = String.valueOf(profileData.get("username"));
                     if (profileData.containsKey("id")) kcId = String.valueOf(profileData.get("id"));
                     if (profileData.containsKey("sub")) kcId = String.valueOf(profileData.get("sub"));
+                    
+                    if (profileData.containsKey("name")) {
+                        String fullName = String.valueOf(profileData.get("name"));
+                        String[] parts = fullName.trim().split(" ", 2);
+                        firstName = parts[0];
+                        if (parts.length > 1) lastName = parts[1];
+                    }
+                    if (profileData.containsKey("first_name") && profileData.get("first_name") != null) firstName = String.valueOf(profileData.get("first_name"));
+                    if (profileData.containsKey("last_name") && profileData.get("last_name") != null) lastName = String.valueOf(profileData.get("last_name"));
                 }
             }
         } catch (Exception e) {
@@ -289,8 +298,22 @@ public class UserService {
             email = (username != null && !username.isEmpty()) ? username + "@kingschat.com" : kcId + "@kingschat.com";
         }
         
-        firstName = (firstName != null && !firstName.isEmpty()) ? firstName : "KingsChat";
-        lastName = (lastName != null && !lastName.isEmpty()) ? lastName : "User";
+        if (firstName == null || firstName.trim().isEmpty()) {
+            if (username != null && !username.trim().isEmpty()) {
+                firstName = username;
+                lastName = "";
+            } else if (email != null && email.contains("@")) {
+                firstName = email.substring(0, email.indexOf("@"));
+                lastName = "";
+            } else {
+                firstName = "KingsChat";
+                lastName = "User";
+            }
+        }
+        
+        if (lastName == null) {
+            lastName = "";
+        }
         
         return processKingChatUser(kcId, email, firstName, lastName, phone);
     }
