@@ -26,6 +26,18 @@ public class PortalApplication {
 		return args -> {
 
 
+			if (!userRepository.existsByEmail("sharonshelke1@gmail.com")) {
+				User admin = new User();
+				admin.setFirstName("Sharon");
+				admin.setLastName("Shelke");
+				admin.setEmail("sharonshelke1@gmail.com");
+				admin.setPassword("admin123");
+				admin.setRole("admin");
+				admin.setRegion("Global");
+				admin.setStatus("active");
+				userRepository.save(admin);
+			}
+
 			if (!userRepository.existsByEmail("admin@loveworld.com")) {
 				User admin = new User();
 				admin.setFirstName("System");
@@ -36,18 +48,6 @@ public class PortalApplication {
 				admin.setRegion("Global");
 				admin.setStatus("active");
 				userRepository.save(admin);
-			}
-
-			if (!userRepository.existsByEmail("admin@loveworld.com")) {
-				User admin2 = new User();
-				admin2.setFirstName("Portal");
-				admin2.setLastName("Admin");
-				admin2.setEmail("admin@loveworld.com");
-				admin2.setPassword("Admin123!");
-				admin2.setRole("admin");
-				admin2.setRegion("Global");
-				admin2.setStatus("active");
-				userRepository.save(admin2);
 			}
 
 			if (!userRepository.existsByEmail("global@loveworld.com")) {
