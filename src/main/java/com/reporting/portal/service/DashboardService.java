@@ -4,6 +4,10 @@ import com.reporting.portal.dto.DashboardStatsDto;
 import com.reporting.portal.entity.Report;
 import com.reporting.portal.repository.ReportRepository;
 import com.reporting.portal.repository.UserRepository;
+import com.reporting.portal.repository.PartnershipReportRepository;
+import com.reporting.portal.repository.TestimonialReportRepository;
+import com.reporting.portal.repository.MagazineReportRepository;
+import com.reporting.portal.repository.OutreachReportRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -17,14 +21,33 @@ public class DashboardService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+    private final PartnershipReportRepository prRepo;
+    private final TestimonialReportRepository trRepo;
+    private final MagazineReportRepository mrRepo;
+    private final OutreachReportRepository orRepo;
 
-    public DashboardService(ReportRepository reportRepository, UserRepository userRepository) {
+    public DashboardService(ReportRepository reportRepository, UserRepository userRepository,
+                            PartnershipReportRepository prRepo, TestimonialReportRepository trRepo,
+                            MagazineReportRepository mrRepo, OutreachReportRepository orRepo) {
         this.reportRepository = reportRepository;
         this.userRepository = userRepository;
+        this.prRepo = prRepo;
+        this.trRepo = trRepo;
+        this.mrRepo = mrRepo;
+        this.orRepo = orRepo;
     }
 
     public DashboardStatsDto getDashboardStats(String email) {
-        Long totalReports = reportRepository.countReports(email);
+        Long zCount = reportRepository.countReports(email);
+        Long pCount = prRepo.countReports(email);
+        Long tCount = trRepo.countReports(email);
+        Long mCount = mrRepo.countReports(email);
+        Long oCount = orRepo.countReports(email);
+        Long totalReports = (zCount != null ? zCount : 0L)
+                          + (pCount != null ? pCount : 0L)
+                          + (tCount != null ? tCount : 0L)
+                          + (mCount != null ? mCount : 0L)
+                          + (oCount != null ? oCount : 0L);
         Long totalUsers = userRepository.count();
         
         LocalDateTime startOfWeek = LocalDateTime.now()

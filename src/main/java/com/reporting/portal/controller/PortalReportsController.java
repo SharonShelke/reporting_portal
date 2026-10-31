@@ -34,12 +34,21 @@ public class PortalReportsController {
         this.backupRepo = backupRepo;
     }
 
+    private void incrementUserReportCount(String email) {
+        if (email != null && !email.isBlank()) {
+            userRepository.findByEmail(email.trim().toLowerCase()).ifPresent(u -> {
+                u.setReportCount((u.getReportCount() != null ? u.getReportCount() : 0) + 1);
+                userRepository.save(u);
+            });
+        }
+    }
+
     // ── Partnership ───────────────────────────────────────
     @PostMapping("/partnership")
     public ResponseEntity<PartnershipReport> submitPartnership(@RequestBody PartnershipReport report) {
         if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
         if (report.getStatus() == null) report.setStatus("PENDING");
-        return ResponseEntity.ok(prRepo.save(report));
+        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(prRepo.save(report));
     }
 
     @GetMapping("/partnership")
@@ -80,7 +89,7 @@ public class PortalReportsController {
     public ResponseEntity<TestimonialReport> submitTestimonials(@RequestBody TestimonialReport report) {
         if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
         if (report.getStatus() == null) report.setStatus("PENDING");
-        return ResponseEntity.ok(trRepo.save(report));
+        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(trRepo.save(report));
     }
 
     @GetMapping("/testimonials")
@@ -121,7 +130,7 @@ public class PortalReportsController {
     public ResponseEntity<MagazineReport> submitMagazine(@RequestBody MagazineReport report) {
         if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
         if (report.getStatus() == null) report.setStatus("PENDING");
-        return ResponseEntity.ok(mrRepo.save(report));
+        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(mrRepo.save(report));
     }
 
     @GetMapping("/magazine")
@@ -162,7 +171,7 @@ public class PortalReportsController {
     public ResponseEntity<OutreachReport> submitOutreach(@RequestBody OutreachReport report) {
         if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
         if (report.getStatus() == null) report.setStatus("PENDING");
-        return ResponseEntity.ok(orRepo.save(report));
+        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(orRepo.save(report));
     }
 
     @GetMapping("/outreach")

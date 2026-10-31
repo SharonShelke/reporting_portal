@@ -210,7 +210,7 @@ public class UserService {
         
         try {
             notificationService.push(new com.reporting.portal.dto.NotificationRequest("New account registration pending approval: " + user.getEmail(), "admin", null));
-            emailService.sendAdminApprovalRequest(user.getEmail());
+            final String approvalRegEmail = user.getEmail(); java.util.concurrent.CompletableFuture.runAsync(() -> { try { emailService.sendAdminApprovalRequest(approvalRegEmail); } catch (Exception e) { System.err.println("Async approval email error: " + e.getMessage()); } });
             user.setAdminApprovalNotificationSent(true);
             userRepository.save(user);
         } catch (Exception e) {}
@@ -249,7 +249,7 @@ public class UserService {
 
         // 1. Try fetching from KingsChat API for verification and profile updates
         // We only DO this if we are missing critical info (email or kcId) or to verify token validity.
-        // If we already have the info from the JWT decode, we can be more lenient with timeouts.
+        if (kcId == null || email == null) {
         try {
             System.err.println("[" + java.time.LocalTime.now() + "] Verifying KingsChat profile...");
             java.net.http.HttpRequest profileReq = java.net.http.HttpRequest.newBuilder()
@@ -288,6 +288,7 @@ public class UserService {
         } catch (Exception e) {
             System.err.println("KingsChat API verification skipped/failed: " + e.getMessage());
             // We continue using pre-decoded values from JWT if available
+        }
         }
 
         if (kcId == null || kcId.isEmpty()) {
@@ -368,7 +369,7 @@ public class UserService {
                 
                 try {
                     notificationService.push(new com.reporting.portal.dto.NotificationRequest("New KingsChat account registration pending approval: " + user.getEmail(), "admin", null));
-                    emailService.sendAdminApprovalRequest(user.getEmail());
+                    final String approvalKcEmail = user.getEmail(); java.util.concurrent.CompletableFuture.runAsync(() -> { try { emailService.sendAdminApprovalRequest(approvalKcEmail); } catch (Exception e) { System.err.println("Async approval email error: " + e.getMessage()); } });
                     user.setAdminApprovalNotificationSent(true);
                 } catch (Exception ignored) {}
             }
@@ -722,7 +723,8 @@ public class UserService {
             user.getStatus() != null ? user.getStatus() : "inactive",
             user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
             user.getInviteToken(),
-            user.getKingschatId()
+            user.getKingschatId(),
+            user.getReportCount()
         );
     }
 }

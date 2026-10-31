@@ -11,5 +11,6 @@ public record UserDto(
     String status,
     String joined,
     String inviteToken,
-    String kingschatId
+    String kingschatId,
+    Integer reportCount
 ) {}

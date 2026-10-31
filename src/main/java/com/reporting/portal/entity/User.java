@@ -56,6 +56,7 @@ public class User {
 
     @Column(name = "admin_approval_notification_sent", columnDefinition = "boolean default false")
     private Boolean adminApprovalNotificationSent = false;
+    @Column(name = "report_count") private Integer reportCount = 0;
 
     public Long getId() { return id; }
     public String getFirstName() { return firstName; }
@@ -78,6 +79,7 @@ public class User {
     public String getSecurityAnswer2() { return securityAnswer2; }
     public String getSecurityAnswer3() { return securityAnswer3; }
     public Boolean getAdminApprovalNotificationSent() { return adminApprovalNotificationSent; }
+    public Integer getReportCount() { return reportCount != null ? reportCount : 0; }
     
     @PrePersist
     protected void onCreate() {
@@ -121,4 +123,5 @@ public class User {
     public void setKingchatLoginCount(Integer kingchatLoginCount) { this.kingchatLoginCount = kingchatLoginCount; }
     public void setKingschatId(String kingschatId) { this.kingschatId = kingschatId; }
     public void setPhone(String phone) { this.phone = phone; }
+    public void setReportCount(Integer reportCount) { this.reportCount = reportCount; }
 }

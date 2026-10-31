@@ -78,6 +78,12 @@ public class ReportService {
         report.setStatus("PENDING");
 
         Report saved = reportRepository.save(report);
+        if (report.getSubmitterEmail() != null && !report.getSubmitterEmail().isBlank()) {
+            userRepository.findByEmail(report.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                u.setReportCount((u.getReportCount() != null ? u.getReportCount() : 0) + 1);
+                userRepository.save(u);
+            });
+        }
 
         // Notify Sharon for approval
         try {

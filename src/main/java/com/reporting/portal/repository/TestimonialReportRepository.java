@@ -1,4 +1,10 @@
 package com.reporting.portal.repository;
 import com.reporting.portal.entity.TestimonialReport;
 import org.springframework.data.jpa.repository.JpaRepository;
-public interface TestimonialReportRepository extends JpaRepository<TestimonialReport, Long> {}
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface TestimonialReportRepository extends JpaRepository<TestimonialReport, Long> {
+    @Query("SELECT COUNT(r) FROM TestimonialReport r WHERE (:email IS NULL OR :email = '' OR r.submitterEmail = :email)")
+    Long countReports(@Param("email") String email);
+}
