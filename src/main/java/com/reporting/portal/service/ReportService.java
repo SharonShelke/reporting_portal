@@ -105,7 +105,9 @@ public class ReportService {
 
         User user = userRepository.findByEmail(email).orElse(null);
 
-        if (user == null) return List.of();
+        if (user == null) {
+            return mapAll(reportRepository.findBySubmitterEmail(email.trim().toLowerCase()));
+        }
 
         return switch (user.getRole()) {
             case "admin"  -> mapAll(reportRepository.findAll());

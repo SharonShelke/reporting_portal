@@ -54,10 +54,14 @@ public class PortalReportsController {
     @GetMapping("/partnership")
     public ResponseEntity<List<PartnershipReport>> getPartnership(@RequestParam(required = false) String email) {
         if (email == null || email.isBlank()) return ResponseEntity.ok(prRepo.findAll());
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) return ResponseEntity.ok(List.of());
-        if ("admin".equals(user.getRole()) || "global".equals(user.getRole())) return ResponseEntity.ok(prRepo.findAll());
-        return ResponseEntity.ok(prRepo.findAll().stream().filter(r -> email.equals(r.getSubmitterEmail())).collect(Collectors.toList()));
+        final String clean = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(clean).orElse(null);
+        if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
+            return ResponseEntity.ok(prRepo.findAll());
+        }
+        return ResponseEntity.ok(prRepo.findAll().stream()
+                .filter(r -> r.getSubmitterEmail() != null && r.getSubmitterEmail().trim().equalsIgnoreCase(clean))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/partnership/{id}/approve")
@@ -95,10 +99,14 @@ public class PortalReportsController {
     @GetMapping("/testimonials")
     public ResponseEntity<List<TestimonialReport>> getTestimonials(@RequestParam(required = false) String email) {
         if (email == null || email.isBlank()) return ResponseEntity.ok(trRepo.findAll());
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) return ResponseEntity.ok(List.of());
-        if ("admin".equals(user.getRole()) || "global".equals(user.getRole())) return ResponseEntity.ok(trRepo.findAll());
-        return ResponseEntity.ok(trRepo.findAll().stream().filter(r -> email.equals(r.getSubmitterEmail())).collect(Collectors.toList()));
+        final String clean = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(clean).orElse(null);
+        if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
+            return ResponseEntity.ok(trRepo.findAll());
+        }
+        return ResponseEntity.ok(trRepo.findAll().stream()
+                .filter(r -> r.getSubmitterEmail() != null && r.getSubmitterEmail().trim().equalsIgnoreCase(clean))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/testimonials/{id}/approve")
@@ -136,10 +144,14 @@ public class PortalReportsController {
     @GetMapping("/magazine")
     public ResponseEntity<List<MagazineReport>> getMagazine(@RequestParam(required = false) String email) {
         if (email == null || email.isBlank()) return ResponseEntity.ok(mrRepo.findAll());
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) return ResponseEntity.ok(List.of());
-        if ("admin".equals(user.getRole()) || "global".equals(user.getRole())) return ResponseEntity.ok(mrRepo.findAll());
-        return ResponseEntity.ok(mrRepo.findAll().stream().filter(r -> email.equals(r.getSubmitterEmail())).collect(Collectors.toList()));
+        final String clean = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(clean).orElse(null);
+        if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
+            return ResponseEntity.ok(mrRepo.findAll());
+        }
+        return ResponseEntity.ok(mrRepo.findAll().stream()
+                .filter(r -> r.getSubmitterEmail() != null && r.getSubmitterEmail().trim().equalsIgnoreCase(clean))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/magazine/{id}/approve")
@@ -177,10 +189,14 @@ public class PortalReportsController {
     @GetMapping("/outreach")
     public ResponseEntity<List<OutreachReport>> getOutreach(@RequestParam(required = false) String email) {
         if (email == null || email.isBlank()) return ResponseEntity.ok(orRepo.findAll());
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) return ResponseEntity.ok(List.of());
-        if ("admin".equals(user.getRole()) || "global".equals(user.getRole())) return ResponseEntity.ok(orRepo.findAll());
-        return ResponseEntity.ok(orRepo.findAll().stream().filter(r -> email.equals(r.getSubmitterEmail())).collect(Collectors.toList()));
+        final String clean = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(clean).orElse(null);
+        if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
+            return ResponseEntity.ok(orRepo.findAll());
+        }
+        return ResponseEntity.ok(orRepo.findAll().stream()
+                .filter(r -> r.getSubmitterEmail() != null && r.getSubmitterEmail().trim().equalsIgnoreCase(clean))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/outreach/{id}/approve")
