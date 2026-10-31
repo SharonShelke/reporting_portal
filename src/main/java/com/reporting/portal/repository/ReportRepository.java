@@ -13,16 +13,15 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      List<Report> findBySubmitterEmail(String submitterEmail);
      List<Report> findByRegionName(String regionName);
 
-     @Query("SELECT SUM(r.totalRegistrationHslhs) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
-     Long sumTotalAttendance(@Param("email") String email);
-
      List<Report> findTop5ByOrderBySubmittedAtDesc();
-
      List<Report> findTop5BySubmitterEmailOrderBySubmittedAtDesc(String email);
 
-     @Query("SELECT COUNT(r) FROM Report r WHERE r.submittedAt >= :start AND (:email IS NULL OR r.submitterEmail = :email)")
+     @Query("SELECT COUNT(r) FROM Report r WHERE (:email IS NULL OR :email = '' OR LOWER(r.submitterEmail) = LOWER(:email))")
+     Long countReports(@Param("email") String email);
+
+     @Query("SELECT COUNT(r) FROM Report r WHERE r.submittedAt >= :start AND (:email IS NULL OR :email = '' OR LOWER(r.submitterEmail) = LOWER(:email))")
      Long countReportsSince(@Param("start") LocalDateTime start, @Param("email") String email);
 
-     @Query("SELECT COUNT(r) FROM Report r WHERE (:email IS NULL OR r.submitterEmail = :email)")
-     Long countReports(@Param("email") String email);
+     @Query("SELECT SUM(r.totalRegistrationHslhs) FROM Report r WHERE (:email IS NULL OR :email = '' OR LOWER(r.submitterEmail) = LOWER(:email))")
+     Long sumTotalAttendance(@Param("email") String email);
 }

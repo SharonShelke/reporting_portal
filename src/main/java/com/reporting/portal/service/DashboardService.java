@@ -38,11 +38,26 @@ public class DashboardService {
     }
 
     public DashboardStatsDto getDashboardStats(String email) {
-        Long zCount = reportRepository.countReports(email);
-        Long pCount = prRepo.countReports(email);
-        Long tCount = trRepo.countReports(email);
-        Long mCount = mrRepo.countReports(email);
-        Long oCount = orRepo.countReports(email);
+        String cleanEmail = (email != null && !email.trim().isEmpty() && !email.trim().equalsIgnoreCase("undefined") && !email.trim().equalsIgnoreCase("null"))
+                ? email.trim().toLowerCase()
+                : null;
+
+        // Admins and Global Managers see all reports across the entire organization
+        if (cleanEmail != null) {
+            var userOpt = userRepository.findByEmail(cleanEmail);
+            if (userOpt.isPresent()) {
+                String role = userOpt.get().getRole();
+                if ("admin".equalsIgnoreCase(role) || "global".equalsIgnoreCase(role)) {
+                    cleanEmail = null;
+                }
+            }
+        }
+
+        Long zCount = (cleanEmail == null) ? reportRepository.count() : reportRepository.countReports(cleanEmail);
+        Long pCount = (cleanEmail == null) ? prRepo.count() : prRepo.countReports(cleanEmail);
+        Long tCount = (cleanEmail == null) ? trRepo.count() : trRepo.countReports(cleanEmail);
+        Long mCount = (cleanEmail == null) ? mrRepo.count() : mrRepo.countReports(cleanEmail);
+        Long oCount = (cleanEmail == null) ? orRepo.count() : orRepo.countReports(cleanEmail);
         Long totalReports = (zCount != null ? zCount : 0L)
                           + (pCount != null ? pCount : 0L)
                           + (tCount != null ? tCount : 0L)
@@ -53,9 +68,9 @@ public class DashboardService {
         LocalDateTime startOfWeek = LocalDateTime.now()
             .with(DayOfWeek.MONDAY)
             .withHour(0).withMinute(0).withSecond(0);
-        Long reportsThisWeek = reportRepository.countReportsSince(startOfWeek, email);
+        Long reportsThisWeek = reportRepository.countReportsSince(startOfWeek, cleanEmail);
         
-        Long totalAttendance = reportRepository.sumTotalAttendance(email);
+        Long totalAttendance = reportRepository.sumTotalAttendance(cleanEmail);
         if (totalAttendance == null) totalAttendance = 0L;
         
         // Mocking completion rate logic: (submitted / expected)
@@ -70,14 +85,14 @@ public class DashboardService {
         campaigns.add(new DashboardStatsDto.CampaignStat("Healing Streams", (int)(totalAttendance * 0.3), "#6366f1"));
 
         // Recent activity
-        List<Report> recent = (email == null) 
+        List<Report> recent = (cleanEmail == null) 
             ? reportRepository.findTop5ByOrderBySubmittedAtDesc()
-            : reportRepository.findTop5BySubmitterEmailOrderBySubmittedAtDesc(email);
+            : reportRepository.findTop5BySubmitterEmailOrderBySubmittedAtDesc(cleanEmail);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         List<DashboardStatsDto.RecentActivity> activities = recent.stream()
             .map(r -> new DashboardStatsDto.RecentActivity(
-                r.getSubmittedBy() != null ? r.getSubmittedBy() : "User",
+                r.getSubmittedBy() != null ? r.getSubmittedBy() : (r.getZonalManager() != null ? r.getZonalManager() : "User"),
                 r.getZoneName() != null ? r.getZoneName() : "Zone",
                 r.getSubmittedAt() != null ? r.getSubmittedAt().format(formatter) : "—"
             )).toList();
