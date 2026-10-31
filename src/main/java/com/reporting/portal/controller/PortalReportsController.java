@@ -88,6 +88,16 @@ public class PortalReportsController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/partnership/{id}/reject")
+    public ResponseEntity<?> rejectPartnership(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+        return prRepo.findById(id).map(r -> {
+            r.setStatus("REJECTED");
+            if (body != null && body.containsKey("reason")) r.setAdminNote(body.get("reason"));
+            return ResponseEntity.ok(prRepo.save(r));
+        })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/partnership/{id}")
     public ResponseEntity<?> deletePartnership(@PathVariable Long id) {
         return prRepo.findById(id).map(r -> {
@@ -148,6 +158,16 @@ public class PortalReportsController {
         return trRepo.findById(id).map(r -> {
             r.setStatus("CLARIFICATION_NEEDED");
             r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(trRepo.save(r));
+        })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/testimonials/{id}/reject")
+    public ResponseEntity<?> rejectTestimonial(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+        return trRepo.findById(id).map(r -> {
+            r.setStatus("REJECTED");
+            if (body != null && body.containsKey("reason")) r.setAdminNote(body.get("reason"));
             return ResponseEntity.ok(trRepo.save(r));
         })
                 .orElse(ResponseEntity.notFound().build());
@@ -218,6 +238,16 @@ public class PortalReportsController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/magazine/{id}/reject")
+    public ResponseEntity<?> rejectMagazine(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+        return mrRepo.findById(id).map(r -> {
+            r.setStatus("REJECTED");
+            if (body != null && body.containsKey("reason")) r.setAdminNote(body.get("reason"));
+            return ResponseEntity.ok(mrRepo.save(r));
+        })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/magazine/{id}")
     public ResponseEntity<?> deleteMagazine(@PathVariable Long id) {
         return mrRepo.findById(id).map(r -> {
@@ -278,6 +308,16 @@ public class PortalReportsController {
         return orRepo.findById(id).map(r -> {
             r.setStatus("CLARIFICATION_NEEDED");
             r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(orRepo.save(r));
+        })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/outreach/{id}/reject")
+    public ResponseEntity<?> rejectOutreach(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+        return orRepo.findById(id).map(r -> {
+            r.setStatus("REJECTED");
+            if (body != null && body.containsKey("reason")) r.setAdminNote(body.get("reason"));
             return ResponseEntity.ok(orRepo.save(r));
         })
                 .orElse(ResponseEntity.notFound().build());

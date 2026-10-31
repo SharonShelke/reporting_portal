@@ -49,15 +49,15 @@ public class ReportService {
     public ReportDto submitReport(CreateReportRequest request) {
         Report report = new Report();
 
-        report.setSubmittedBy(request.submittedBy());
-        report.setSubmitterEmail(request.submitterEmail());
-        report.setSubmittedDate(request.submittedDate());
-        report.setSubmittedTime(request.submittedTime());
-        report.setWeekStartDate(request.weekStartDate());
+        report.setSubmittedBy(request.submittedBy() != null && !request.submittedBy().isBlank() ? request.submittedBy().trim() : "User");
+        report.setSubmitterEmail(request.submitterEmail() != null && !request.submitterEmail().isBlank() ? request.submitterEmail().trim().toLowerCase() : "admin@loveworld.com");
+        report.setSubmittedDate(request.submittedDate() != null ? request.submittedDate() : LocalDate.now());
+        report.setSubmittedTime(request.submittedTime() != null ? request.submittedTime() : LocalTime.now());
+        report.setWeekStartDate(request.weekStartDate() != null ? request.weekStartDate() : LocalDate.now());
 
-        report.setZoneName(request.zoneName());
-        report.setZonalManager(request.zonalManager());
-        report.setZonalPastor(request.zonalPastor());
+        report.setZoneName(request.zoneName() != null && !request.zoneName().isBlank() ? request.zoneName().trim() : "Default Zone");
+        report.setZonalManager(request.zonalManager() != null && !request.zonalManager().isBlank() ? request.zonalManager().trim() : report.getSubmittedBy());
+        report.setZonalPastor(request.zonalPastor() != null && !request.zonalPastor().isBlank() ? request.zonalPastor().trim() : "—");
 
         report.setZonalPastorExecutiveMinistersMeeting(
                 parseAttendance(request.zonalPastorExecutiveMinistersMeeting())
@@ -101,20 +101,17 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<ReportDto> getAllReports(String email) {
         if (email == null || email.isBlank()) {
-            return mapAll(reportRepository.findAll());
+            return mapAll(reportRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id")));
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        final String clean = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(clean).orElse(null);
 
-        if (user == null) {
-            return mapAll(reportRepository.findBySubmitterEmail(email.trim().toLowerCase()));
+        if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
+            return mapAll(reportRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id")));
         }
 
-        return switch (user.getRole()) {
-            case "admin"  -> mapAll(reportRepository.findAll());
-            case "global" -> mapAll(reportRepository.findByRegionName(user.getRegion()));
-            default -> mapAll(reportRepository.findBySubmitterEmail(user.getEmail()));
-        };
+        return mapAll(reportRepository.findByEmailOrSubmitter(clean));
     }
 
     // ===================== EXPORT =====================
@@ -351,6 +348,17 @@ public class ReportService {
                 .orElseThrow(() -> new RuntimeException("Report not found"));
         report.setStatus("CLARIFICATION_NEEDED");
         report.setAdminNote(note);
+        return mapToDto(reportRepository.save(report));
+    }
+
+    @Transactional
+    public ReportDto rejectReport(Long id, String reason) {
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        report.setStatus("REJECTED");
+        if (reason != null && !reason.isBlank()) {
+            report.setAdminNote(reason);
+        }
         return mapToDto(reportRepository.save(report));
     }
 

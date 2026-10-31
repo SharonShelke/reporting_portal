@@ -107,6 +107,12 @@ public class ReportController {
         return ResponseEntity.ok(reportService.clarifyReport(id, body.getOrDefault("note", "")));
     }
 
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<?> rejectReport(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+        String reason = body != null ? body.getOrDefault("reason", "") : "";
+        return ResponseEntity.ok(reportService.rejectReport(id, reason));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReport(@PathVariable Long id) {
         reportService.deleteReport(id);
