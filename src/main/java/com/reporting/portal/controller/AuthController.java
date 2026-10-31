@@ -40,13 +40,24 @@ public class AuthController {
     }
 
     @PostMapping("/kingchat")
-    public ResponseEntity<?> kingchatLogin(@RequestBody java.util.Map<String, String> request) {
+    public ResponseEntity<?> kingchatLogin(@RequestBody java.util.Map<String, Object> request) {
         try {
-            String token = request.get("token");
-            String email = request.get("email");
-            String firstName = request.get("firstName");
-            String lastName = request.get("lastName");
-            String username = request.get("username");
+            String token = request.get("token") != null ? String.valueOf(request.get("token")) : null;
+            Object emailObj = request.get("email");
+            String email = null;
+            if (emailObj instanceof java.util.Map) {
+                Object addr = ((java.util.Map<?, ?>) emailObj).get("address");
+                if (addr == null) addr = ((java.util.Map<?, ?>) emailObj).get("email");
+                email = addr != null ? String.valueOf(addr) : null;
+            } else if (emailObj != null) {
+                email = String.valueOf(emailObj);
+            }
+            if (email != null && (email.isBlank() || "null".equalsIgnoreCase(email.trim()))) {
+                email = null;
+            }
+            String firstName = request.get("firstName") != null ? String.valueOf(request.get("firstName")) : null;
+            String lastName = request.get("lastName") != null ? String.valueOf(request.get("lastName")) : null;
+            String username = request.get("username") != null ? String.valueOf(request.get("username")) : null;
             return ResponseEntity.ok(userService.loginWithKingChatToken(token, email, firstName, lastName, username));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
