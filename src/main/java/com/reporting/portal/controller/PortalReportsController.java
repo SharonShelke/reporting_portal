@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping({"/api/portal-reports", "/portal-reports"})
+@RequestMapping({ "/api/portal-reports", "/portal-reports" })
 
 public class PortalReportsController {
 
@@ -24,8 +24,8 @@ public class PortalReportsController {
             .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
     public PortalReportsController(PartnershipReportRepository prRepo, TestimonialReportRepository trRepo,
-                                   MagazineReportRepository mrRepo, OutreachReportRepository orRepo,
-                                   UserRepository userRepository, ReportBackupRepository backupRepo) {
+            MagazineReportRepository mrRepo, OutreachReportRepository orRepo,
+            UserRepository userRepository, ReportBackupRepository backupRepo) {
         this.prRepo = prRepo;
         this.trRepo = trRepo;
         this.mrRepo = mrRepo;
@@ -46,14 +46,18 @@ public class PortalReportsController {
     // ── Partnership ───────────────────────────────────────
     @PostMapping("/partnership")
     public ResponseEntity<PartnershipReport> submitPartnership(@RequestBody PartnershipReport report) {
-        if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
-        if (report.getStatus() == null) report.setStatus("PENDING");
-        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(prRepo.save(report));
+        if (report.getSubmittedDate() == null)
+            report.setSubmittedDate(LocalDate.now());
+        if (report.getStatus() == null)
+            report.setStatus("PENDING");
+        incrementUserReportCount(report.getSubmitterEmail());
+        return ResponseEntity.ok(prRepo.save(report));
     }
 
     @GetMapping("/partnership")
     public ResponseEntity<List<PartnershipReport>> getPartnership(@RequestParam(required = false) String email) {
-        if (email == null || email.isBlank()) return ResponseEntity.ok(prRepo.findAll());
+        if (email == null || email.isBlank())
+            return ResponseEntity.ok(prRepo.findAll());
         final String clean = email.trim().toLowerCase();
         User user = userRepository.findByEmail(clean).orElse(null);
         if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
@@ -66,13 +70,20 @@ public class PortalReportsController {
 
     @PostMapping("/partnership/{id}/approve")
     public ResponseEntity<?> approvePartnership(@PathVariable Long id) {
-        return prRepo.findById(id).map(r -> { r.setStatus("APPROVED"); return ResponseEntity.ok(prRepo.save(r)); })
+        return prRepo.findById(id).map(r -> {
+            r.setStatus("APPROVED");
+            return ResponseEntity.ok(prRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/partnership/{id}/clarification")
     public ResponseEntity<?> clarifyPartnership(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return prRepo.findById(id).map(r -> { r.setStatus("CLARIFICATION_NEEDED"); r.setAdminNote(body.getOrDefault("note", "")); return ResponseEntity.ok(prRepo.save(r)); })
+        return prRepo.findById(id).map(r -> {
+            r.setStatus("CLARIFICATION_NEEDED");
+            r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(prRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -82,7 +93,9 @@ public class PortalReportsController {
             try {
                 String json = objectMapper.writeValueAsString(r);
                 backupRepo.save(new ReportBackup(r.getId(), "Partnership", json, "Admin"));
-            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.err.println("Backup failed: " + e.getMessage());
+            }
             prRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
@@ -91,14 +104,18 @@ public class PortalReportsController {
     // ── Testimonials ──────────────────────────────────────
     @PostMapping("/testimonials")
     public ResponseEntity<TestimonialReport> submitTestimonials(@RequestBody TestimonialReport report) {
-        if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
-        if (report.getStatus() == null) report.setStatus("PENDING");
-        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(trRepo.save(report));
+        if (report.getSubmittedDate() == null)
+            report.setSubmittedDate(LocalDate.now());
+        if (report.getStatus() == null)
+            report.setStatus("PENDING");
+        incrementUserReportCount(report.getSubmitterEmail());
+        return ResponseEntity.ok(trRepo.save(report));
     }
 
     @GetMapping("/testimonials")
     public ResponseEntity<List<TestimonialReport>> getTestimonials(@RequestParam(required = false) String email) {
-        if (email == null || email.isBlank()) return ResponseEntity.ok(trRepo.findAll());
+        if (email == null || email.isBlank())
+            return ResponseEntity.ok(trRepo.findAll());
         final String clean = email.trim().toLowerCase();
         User user = userRepository.findByEmail(clean).orElse(null);
         if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
@@ -111,13 +128,20 @@ public class PortalReportsController {
 
     @PostMapping("/testimonials/{id}/approve")
     public ResponseEntity<?> approveTestimonial(@PathVariable Long id) {
-        return trRepo.findById(id).map(r -> { r.setStatus("APPROVED"); return ResponseEntity.ok(trRepo.save(r)); })
+        return trRepo.findById(id).map(r -> {
+            r.setStatus("APPROVED");
+            return ResponseEntity.ok(trRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/testimonials/{id}/clarification")
     public ResponseEntity<?> clarifyTestimonial(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return trRepo.findById(id).map(r -> { r.setStatus("CLARIFICATION_NEEDED"); r.setAdminNote(body.getOrDefault("note", "")); return ResponseEntity.ok(trRepo.save(r)); })
+        return trRepo.findById(id).map(r -> {
+            r.setStatus("CLARIFICATION_NEEDED");
+            r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(trRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -127,7 +151,9 @@ public class PortalReportsController {
             try {
                 String json = objectMapper.writeValueAsString(r);
                 backupRepo.save(new ReportBackup(r.getId(), "Testimonial", json, "Admin"));
-            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.err.println("Backup failed: " + e.getMessage());
+            }
             trRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
@@ -136,14 +162,18 @@ public class PortalReportsController {
     // ── Magazine ──────────────────────────────────────────
     @PostMapping("/magazine")
     public ResponseEntity<MagazineReport> submitMagazine(@RequestBody MagazineReport report) {
-        if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
-        if (report.getStatus() == null) report.setStatus("PENDING");
-        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(mrRepo.save(report));
+        if (report.getSubmittedDate() == null)
+            report.setSubmittedDate(LocalDate.now());
+        if (report.getStatus() == null)
+            report.setStatus("PENDING");
+        incrementUserReportCount(report.getSubmitterEmail());
+        return ResponseEntity.ok(mrRepo.save(report));
     }
 
     @GetMapping("/magazine")
     public ResponseEntity<List<MagazineReport>> getMagazine(@RequestParam(required = false) String email) {
-        if (email == null || email.isBlank()) return ResponseEntity.ok(mrRepo.findAll());
+        if (email == null || email.isBlank())
+            return ResponseEntity.ok(mrRepo.findAll());
         final String clean = email.trim().toLowerCase();
         User user = userRepository.findByEmail(clean).orElse(null);
         if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
@@ -156,13 +186,20 @@ public class PortalReportsController {
 
     @PostMapping("/magazine/{id}/approve")
     public ResponseEntity<?> approveMagazine(@PathVariable Long id) {
-        return mrRepo.findById(id).map(r -> { r.setStatus("APPROVED"); return ResponseEntity.ok(mrRepo.save(r)); })
+        return mrRepo.findById(id).map(r -> {
+            r.setStatus("APPROVED");
+            return ResponseEntity.ok(mrRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/magazine/{id}/clarification")
     public ResponseEntity<?> clarifyMagazine(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return mrRepo.findById(id).map(r -> { r.setStatus("CLARIFICATION_NEEDED"); r.setAdminNote(body.getOrDefault("note", "")); return ResponseEntity.ok(mrRepo.save(r)); })
+        return mrRepo.findById(id).map(r -> {
+            r.setStatus("CLARIFICATION_NEEDED");
+            r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(mrRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -172,7 +209,9 @@ public class PortalReportsController {
             try {
                 String json = objectMapper.writeValueAsString(r);
                 backupRepo.save(new ReportBackup(r.getId(), "Magazine", json, "Admin"));
-            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.err.println("Backup failed: " + e.getMessage());
+            }
             mrRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
@@ -181,14 +220,18 @@ public class PortalReportsController {
     // ── Outreach ──────────────────────────────────────────
     @PostMapping("/outreach")
     public ResponseEntity<OutreachReport> submitOutreach(@RequestBody OutreachReport report) {
-        if (report.getSubmittedDate() == null) report.setSubmittedDate(LocalDate.now());
-        if (report.getStatus() == null) report.setStatus("PENDING");
-        incrementUserReportCount(report.getSubmitterEmail()); return ResponseEntity.ok(orRepo.save(report));
+        if (report.getSubmittedDate() == null)
+            report.setSubmittedDate(LocalDate.now());
+        if (report.getStatus() == null)
+            report.setStatus("PENDING");
+        incrementUserReportCount(report.getSubmitterEmail());
+        return ResponseEntity.ok(orRepo.save(report));
     }
 
     @GetMapping("/outreach")
     public ResponseEntity<List<OutreachReport>> getOutreach(@RequestParam(required = false) String email) {
-        if (email == null || email.isBlank()) return ResponseEntity.ok(orRepo.findAll());
+        if (email == null || email.isBlank())
+            return ResponseEntity.ok(orRepo.findAll());
         final String clean = email.trim().toLowerCase();
         User user = userRepository.findByEmail(clean).orElse(null);
         if (user != null && ("admin".equalsIgnoreCase(user.getRole()) || "global".equalsIgnoreCase(user.getRole()))) {
@@ -201,13 +244,20 @@ public class PortalReportsController {
 
     @PostMapping("/outreach/{id}/approve")
     public ResponseEntity<?> approveOutreach(@PathVariable Long id) {
-        return orRepo.findById(id).map(r -> { r.setStatus("APPROVED"); return ResponseEntity.ok(orRepo.save(r)); })
+        return orRepo.findById(id).map(r -> {
+            r.setStatus("APPROVED");
+            return ResponseEntity.ok(orRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/outreach/{id}/clarification")
     public ResponseEntity<?> clarifyOutreach(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return orRepo.findById(id).map(r -> { r.setStatus("CLARIFICATION_NEEDED"); r.setAdminNote(body.getOrDefault("note", "")); return ResponseEntity.ok(orRepo.save(r)); })
+        return orRepo.findById(id).map(r -> {
+            r.setStatus("CLARIFICATION_NEEDED");
+            r.setAdminNote(body.getOrDefault("note", ""));
+            return ResponseEntity.ok(orRepo.save(r));
+        })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -217,11 +267,11 @@ public class PortalReportsController {
             try {
                 String json = objectMapper.writeValueAsString(r);
                 backupRepo.save(new ReportBackup(r.getId(), "Outreach", json, "Admin"));
-            } catch (Exception e) { System.err.println("Backup failed: " + e.getMessage()); }
+            } catch (Exception e) {
+                System.err.println("Backup failed: " + e.getMessage());
+            }
             orRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
 }
-
-
