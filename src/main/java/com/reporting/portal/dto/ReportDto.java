@@ -7,6 +7,8 @@ public record ReportDto(
     String createdAt,
     String zoneName,
     String zonalManager,
+    String zonalPastor,
+    String submittedBy,
     String zonalPastorExecutiveMinistersMeeting,
     String zonalManagerExecutiveMinistersMeeting,
     String zonalManagerStrategyMeetingAttendance,

@@ -14,6 +14,7 @@ public record CreateReportRequest(
 
         String zoneName,
         String zonalManager,
+        String zonalPastor,
 
         String zonalPastorExecutiveMinistersMeeting,
         String zonalManagerExecutiveMinistersMeeting,

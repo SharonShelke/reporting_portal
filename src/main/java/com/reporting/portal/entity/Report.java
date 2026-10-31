@@ -47,6 +47,9 @@ public class Report {
     @Column(name = "zonal_manager", nullable = false, length = 150)
     private String zonalManager;
 
+    @Column(name = "zonal_pastor", length = 150)
+    private String zonalPastor;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "zonal_pastor_executive_ministers_meeting", nullable = false)
     private AttendanceStatus zonalPastorExecutiveMinistersMeeting;

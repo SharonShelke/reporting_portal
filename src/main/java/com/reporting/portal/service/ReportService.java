@@ -57,6 +57,7 @@ public class ReportService {
 
         report.setZoneName(request.zoneName());
         report.setZonalManager(request.zonalManager());
+        report.setZonalPastor(request.zonalPastor());
 
         report.setZonalPastorExecutiveMinistersMeeting(
                 parseAttendance(request.zonalPastorExecutiveMinistersMeeting())
@@ -252,11 +253,11 @@ public class ReportService {
                         LocalDate.parse(c[4]),
                         c[5],
                         c[6],
+                        null,
                         c[7],
                         c[8],
                         c[9],
                         c[10],
-                        c[11],
                         c.length > 12 ? c[12] : null,
                         c.length > 13 ? toInt(c[13]) : null,
                         c.length > 14 ? c[14] : null,
@@ -287,6 +288,7 @@ public class ReportService {
                         LocalDate.parse(cell(row, 4)),
                         cell(row, 5),
                         cell(row, 6),
+                        null,
                         cell(row, 7),
                         cell(row, 8),
                         cell(row, 9),
@@ -314,12 +316,14 @@ public class ReportService {
 
         return new ReportDto(
                 r.getId(),
-                r.getSubmittedAt() != null ? r.getSubmittedAt().format(f) : "",
+                r.getSubmittedAt() != null ? r.getSubmittedAt().format(f) : (r.getSubmittedDate() != null ? r.getSubmittedDate().toString() : ""),
                 r.getZoneName(),
                 r.getZonalManager(),
-                r.getZonalPastorExecutiveMinistersMeeting().name(),
-                r.getZonalManagerExecutiveMinistersMeeting().name(),
-                r.getZonalManagerStrategyMeeting().name(),
+                r.getZonalPastor() != null ? r.getZonalPastor() : "",
+                r.getSubmittedBy() != null ? r.getSubmittedBy() : (r.getZonalManager() != null ? r.getZonalManager() : "User"),
+                r.getZonalPastorExecutiveMinistersMeeting() != null ? r.getZonalPastorExecutiveMinistersMeeting().name() : "",
+                r.getZonalManagerExecutiveMinistersMeeting() != null ? r.getZonalManagerExecutiveMinistersMeeting().name() : "",
+                r.getZonalManagerStrategyMeeting() != null ? r.getZonalManagerStrategyMeeting().name() : "",
                 r.getTestimonyClarificationConcern(),
                 r.getSubmitterEmail(),
                 r.getRegionName(),
