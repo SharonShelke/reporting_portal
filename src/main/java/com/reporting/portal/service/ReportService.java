@@ -258,6 +258,7 @@ public class ReportService {
                         c[8],
                         c[9],
                         c[10],
+                        c.length > 11 ? c[11] : null,
                         c.length > 12 ? c[12] : null,
                         c.length > 13 ? toInt(c[13]) : null,
                         c.length > 14 ? c[14] : null,
