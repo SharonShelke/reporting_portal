@@ -5,6 +5,11 @@ import com.reporting.portal.dto.RegisterRequest;
 import com.reporting.portal.dto.UserDto;
 import com.reporting.portal.entity.User;
 import com.reporting.portal.repository.UserRepository;
+import com.reporting.portal.repository.ReportRepository;
+import com.reporting.portal.repository.PartnershipReportRepository;
+import com.reporting.portal.repository.TestimonialReportRepository;
+import com.reporting.portal.repository.MagazineReportRepository;
+import com.reporting.portal.repository.OutreachReportRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,16 +41,28 @@ public class UserService {
     private final AuditLogService auditLogService;
     private final EmailService emailService;
     private final NotificationService notificationService;
+    private final ReportRepository reportRepository;
+    private final PartnershipReportRepository prRepo;
+    private final TestimonialReportRepository trRepo;
+    private final MagazineReportRepository mrRepo;
+    private final OutreachReportRepository orRepo;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder()
         .connectTimeout(java.time.Duration.ofSeconds(5))
         .build();
 
-    public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService, NotificationService notificationService) {
+    public UserService(UserRepository userRepository, AuditLogService auditLogService, EmailService emailService, NotificationService notificationService,
+                       ReportRepository reportRepository, PartnershipReportRepository prRepo, TestimonialReportRepository trRepo,
+                       MagazineReportRepository mrRepo, OutreachReportRepository orRepo) {
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
         this.emailService = emailService;
         this.notificationService = notificationService;
+        this.reportRepository = reportRepository;
+        this.prRepo = prRepo;
+        this.trRepo = trRepo;
+        this.mrRepo = mrRepo;
+        this.orRepo = orRepo;
     }
 
     public UserDto login(LoginRequest request) {
@@ -339,6 +356,14 @@ public class UserService {
                 user.setLastName(lastName);
                 needsSave = true;
             }
+            // Ensure system admins stay admin & active, and all other non-admin roles are zonal
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) {
+                if (!"admin".equalsIgnoreCase(user.getRole())) { user.setRole("admin"); needsSave = true; }
+                if (!"active".equalsIgnoreCase(user.getStatus())) { user.setStatus("active"); needsSave = true; }
+            } else if (!"admin".equalsIgnoreCase(user.getRole()) && !"zonal".equalsIgnoreCase(user.getRole())) {
+                user.setRole("zonal");
+                needsSave = true;
+            }
         } else {
             // 2. Try finding by email (auto-link existing account)
             var userByEmail = userRepository.findByEmail(email);
@@ -349,6 +374,12 @@ public class UserService {
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
                 user.setKingschatId(kcId); // Link it!
+                if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) {
+                    if (!"admin".equalsIgnoreCase(user.getRole())) user.setRole("admin");
+                    if (!"active".equalsIgnoreCase(user.getStatus())) user.setStatus("active");
+                } else if (!"admin".equalsIgnoreCase(user.getRole()) && !"zonal".equalsIgnoreCase(user.getRole())) {
+                    user.setRole("zonal");
+                }
                 needsSave = true;
             } else if (userByPhone.isPresent()) {
                 user = userByPhone.get();
@@ -362,8 +393,13 @@ public class UserService {
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                user.setRole("user");
-                user.setStatus("inactive"); // Pending Admin approval
+                if ("admin@loveworld.com".equalsIgnoreCase(email) || "sharonshelke1@gmail.com".equalsIgnoreCase(email)) {
+                    user.setRole("admin");
+                    user.setStatus("active");
+                } else {
+                    user.setRole("zonal");
+                    user.setStatus("inactive"); // Pending Admin approval
+                }
                 user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                 needsSave = true;
                 
@@ -470,10 +506,14 @@ public class UserService {
         }
         
         if (details.getRole() != null) {
-            if (("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) && !"admin".equalsIgnoreCase(details.getRole())) {
+            String targetRole = details.getRole().trim().toLowerCase();
+            if (!"admin".equals(targetRole)) {
+                targetRole = "zonal";
+            }
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) && !"admin".equals(targetRole)) {
                 user.setRole("admin");
             } else {
-                user.setRole(details.getRole());
+                user.setRole(targetRole);
             }
         }
         
@@ -712,19 +752,32 @@ public class UserService {
         var displayName = (!firstName.isBlank() || !lastName.isBlank()) 
             ? (firstName + " " + lastName).trim() 
             : user.getEmail();
+
+        long actualReportCount = 0;
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            String email = user.getEmail().trim().toLowerCase();
+            actualReportCount = (reportRepository != null ? reportRepository.countReports(email) : 0L)
+                + (prRepo != null ? prRepo.countReports(email) : 0L)
+                + (trRepo != null ? trRepo.countReports(email) : 0L)
+                + (mrRepo != null ? mrRepo.countReports(email) : 0L)
+                + (orRepo != null ? orRepo.countReports(email) : 0L);
+        }
+
+        String normalizedRole = "admin".equalsIgnoreCase(user.getRole()) ? "admin" : "zonal";
+
         return new UserDto(
             user.getId(),
             firstName,
             lastName,
             displayName,
             user.getEmail(),
-            user.getRole(),
+            normalizedRole,
             user.getRegion() != null ? user.getRegion() : "Global",
             user.getStatus() != null ? user.getStatus() : "inactive",
             user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
             user.getInviteToken(),
             user.getKingschatId(),
-            user.getReportCount()
+            (int) actualReportCount
         );
     }
 }

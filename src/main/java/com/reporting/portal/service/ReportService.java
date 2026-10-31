@@ -365,6 +365,13 @@ public class ReportService {
             System.err.println("Backup failed: " + e.getMessage());
         }
         
+        if (report.getSubmitterEmail() != null && !report.getSubmitterEmail().isBlank()) {
+            userRepository.findByEmail(report.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                int current = u.getReportCount() != null ? u.getReportCount() : 0;
+                u.setReportCount(Math.max(0, current - 1));
+                userRepository.save(u);
+            });
+        }
         reportRepository.delete(report);
     }
 

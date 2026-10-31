@@ -2,6 +2,7 @@ package com.reporting.portal.controller;
 
 import com.reporting.portal.entity.*;
 import com.reporting.portal.repository.*;
+import com.reporting.portal.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -96,6 +97,13 @@ public class PortalReportsController {
             } catch (Exception e) {
                 System.err.println("Backup failed: " + e.getMessage());
             }
+            if (r.getSubmitterEmail() != null && !r.getSubmitterEmail().isBlank()) {
+                userRepository.findByEmail(r.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                    int cur = u.getReportCount() != null ? u.getReportCount() : 0;
+                    u.setReportCount(Math.max(0, cur - 1));
+                    userRepository.save(u);
+                });
+            }
             prRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
@@ -153,6 +161,13 @@ public class PortalReportsController {
                 backupRepo.save(new ReportBackup(r.getId(), "Testimonial", json, "Admin"));
             } catch (Exception e) {
                 System.err.println("Backup failed: " + e.getMessage());
+            }
+            if (r.getSubmitterEmail() != null && !r.getSubmitterEmail().isBlank()) {
+                userRepository.findByEmail(r.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                    int cur = u.getReportCount() != null ? u.getReportCount() : 0;
+                    u.setReportCount(Math.max(0, cur - 1));
+                    userRepository.save(u);
+                });
             }
             trRepo.delete(r);
             return ResponseEntity.ok().build();
@@ -212,6 +227,13 @@ public class PortalReportsController {
             } catch (Exception e) {
                 System.err.println("Backup failed: " + e.getMessage());
             }
+            if (r.getSubmitterEmail() != null && !r.getSubmitterEmail().isBlank()) {
+                userRepository.findByEmail(r.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                    int cur = u.getReportCount() != null ? u.getReportCount() : 0;
+                    u.setReportCount(Math.max(0, cur - 1));
+                    userRepository.save(u);
+                });
+            }
             mrRepo.delete(r);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
@@ -269,6 +291,13 @@ public class PortalReportsController {
                 backupRepo.save(new ReportBackup(r.getId(), "Outreach", json, "Admin"));
             } catch (Exception e) {
                 System.err.println("Backup failed: " + e.getMessage());
+            }
+            if (r.getSubmitterEmail() != null && !r.getSubmitterEmail().isBlank()) {
+                userRepository.findByEmail(r.getSubmitterEmail().trim().toLowerCase()).ifPresent(u -> {
+                    int cur = u.getReportCount() != null ? u.getReportCount() : 0;
+                    u.setReportCount(Math.max(0, cur - 1));
+                    userRepository.save(u);
+                });
             }
             orRepo.delete(r);
             return ResponseEntity.ok().build();
