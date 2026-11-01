@@ -77,7 +77,7 @@ public class UserService {
             .or(() -> userRepository.findByPhone(identifier));
 
         User user;
-        if (userOpt.isEmpty() && ("admin@loveworld.com".equalsIgnoreCase(identifier) || "sharonshelke1@gmail.com".equalsIgnoreCase(identifier))) {
+        if (userOpt.isEmpty() && "admin@loveworld.com".equalsIgnoreCase(identifier)) {
             user = new User();
             user.setFirstName("System");
             user.setLastName("Administrator");
@@ -94,7 +94,7 @@ public class UserService {
         var email = user.getEmail();
 
         // Ensure system admin accounts are always active and have admin role
-        if ("admin@loveworld.com".equalsIgnoreCase(email) || "sharonshelke1@gmail.com".equalsIgnoreCase(email)) {
+        if ("admin@loveworld.com".equalsIgnoreCase(email)) {
             if (!"active".equalsIgnoreCase(user.getStatus()) || !"admin".equalsIgnoreCase(user.getRole())) {
                 user.setStatus("active");
                 user.setRole("admin");
@@ -357,7 +357,7 @@ public class UserService {
                 needsSave = true;
             }
             // Ensure system admins stay admin & active, and all other non-admin roles are zonal
-            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) {
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail())) {
                 if (!"admin".equalsIgnoreCase(user.getRole())) { user.setRole("admin"); needsSave = true; }
                 if (!"active".equalsIgnoreCase(user.getStatus())) { user.setStatus("active"); needsSave = true; }
             } else if (!"admin".equalsIgnoreCase(user.getRole()) && !"zonal".equalsIgnoreCase(user.getRole())) {
@@ -374,7 +374,7 @@ public class UserService {
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
                 user.setKingschatId(kcId); // Link it!
-                if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) {
+                if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail())) {
                     if (!"admin".equalsIgnoreCase(user.getRole())) user.setRole("admin");
                     if (!"active".equalsIgnoreCase(user.getStatus())) user.setStatus("active");
                 } else if (!"admin".equalsIgnoreCase(user.getRole()) && !"zonal".equalsIgnoreCase(user.getRole())) {
@@ -393,7 +393,7 @@ public class UserService {
                 user.setKingschatId(kcId);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                if ("admin@loveworld.com".equalsIgnoreCase(email) || "sharonshelke1@gmail.com".equalsIgnoreCase(email)) {
+                if ("admin@loveworld.com".equalsIgnoreCase(email)) {
                     user.setRole("admin");
                     user.setStatus("active");
                 } else {
@@ -416,7 +416,7 @@ public class UserService {
         }
         
         // Enforce Admin approval check (Admins bypass approval)
-        boolean isSystemAdmin = "admin".equalsIgnoreCase(user.getRole()) || "admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail());
+        boolean isSystemAdmin = "admin".equalsIgnoreCase(user.getRole()) || "admin@loveworld.com".equalsIgnoreCase(user.getEmail());
         if (!isSystemAdmin && !"active".equalsIgnoreCase(user.getStatus())) {
             System.err.println("KingsChat Login BLOCKED: Account pending admin approval for " + user.getEmail() + " (Status: " + user.getStatus() + ")");
             throw new RuntimeException("Your account is pending admin approval. Please contact an administrator.");
@@ -498,7 +498,7 @@ public class UserService {
         if (details.getRegion() != null) user.setRegion(details.getRegion());
         
         if (details.getStatus() != null) {
-            if (("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) && "inactive".equalsIgnoreCase(details.getStatus())) {
+            if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) && "inactive".equalsIgnoreCase(details.getStatus())) {
                 user.setStatus("active");
             } else {
                 user.setStatus(details.getStatus());
@@ -530,7 +530,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         var user = userRepository.findById(id).orElseThrow();
-        if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail()) || "sharonshelke1@gmail.com".equalsIgnoreCase(user.getEmail())) {
+        if ("admin@loveworld.com".equalsIgnoreCase(user.getEmail())) {
             throw new RuntimeException("Cannot delete the primary system administrator.");
         }
         userRepository.deleteById(id);
