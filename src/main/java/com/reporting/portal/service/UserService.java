@@ -753,16 +753,7 @@ public class UserService {
             ? (firstName + " " + lastName).trim() 
             : user.getEmail();
 
-        long actualReportCount = 0;
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            String email = user.getEmail().trim().toLowerCase();
-            actualReportCount = (reportRepository != null ? reportRepository.countReports(email) : 0L)
-                + (prRepo != null ? prRepo.countReports(email) : 0L)
-                + (trRepo != null ? trRepo.countReports(email) : 0L)
-                + (mrRepo != null ? mrRepo.countReports(email) : 0L)
-                + (orRepo != null ? orRepo.countReports(email) : 0L);
-        }
-
+        int reportCount = user.getReportCount() != null ? user.getReportCount() : 0;
         String normalizedRole = "admin".equalsIgnoreCase(user.getRole()) ? "admin" : "zonal";
 
         return new UserDto(
@@ -777,7 +768,7 @@ public class UserService {
             user.getJoinedDate() != null ? user.getJoinedDate().format(formatter) : null,
             user.getInviteToken(),
             user.getKingschatId(),
-            (int) actualReportCount
+            reportCount
         );
     }
 }

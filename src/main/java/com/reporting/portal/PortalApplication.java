@@ -17,7 +17,7 @@ public class PortalApplication {
 
 	public static void main(String[] args) {
 		System.out.println("==============================================");
-		System.out.println("Portal Backend Starting - VERSION: 2.2 (STRICT 2 ROLES)");
+		System.out.println("Portal Backend Starting - VERSION: 2.3 (POOL FIXED)");
 		System.out.println("==============================================");
 		SpringApplication.run(PortalApplication.class, args);
 	}
@@ -77,6 +77,27 @@ public class PortalApplication {
 					"UPDATE loveworld_reports.zone_weekly_reports " +
 					"SET submitted_by = COALESCE(NULLIF(zonal_manager, ''), submitter_email, 'Zonal User') " +
 					"WHERE submitted_by IS NULL OR submitted_by = '' OR submitted_by = 'User' OR submitted_by = '—'"
+				);
+
+				// Synchronize user report_count column across all 5 report tables in 1 fast query
+				stmt.executeUpdate(
+					"UPDATE loveworld_reports.users u " +
+					"SET report_count = COALESCE(( " +
+					"    SELECT COUNT(*) FROM loveworld_reports.zone_weekly_reports r " +
+					"    WHERE LOWER(TRIM(r.submitter_email)) = LOWER(TRIM(u.email)) " +
+					"), 0) + COALESCE(( " +
+					"    SELECT COUNT(*) FROM loveworld_reports.partnership_reports pr " +
+					"    WHERE LOWER(TRIM(pr.submitter_email)) = LOWER(TRIM(u.email)) " +
+					"), 0) + COALESCE(( " +
+					"    SELECT COUNT(*) FROM loveworld_reports.testimonial_reports tr " +
+					"    WHERE LOWER(TRIM(tr.submitter_email)) = LOWER(TRIM(u.email)) " +
+					"), 0) + COALESCE(( " +
+					"    SELECT COUNT(*) FROM loveworld_reports.magazine_reports mr " +
+					"    WHERE LOWER(TRIM(mr.submitter_email)) = LOWER(TRIM(u.email)) " +
+					"), 0) + COALESCE(( " +
+					"    SELECT COUNT(*) FROM loveworld_reports.outreach_reports orpt " +
+					"    WHERE LOWER(TRIM(orpt.submitter_email)) = LOWER(TRIM(u.email)) " +
+					"), 0)"
 				);
 
 				System.out.println("Database startup data normalization complete.");
