@@ -198,7 +198,7 @@ public class UserService {
         var user = new User();
         user.setEmail(request.getEmail().trim().toLowerCase());
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash this in production
-        user.setRole("user"); // Default role based on signup.jsx
+        user.setRole("zonal"); // Strictly 2 roles: admin or zonal
         user.setStatus("inactive");
         System.err.println("Registering new user: email=" + user.getEmail() + ", initial_status=" + user.getStatus());
 
@@ -222,7 +222,7 @@ public class UserService {
             user.setSecurityQuestion("SET_3_QUESTIONS");
         }
 
-        user = userRepository.save(user);
+        user = userRepository.saveAndFlush(user);
         System.err.println("User saved to database: id=" + user.getId() + ", saved_status=" + user.getStatus());
         
         try {
@@ -412,14 +412,14 @@ public class UserService {
         }
 
         if (needsSave) {
-            user = userRepository.save(user);
+            user = userRepository.saveAndFlush(user);
         }
         
         // Enforce Admin approval check (Admins bypass approval)
         boolean isSystemAdmin = "admin".equalsIgnoreCase(user.getRole()) || "admin@loveworld.com".equalsIgnoreCase(user.getEmail());
         if (!isSystemAdmin && !"active".equalsIgnoreCase(user.getStatus())) {
-            System.err.println("KingsChat Login BLOCKED: Account pending admin approval for " + user.getEmail() + " (Status: " + user.getStatus() + ")");
-            throw new RuntimeException("Your account is pending admin approval. Please contact an administrator.");
+            System.err.println("KingsChat Registration / Login Pending Approval for " + user.getEmail() + " (Status: " + user.getStatus() + ")");
+            return mapToDto(user);
         }
         
         // Increment login count for active users
@@ -542,7 +542,7 @@ public class UserService {
         if (!"admin".equalsIgnoreCase(user.getRole())) {
             user.setRole("zonal");
         }
-        user = userRepository.save(user);
+        user = userRepository.saveAndFlush(user);
         
         try {
             auditLogService.logActivity("System Administrator", 1L, "Approved user", "User Management", "inactive", "active", "Admin approved account for " + user.getEmail());
